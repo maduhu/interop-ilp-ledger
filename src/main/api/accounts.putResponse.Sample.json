@@ -1,0 +1,6 @@
+{
+  "name": "alice",
+  "balance": "100",
+  "id": "http://d5cad9621db2:3000/accounts/alice",
+  "minimum_allowed_balance": "0"
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.l1p.interop</groupId>
+		<artifactId>interop-parent</artifactId>
+		<version>1.0.3</version>
+	</parent>
+
+	<groupId>com.l1p.interop.ilp</groupId>
+	<artifactId>interop-ilp-ledger</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<packaging>mule</packaging>
+	<name>Mule ILP Ledger Adapter</name>
+
+	<scm>
+		<connection>scm:git:https://github.com/LevelOneProject/interop-ilp-ledger</connection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<interop-common-version>1.0.5</interop-common-version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.l1p.interop</groupId>
+			<artifactId>interop-common</artifactId>
+			<version>${interop-common-version}</version>
+		</dependency>
+    <dependency>
+            <groupId>com.l1p.interop</groupId>
+            <artifactId>interop-domain</artifactId>
+            <version>0.1.1</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
+
+</project>

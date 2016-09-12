@@ -1,0 +1,14 @@
+{
+  "id": "http://d5cad9621db2:3000/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
+  "ledger": "http://d5cad9621db2:3000",
+  "debits": [{
+    "account": "http://d5cad9621db2:3000/accounts/alice",
+    "amount": "50"
+  }],
+  "credits": [{
+    "account": "http://d5cad9621db2:3000/accounts/bob",
+    "amount": "50"
+  }],
+  "execution_condition": "cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2",
+  "expires_at": "2016-09-12T00:00:01.000Z"
+}

@@ -1,0 +1,363 @@
+#%RAML 1.0
+title: ILP Ledger Adapter
+version: v1
+baseUri: https://localhost:8081/ilp-ledger/{version}
+
+types:
+  TransferState:
+    enum: [ proposed, prepared, executed, cancelled ]
+
+  Timeline:
+    type: object
+    properties:
+      proposed_at:
+        type: string
+        required: false
+      prepared_at:
+        type: string
+        required: false
+      executed_at:
+        type: string
+        required: false
+
+  PutAccountRequest:
+    type: object
+    properties:
+      name: string
+      balance: string
+
+  PutAccountResponse:
+    type: object
+    properties:
+      name: string
+      balance: string
+      id: string
+      minimum_allowed_balance: string
+
+  GetAccountsResponse:
+    type: array
+    items: object
+
+  TransferRequest:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      debits:
+        type: array
+        items: Debit
+        minItems: 1
+      credits:
+        type: array
+        items: Credit
+        minItems: 1
+
+  ProposeTransferRequest:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      debits:
+        type: array
+        items: Debit
+        minItems: 1
+      credits:
+        type: array
+        items: Credit
+        minItems: 1
+
+  ProposedTransferResponse:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      state: TransferState
+      debits:
+        type: array
+        items: Debit
+      credits:
+        type: array
+        items: Credit
+
+  PrepareTransferRequest:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      debits:
+        type: array
+        items: AuthorizedDebit
+        minItems: 1
+      credits:
+        type: array
+        items: Credit
+        minItems: 1
+
+  PreparedTransferResponse:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      state: TransferState
+      debits:
+        type: array
+        items: AuthorizedDebit
+      credits:
+        type: array
+        items: Credit
+
+  TransferResponse:
+    type: object
+    properties:
+      id: string
+      ledger: string
+      execution_condition: string
+      expires_at: string
+      state: TransferState
+      timeline:
+        type: Timeline
+        required: false
+      credits:
+        type: array
+        items: Credit
+        minItems: 1
+      debits:
+        type: array
+        items: Debit
+        minItems: 1
+
+  TransferResponses:
+    type: array
+    items: TransferResponse
+    minItems: 1
+
+  Credit:
+    type:  object
+    properties:
+      account: string
+      amount: string
+
+  Debit:
+    type:  object
+    properties:
+      account: string
+      amount: string
+      authorized:
+        type: boolean
+        required: false
+
+  AuthorizedDebit:
+    type:  object
+    properties:
+      account: string
+      amount: string
+      authorized: boolean
+
+  ConnectorDescriptor:
+    type: object
+    properties:
+      id: string
+      name: string
+      connector: string
+
+  Error:
+    type: object
+    properties:
+      id: string
+      message: string
+      owner:    #used in insufficientFundsError
+        type: string
+        required: false
+
+  ValidationError:
+    type: Error
+    properties:
+      validationErrors:
+        type: array
+        items: Error
+        required: false
+
+  TransferStateResponse:
+    type: object
+    properties:
+      message:
+        type: object
+        properties:
+          id: string
+          state: string
+      #"type": string
+      signer: string
+      public_key: string
+      signature: string
+
+/accounts/{id}:
+      displayName: POST /v1/accounts/:id
+      uriParameters:
+        id: string
+      get:
+        description: lookup an account
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: object
+                properties:
+                  id: string
+                  name: string
+                  #UnauthenticatedResponse
+                  ledger:
+                    type: string
+                    required: false
+                  #AuthenticatedResponse
+                  balance:
+                    type: string
+                    required: false
+                  is_disabled:
+                    type: boolean
+                    required: false
+
+          400:  #InvalidUriParameterError
+            body:
+              application/json:
+                type: ValidationError
+
+          404:  #NotFoundError
+            body:
+              application/json:
+                type: Error
+      put:
+        description: Create an account
+        body:
+          application/json:
+            type:  PutAccountRequest
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: PutAccountResponse
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              application/json:
+                type: ValidationError
+
+          403:  #UnauthorizedError
+            body:
+              application/json:
+                type: Error
+
+/accounts:
+      displayName: GET /v1/accounts
+      get:
+        description: Retrieve all accounts
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: GetAccountsResponse
+
+/transfers/{id}:
+      displayName: POST /v1/transfers/:id
+      uriParameters:
+        id: string
+      get:
+        description: Transfer - Get local transfer object
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: TransferResponse
+
+          400:  #InvalidUriParameterError
+            body:
+              application/json:
+                type: ValidationError
+
+          404:  #NotFoundError
+            body:
+              application/json:
+                type: Error
+
+      put:
+        description:
+        body:
+          application/json:
+            type: TransferRequest
+        responses:
+          200:  #prepared success
+            body:
+              application/json:
+                type: PreparedTransferResponse
+
+          201:  #proposed success
+            body:
+              application/json:
+                type: ProposedTransferResponse
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              application/json:
+                type: ValidationError
+
+          422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
+            body:
+              application/json:
+                type: Error
+
+/transfers/{id}/fulfillment:
+      displayName: GET /v1/transfers/:id/fulfillment
+      uriParameters:
+        id: string
+      put:
+        description: Transfer - Execute a prepared transfer
+        body:
+          text/plain:
+            type:  string
+            example: "cf:0:_v8"
+
+        responses:
+          200:
+            body:
+              text/plain:
+                type:  string
+                example: "cf:0:_v8"
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              application/json:
+                type: ValidationError
+
+          422:  #UnmetConditionError, UnprocessableEntityError
+            body:
+              application/json:
+                type: Error
+
+/connectors:
+      displayName: GET /v1/connectors
+      get:
+        description: Get all accounts of all connectors on this ledger.
+
+        responses:
+          200:
+            body:
+              application/json:
+                type: array
+                items: ConnectorDescriptor
+                minItems: 1
+
+
+

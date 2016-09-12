@@ -1,0 +1,28 @@
+<Configuration>
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <PatternLayout pattern="%-5p %d [%t] %c{1}: %m%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="javax.jmdns.impl.DNSIncoming" level="ERROR" />
+    <Logger name="com.rh.mule.logging.ActiveMQConnectionAsyncLogger" level="WARN"/>
+    <Logger name="httpclient.wire" level="INFO" />
+    <Logger name="org.apache.commons.httpclient" level="INFO" />
+    <Logger name="org.mule.util.queue.DualRandomAccessFileQueueStoreDelegate" level="INFO" />
+    <Logger name="com.rh.mule.logging.ApplicationMonitoringAgent" level="INFO" />
+    <Logger name="org.mule.transformer" level="WARN" />
+    <Logger name="org.jetel.graph" level="WARN" />
+    <Logger name="org.mule.transport.service.DefaultTransportServiceDescriptor" level="WARN" />
+    <Logger name="com.sforce" level="INFO" />
+    <Logger name="org.mule.module.launcher.DeploymentDirectoryWatcher" level="WARN" />
+    <Logger name="org.mule.transformer.graph" level="WARN" />
+    <Logger name="com.mulesoft.module.batch" level="WARN" />
+    <Logger name="com.rh.mule.reliability" level="INFO" />
+    <Logger name="org.mule.transport.jms.JmsMessageUtils" level="ERROR" />
+    <Logger name="org.mule.lifecycle.AbstractLifecycleManager" level="WARN" />
+    <Root level="INFO">
+      <AppenderRef ref="CONSOLE" />
+    </Root>
+  </Loggers>
+</Configuration>

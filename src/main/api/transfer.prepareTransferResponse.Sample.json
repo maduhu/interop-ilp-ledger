@@ -1,0 +1,24 @@
+{
+  "ledger": "http://d5cad9621db2:3000",
+  "execution_condition": "cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2",
+  "id": "http://d5cad9621db2:3000/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
+  "expires_at": "2016-09-12T00:00:01.000Z",
+  "state": "prepared",
+  "debits": [
+    {
+      "account": "http://d5cad9621db2:3000/accounts/alice",
+      "amount": "50",
+      "authorized": true
+    }
+  ],
+  "credits": [
+    {
+      "account": "http://d5cad9621db2:3000/accounts/bob",
+      "amount": "50"
+    }
+  ],
+  "timeline": {
+    "proposed_at": "2016-09-11T08:58:05.727Z",
+    "prepared_at": "2016-09-11T09:08:51.547Z"
+  }
+}

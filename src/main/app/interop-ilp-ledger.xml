@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    
+	<!-- DFSP HTTP configuration for making REST call to the mock service -->
+	<http:request-config name="ILP_Ledger_Configuration" host="0.0.0.0" port="3000" basePath="" doc:name="HTTP Request Configuration"/>
+
+    <flow name="get:/accounts:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts" method="GET" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+    </flow>
+    <flow name="get:/accounts/{id}:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[message.inboundProperties.'http.uri.params'.id]" method="GET" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+    </flow>
+    <flow name="put:/accounts/{id}:api-config">
+        <logger level="INFO" message="=== request data: #[payload]" category="com.l1p.interop"/>
+        <logger level="INFO" message="" category="com.l1p.interop"/>
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[message.inboundProperties.'http.uri.params'.id]" method="PUT" doc:name="HTTP"/>
+
+        <object-to-string-transformer/>
+        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+    </flow>
+
+    <flow name="get:/transfers/{id}:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]" method="GET" doc:name="HTTP"/>
+    </flow>
+    <flow name="put:/transfers/{id}:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]" method="PUT" doc:name="HTTP"/>
+    </flow>
+    <flow name="put:/transfers/{id}/fulfillment:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]/fulfillment" method="PUT" doc:name="HTTP"/>
+    </flow>
+
+    <flow name="get:/connectors:api-config">
+        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/connectors" method="GET" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+    </flow>
+
+
+</mule>
