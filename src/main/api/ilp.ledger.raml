@@ -10,15 +10,9 @@ types:
   Timeline:
     type: object
     properties:
-      proposed_at:
-        type: string
-        required: false
-      prepared_at:
-        type: string
-        required: false
-      executed_at:
-        type: string
-        required: false
+      proposed_at?: string
+      prepared_at?: string
+      executed_at?: string
 
   PutAccountRequest:
     type: object
@@ -55,86 +49,34 @@ types:
         minItems: 1
 
   ProposeTransferRequest:
-    type: object
-    properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
-      debits:
-        type: array
-        items: Debit
-        minItems: 1
-      credits:
-        type: array
-        items: Credit
-        minItems: 1
+    type: TransferRequest
 
   ProposedTransferResponse:
-    type: object
+    type: ProposeTransferRequest
     properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
-      state: TransferState
-      debits:
-        type: array
-        items: Debit
-      credits:
-        type: array
-        items: Credit
+      state:
+        enum: [ proposed ]
 
   PrepareTransferRequest:
-    type: object
+    type: ProposeTransferRequest
     properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
       debits:
         type: array
         items: AuthorizedDebit
-        minItems: 1
-      credits:
-        type: array
-        items: Credit
         minItems: 1
 
   PreparedTransferResponse:
-    type: object
+    type: PrepareTransferRequest
     properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
-      state: TransferState
-      debits:
-        type: array
-        items: AuthorizedDebit
-      credits:
-        type: array
-        items: Credit
+      state:
+        enum: [ prepared ]
 
   TransferResponse:
-    type: object
+    type: TransferRequest
     properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
-      state: TransferState
       timeline:
         type: Timeline
         required: false
-      credits:
-        type: array
-        items: Credit
-        minItems: 1
-      debits:
-        type: array
-        items: Debit
-        minItems: 1
 
   TransferResponses:
     type: array
@@ -152,15 +94,10 @@ types:
     properties:
       account: string
       amount: string
-      authorized:
-        type: boolean
-        required: false
 
   AuthorizedDebit:
-    type:  object
+    type: Debit
     properties:
-      account: string
-      amount: string
       authorized: boolean
 
   ConnectorDescriptor:
@@ -175,9 +112,7 @@ types:
     properties:
       id: string
       message: string
-      owner:    #used in insufficientFundsError
-        type: string
-        required: false
+      owner?: string   #used in insufficientFundsError
 
   ValidationError:
     type: Error
@@ -195,19 +130,30 @@ types:
         properties:
           id: string
           state: string
-      #"type": string
+      type: string
       signer: string
       public_key: string
       signature: string
 
-/accounts/{id}:
-      displayName: POST /v1/accounts/:id
-      uriParameters:
-        id: string
-      get:
-        description: lookup an account
+/accounts:
+  displayName: GET /v1/accounts
+  get:
+    description: Retrieve all accounts
 
-        responses:
+    responses:
+      200:
+        body:
+          application/json:
+            type: GetAccountsResponse
+
+  /{id}:
+    displayName: POST /v1/accounts/:id
+    uriParameters:
+      id: string
+    get:
+      description: lookup an account
+
+      responses:
           200:
             body:
               application/json:
@@ -236,89 +182,78 @@ types:
             body:
               application/json:
                 type: Error
-      put:
-        description: Create an account
-        body:
-          application/json:
-            type:  PutAccountRequest
+    put:
+      description: Create an account
+      body:
+        application/json:
+          type:  PutAccountRequest
 
-        responses:
-          200:
-            body:
-              application/json:
-                type: PutAccountResponse
+      responses:
+        200:
+          body:
+            application/json:
+              type: PutAccountResponse
 
-          400:  #InvalidUriParameterError, InvalidBodyError
-            body:
-              application/json:
-                type: ValidationError
+        400:  #InvalidUriParameterError, InvalidBodyError
+          body:
+            application/json:
+              type: ValidationError
 
-          403:  #UnauthorizedError
-            body:
-              application/json:
-                type: Error
-
-/accounts:
-      displayName: GET /v1/accounts
-      get:
-        description: Retrieve all accounts
-
-        responses:
-          200:
-            body:
-              application/json:
-                type: GetAccountsResponse
+        403:  #UnauthorizedError
+          body:
+            application/json:
+              type: Error
 
 /transfers/{id}:
-      displayName: POST /v1/transfers/:id
-      uriParameters:
-        id: string
-      get:
-        description: Transfer - Get local transfer object
+  displayName: POST /v1/transfers/:id
+  uriParameters:
+    id: string
+  get:
+    description: Transfer - Get local transfer object
 
-        responses:
-          200:
-            body:
-              application/json:
-                type: TransferResponse
-
-          400:  #InvalidUriParameterError
-            body:
-              application/json:
-                type: ValidationError
-
-          404:  #NotFoundError
-            body:
-              application/json:
-                type: Error
-
-      put:
-        description:
+    responses:
+      200:
         body:
           application/json:
-            type: TransferRequest
-        responses:
-          200:  #prepared success
-            body:
-              application/json:
-                type: PreparedTransferResponse
+            type: TransferResponse
 
-          201:  #proposed success
-            body:
-              application/json:
-                type: ProposedTransferResponse
+      400:  #InvalidUriParameterError
+        body:
+          application/json:
+            type: ValidationError
 
-          400:  #InvalidUriParameterError, InvalidBodyError
-            body:
-              application/json:
-                type: ValidationError
+      404:  #NotFoundError
+        body:
+          application/json:
+            type: Error
 
-          422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
-            body:
-              application/json:
-                type: Error
+  put:
+    description:
+    body:
+      application/json:
+        type: [ ProposeTransferRequest, PrepareTransferRequest ]
+    responses:
+      200:  #prepared success
+        body:
+          application/json:
+            type: PreparedTransferResponse
 
-/transfers/{id}/fulfillment:
+      201:  #proposed success
+        body:
+          application/json:
+            type: ProposedTransferResponse
+
+      400:  #InvalidUriParameterError, InvalidBodyError
+        body:
+          application/json:
+            type: ValidationError
+
+      422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
+        body:
+          application/json:
+            type: Error
+
+  /fulfillment:
       displayName: GET /v1/transfers/:id/fulfillment
       uriParameters:
         id: string

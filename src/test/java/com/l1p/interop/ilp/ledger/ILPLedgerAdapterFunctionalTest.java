@@ -68,7 +68,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Test
 	public void testValidPutAccountShouldReturnValidResponse() throws Exception {
-		Thread.sleep( 60000 );
 		final String putAccountJSON = loadResourceAsString("testData/putAccount-Alice.json");
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
