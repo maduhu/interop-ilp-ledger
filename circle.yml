@@ -4,7 +4,7 @@ checkout:
     - curl -H "Authorization:token $GITHUB_TOKEN" -H 'Accept:application/vnd.github.v3.raw' -o /tmp/interop_maven_settings.xml -L https://raw.githubusercontent.com/LevelOneProject/automation/master/interop/interop_maven_settings.xml
 dependencies:
   override:
-    - "mvn dependency:resolve -s /tmp/interop_maven_settings.xml"
+    - "mvn --fail-never dependency:go-offline -s /tmp/interop_maven_settings.xml"
 
 test:
   override:
