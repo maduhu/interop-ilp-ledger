@@ -113,14 +113,45 @@ types:
       id: string
       message: string
       owner?: string   #used in insufficientFundsError
+  
+  UnmetConditionError:
+    type: Error
+    properties:
+      condition?: string
+      fulfillment?: string
+  
+  ValidationItem: #Each item in the array of validation Errors
+    type: object
+    properties:
+      message: string
+      params:
+        type: object
+        properties:
+          pattern?: string
+          key?: string
+      code: integer
+      dataPath: string
+      schemaPath: string
+      subErrors: string
+      stack: string
 
   ValidationError:
     type: Error
     properties:
       validationErrors:
         type: array
-        items: Error
+        items: ValidationItem
         required: false
+  
+  #InvalidBodyError is same as below - only params field toggles between pattern and key
+  InvalidUriParameterError: #HTTP/1.1 400 Bad Request
+    type: Error
+    properties:
+      validationErrors:
+        type: ValidationError
+        
+  InvalidBodyError: #HTTP/1.1 400 Bad Request
+    type: InvalidUriParameterError
 
   TransferStateResponse:
     type: object
@@ -176,11 +207,13 @@ types:
           400:  #InvalidUriParameterError
             body:
               application/json:
-                type: ValidationError
+                description: HTTP/1.1 400 Bad Request
+                type: InvalidUriParameterError
 
           404:  #NotFoundError
             body:
               application/json:
+                description: HTTP/1.1 404 Not Found
                 type: Error
     put:
       description: Create an account
@@ -197,9 +230,11 @@ types:
         400:  #InvalidUriParameterError, InvalidBodyError
           body:
             application/json:
-              type: ValidationError
+              description: HTTP/1.1 400 Bad Request
+              type: InvalidUriParameterError
 
         403:  #UnauthorizedError
+          description: HTTP/1.1 403 Forbidden
           body:
             application/json:
               type: Error
@@ -220,11 +255,13 @@ types:
       400:  #InvalidUriParameterError
         body:
           application/json:
-            type: ValidationError
+            description: HTTP/1.1 400 Bad Request
+            type: InvalidUriParameterError
 
       404:  #NotFoundError
         body:
           application/json:
+            description: HTTP/1.1 404 Not Found
             type: Error
 
   put:
@@ -246,11 +283,13 @@ types:
       400:  #InvalidUriParameterError, InvalidBodyError
         body:
           application/json:
-            type: ValidationError
+            description: HTTP/1.1 400 Bad Request
+            type: InvalidUriParameterError
 
       422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
         body:
           application/json:
+            description: HTTP/1.1 422 Unprocessable Entity
             type: Error
 
   /fulfillment:
@@ -274,12 +313,14 @@ types:
           400:  #InvalidUriParameterError, InvalidBodyError
             body:
               application/json:
-                type: ValidationError
+                description: HTTP/1.1 400 Bad Request
+                type: InvalidUriParameterError
 
           422:  #UnmetConditionError, UnprocessableEntityError
             body:
               application/json:
-                type: Error
+                description: HTTP/1.1 422 Unprocessable Entity
+                type: UnmetConditionError
 
 /connectors:
       displayName: GET /v1/connectors
@@ -293,6 +334,3 @@ types:
                 type: array
                 items: ConnectorDescriptor
                 minItems: 1
-
-
-
