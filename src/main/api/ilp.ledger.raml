@@ -71,6 +71,18 @@ types:
       state:
         enum: [ prepared ]
 
+  ServerMetadataResponse:
+    description: Information about the ILP Ledger Adapter
+    type: object
+    properties:
+      currency_code: string
+      currency_symbol: string
+      precision: integer
+      scale: integer
+      urls?:
+        description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
+        type: object
+
   TransferResponse:
     type: TransferRequest
     properties:
@@ -107,19 +119,34 @@ types:
       name: string
       connector: string
 
+  TransferStateResponse:
+    type: object
+    properties:
+      message:
+        type: object
+        properties:
+          id: string
+          state: string
+      type: string
+      signer: string
+      public_key: string
+      signature: string
+
+  #Error Definitions
   Error:
     type: object
     properties:
       id: string
       message: string
-      owner?: string   #used in insufficientFundsError
-  
-  UnmetConditionError:
+
+  ValidationError:
     type: Error
     properties:
-      condition?: string
-      fulfillment?: string
-  
+      validationErrors:
+        type: array
+        items: ValidationItem
+        minItems: 0
+
   ValidationItem: #Each item in the array of validation Errors
     type: object
     properties:
@@ -135,36 +162,76 @@ types:
       subErrors: string
       stack: string
 
-  ValidationError:
-    type: Error
-    properties:
-      validationErrors:
-        type: array
-        items: ValidationItem
-        required: false
-  
-  #InvalidBodyError is same as below - only params field toggles between pattern and key
-  InvalidUriParameterError: #HTTP/1.1 400 Bad Request
-    type: Error
-    properties:
-      validationErrors:
-        type: ValidationError
-        
-  InvalidBodyError: #HTTP/1.1 400 Bad Request
-    type: InvalidUriParameterError
+  #400 Errors
+  InvalidBodyError:
+    description: The submitted JSON entity does not match the required schema.
+    type: ValidationError
 
-  TransferStateResponse:
-    type: object
+  InvalidUriParameterError:
+    description: At least one provided URI or UUID parameter was invalid.
+    type: ValidationError
+
+  #403 Forbidden Errors
+  UnauthorizedError:
+    description: You do not have permissions to access or modify this resource in the requested way.
+    type: Error
+
+  #404 Not Found Errors
+  NotFoundError:
+    description: The requested resource could not be found.
+    type: Error
+
+  #422 Unprocessable Entity Errors
+  AlreadyExistsError:
+    description: The specified entity already exists and may not be modified.
+    type: Error
+
+  InsufficientFundsError:
+    descriptioin: The source account does not have sufficient funds to satisfy the request.
+    type: Error
     properties:
-      message:
-        type: object
-        properties:
-          id: string
-          state: string
-      type: string
-      signer: string
-      public_key: string
-      signature: string
+      owner: string
+
+  UnmetConditionError:
+    description: The submitted fulfillment does not meet the specified condition.
+    type: Error
+    properties:
+      condition?: string
+      fulfillment?: string
+
+  UnprocessableEntityError:
+    description: The provided entity is syntactically correct, but there is a generic semantic problem with it.
+    type: Error
+
+/:
+  displayName: GET /v1
+  get:
+    description: Receive information about the ILP Ledger Adapter
+
+    responses:
+      200:
+        body:
+          application/json:
+            type: ServerMetadataResponse
+            example:
+            {
+                "currency_code": null,
+                "currency_symbol": null,
+                "condition_sign_public_key": "YNDefwo4LB+AjkCRzuCSGuAlDLvSCWUxPRX7lXLhV1I=",
+                "notification_sign_public_key": "-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEAnR0o5RIONZy8zwKNxt8ibQtuIu+VDgcZB5MFzFywEvhNFAMXJZyq2ZgER2fb\nXJGfT0CAOMLa3TNcPHvhdHCOnkHSqs7SRLnjnGJuxv/+WyNaFuzrgUT4ymBdtK2LT5j1p7uw\nllxUv9uAjWRz96LUQewjXl38QxE56rp5ov+O+frF2TDN+qFLqgRX1N6kbY6roQRDJ3BFKKqN\nS3mVqMqokeQ5UmYwqAcgmdysoFZFcCkuRdZ1Han/CMDfnhL0mtQmwOhUdOZ4a6dfWNgozycI\nyQOS59ckDp31dRjMZddaSQki/yDIAxmtZHzE4z+U4ZMxEbirwCZbA9QZed2Tu35yQwIDAQAB\n-----END RSA PUBLIC KEY-----\n",
+                "urls": {
+                    "health": "http://usd-ledger.example/health",
+                    "transfer": "http://usd-ledger.example/transfers/:id",
+                    "transfer_fulfillment": "http://usd-ledger.example/transfers/:id/fulfillment",
+                    "transfer_state": "http://usd-ledger.example/transfers/:id/state",
+                    "connectors": "http://usd-ledger.example/connectors",
+                    "accounts": "http://usd-ledger.example/accounts",
+                    "account": "http://usd-ledger.example/accounts/:name",
+                    "subscription": "http://usd-ledger.example/subscriptions/:id"
+                },
+                "precision": 10,
+                "scale": 2
+            }
 
 /accounts:
   displayName: GET /v1/accounts
@@ -176,6 +243,12 @@ types:
         body:
           application/json:
             type: GetAccountsResponse
+
+      403:  #UnauthorizedError
+        description: HTTP/1.1 403 Forbidden - UnauthorizedError
+        body:
+          application/json:
+            type: UnauthorizedError
 
   /{id}:
     displayName: POST /v1/accounts/:id
@@ -207,14 +280,14 @@ types:
           400:  #InvalidUriParameterError
             body:
               application/json:
-                description: HTTP/1.1 400 Bad Request
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError
                 type: InvalidUriParameterError
 
           404:  #NotFoundError
             body:
               application/json:
-                description: HTTP/1.1 404 Not Found
-                type: Error
+                description: HTTP/1.1 404 Not Found - NotFoundError
+                type: NotFoundError
     put:
       description: Create an account
       body:
@@ -230,14 +303,14 @@ types:
         400:  #InvalidUriParameterError, InvalidBodyError
           body:
             application/json:
-              description: HTTP/1.1 400 Bad Request
-              type: InvalidUriParameterError
+              description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+              type: [ InvalidUriParameterError, InvalidBodyError ]
 
         403:  #UnauthorizedError
-          description: HTTP/1.1 403 Forbidden
+          description: HTTP/1.1 403 Forbidden - UnauthorizedError
           body:
             application/json:
-              type: Error
+              type: UnauthorizedError
 
 /transfers/{id}:
   displayName: POST /v1/transfers/:id
@@ -251,18 +324,19 @@ types:
         body:
           application/json:
             type: TransferResponse
+            example: !include transfer.getTransferResponse.Sample.json
 
       400:  #InvalidUriParameterError
         body:
           application/json:
-            description: HTTP/1.1 400 Bad Request
+            description: HTTP/1.1 400 Bad Request - InvalidUriParameterError
             type: InvalidUriParameterError
 
       404:  #NotFoundError
         body:
           application/json:
             description: HTTP/1.1 404 Not Found
-            type: Error
+            type: NotFoundError
 
   put:
     description:
@@ -283,14 +357,14 @@ types:
       400:  #InvalidUriParameterError, InvalidBodyError
         body:
           application/json:
-            description: HTTP/1.1 400 Bad Request
-            type: InvalidUriParameterError
+            description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+            type: [ InvalidUriParameterError, InvalidBodyError ]
 
       422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
         body:
           application/json:
-            description: HTTP/1.1 422 Unprocessable Entity
-            type: Error
+            description: HTTP/1.1 422 Unprocessable Entity - InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
+            type: [ InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError ]
 
   /fulfillment:
       displayName: GET /v1/transfers/:id/fulfillment
@@ -313,14 +387,14 @@ types:
           400:  #InvalidUriParameterError, InvalidBodyError
             body:
               application/json:
-                description: HTTP/1.1 400 Bad Request
-                type: InvalidUriParameterError
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+                type: [ InvalidUriParameterError, InvalidBodyError ]
 
           422:  #UnmetConditionError, UnprocessableEntityError
             body:
               application/json:
-                description: HTTP/1.1 422 Unprocessable Entity
-                type: UnmetConditionError
+                description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
+                type: [ UnmetConditionError, UnprocessableEntityError ]
 
 /connectors:
       displayName: GET /v1/connectors
