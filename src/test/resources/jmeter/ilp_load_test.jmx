@@ -45,11 +45,11 @@
             <stringProp name="-399754426">ledgerUrl</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-1041258501">
+            <collectionProp name="-1039843674">
               <stringProp name="1588736731">ec2-52-37-54-209.us-west-2.compute.amazonaws.com</stringProp>
               <stringProp name="1567005">3000</stringProp>
               <stringProp name="1809484268">2016-10-27T00:00:01.000Z</stringProp>
-              <stringProp name="-1009772662">http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:3000</stringProp>
+              <stringProp name="1668257189">http://${ledgerHost}:${ledgerPort}</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
