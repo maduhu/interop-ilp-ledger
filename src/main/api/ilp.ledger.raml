@@ -32,6 +32,13 @@ types:
     type: array
     items: object
 
+  Funds:
+    type: object
+    properties:
+      account: string
+      amount: string
+      authorized?: boolean
+
   TransferRequest:
     type: object
     properties:
@@ -40,12 +47,10 @@ types:
       execution_condition: string
       expires_at: string
       debits:
-        type: array
-        items: Debit
+        type: Funds[]
         minItems: 1
       credits:
-        type: array
-        items: Credit
+        type: Funds[]
         minItems: 1
 
   ProposeTransferRequest:
@@ -58,12 +63,7 @@ types:
         enum: [ proposed ]
 
   PrepareTransferRequest:
-    type: ProposeTransferRequest
-    properties:
-      debits:
-        type: array
-        items: AuthorizedDebit
-        minItems: 1
+    type: TransferRequest
 
   PreparedTransferResponse:
     type: PrepareTransferRequest
@@ -79,9 +79,10 @@ types:
       currency_symbol: string
       precision: integer
       scale: integer
-      urls?:
+      urls:
         description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
         type: object
+        required: false
 
   TransferResponse:
     type: TransferRequest
@@ -94,23 +95,6 @@ types:
     type: array
     items: TransferResponse
     minItems: 1
-
-  Credit:
-    type:  object
-    properties:
-      account: string
-      amount: string
-
-  Debit:
-    type:  object
-    properties:
-      account: string
-      amount: string
-
-  AuthorizedDebit:
-    type: Debit
-    properties:
-      authorized: boolean
 
   ConnectorDescriptor:
     type: object
@@ -151,16 +135,17 @@ types:
     type: object
     properties:
       message: string
-      params:
-        type: object
-        properties:
-          pattern?: string
-          key?: string
       code: integer
       dataPath: string
       schemaPath: string
       subErrors: string
       stack: string
+      params:
+        type: object
+        required: false
+        properties:
+          pattern: string
+          key: string
 
   #400 Errors
   InvalidBodyError:
@@ -187,7 +172,7 @@ types:
     type: Error
 
   InsufficientFundsError:
-    descriptioin: The source account does not have sufficient funds to satisfy the request.
+    description: The source account does not have sufficient funds to satisfy the request.
     type: Error
     properties:
       owner: string
@@ -213,25 +198,6 @@ types:
         body:
           application/json:
             type: ServerMetadataResponse
-            example:
-            {
-                "currency_code": null,
-                "currency_symbol": null,
-                "condition_sign_public_key": "YNDefwo4LB+AjkCRzuCSGuAlDLvSCWUxPRX7lXLhV1I=",
-                "notification_sign_public_key": "-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEAnR0o5RIONZy8zwKNxt8ibQtuIu+VDgcZB5MFzFywEvhNFAMXJZyq2ZgER2fb\nXJGfT0CAOMLa3TNcPHvhdHCOnkHSqs7SRLnjnGJuxv/+WyNaFuzrgUT4ymBdtK2LT5j1p7uw\nllxUv9uAjWRz96LUQewjXl38QxE56rp5ov+O+frF2TDN+qFLqgRX1N6kbY6roQRDJ3BFKKqN\nS3mVqMqokeQ5UmYwqAcgmdysoFZFcCkuRdZ1Han/CMDfnhL0mtQmwOhUdOZ4a6dfWNgozycI\nyQOS59ckDp31dRjMZddaSQki/yDIAxmtZHzE4z+U4ZMxEbirwCZbA9QZed2Tu35yQwIDAQAB\n-----END RSA PUBLIC KEY-----\n",
-                "urls": {
-                    "health": "http://usd-ledger.example/health",
-                    "transfer": "http://usd-ledger.example/transfers/:id",
-                    "transfer_fulfillment": "http://usd-ledger.example/transfers/:id/fulfillment",
-                    "transfer_state": "http://usd-ledger.example/transfers/:id/state",
-                    "connectors": "http://usd-ledger.example/connectors",
-                    "accounts": "http://usd-ledger.example/accounts",
-                    "account": "http://usd-ledger.example/accounts/:name",
-                    "subscription": "http://usd-ledger.example/subscriptions/:id"
-                },
-                "precision": 10,
-                "scale": 2
-            }
 
 /accounts:
   displayName: GET /v1/accounts
@@ -304,7 +270,7 @@ types:
           body:
             application/json:
               description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-              type: [ InvalidUriParameterError, InvalidBodyError ]
+              type: InvalidUriParameterError | InvalidBodyError
 
         403:  #UnauthorizedError
           description: HTTP/1.1 403 Forbidden - UnauthorizedError
@@ -324,7 +290,6 @@ types:
         body:
           application/json:
             type: TransferResponse
-            example: !include transfer.getTransferResponse.Sample.json
 
       400:  #InvalidUriParameterError
         body:
@@ -342,7 +307,7 @@ types:
     description:
     body:
       application/json:
-        type: [ ProposeTransferRequest, PrepareTransferRequest ]
+        type: ProposeTransferRequest | PrepareTransferRequest
     responses:
       200:  #prepared success
         body:
@@ -358,13 +323,13 @@ types:
         body:
           application/json:
             description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-            type: [ InvalidUriParameterError, InvalidBodyError ]
+            type: InvalidUriParameterError | InvalidBodyError
 
       422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
         body:
           application/json:
             description: HTTP/1.1 422 Unprocessable Entity - InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
-            type: [ InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError ]
+            type: InsufficientFundsError | UnprocessableEntityError | AlreadyExistsError
 
   /fulfillment:
       displayName: GET /v1/transfers/:id/fulfillment
@@ -374,6 +339,9 @@ types:
         description: Transfer - Execute a prepared transfer
         body:
           text/plain:
+            type:  string
+            example: "cf:0:_v8"
+          application/json:
             type:  string
             example: "cf:0:_v8"
 
@@ -388,13 +356,13 @@ types:
             body:
               application/json:
                 description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-                type: [ InvalidUriParameterError, InvalidBodyError ]
+                type: InvalidUriParameterError | InvalidBodyError
 
           422:  #UnmetConditionError, UnprocessableEntityError
             body:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
-                type: [ UnmetConditionError, UnprocessableEntityError ]
+                type: UnmetConditionError | UnprocessableEntityError
 
 /connectors:
       displayName: GET /v1/connectors

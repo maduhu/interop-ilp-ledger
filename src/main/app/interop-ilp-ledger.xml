@@ -12,52 +12,96 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
     
-	<!-- DFSP HTTP configuration for making REST call to the mock service -->
-	<http:request-config name="ILP_Ledger_Configuration" host="0.0.0.0" port="3000" basePath="" doc:name="HTTP Request Configuration"/>
+    <flow name="get:/:api-config">
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Calling getLedgerMetadata for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getLedgerMetadata" doc:name="call getLedgerMetadata"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received getLedgerMetadata response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+    </flow>
 
     <flow name="get:/accounts:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts" method="GET" doc:name="HTTP"/>
         <object-to-string-transformer/>
-        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+        <logger level="INFO"
+                message="Calling getAccounts for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getAccounts" doc:name="call getAccounts"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received getAccounts response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="get:/accounts/{id}:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <set-payload value="#[NullPayload.getInstance()]" />
-        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[message.inboundProperties.'http.uri.params'.id]" method="GET" doc:name="HTTP"/>
         <object-to-string-transformer/>
-        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+        <logger level="INFO"
+                message="Calling getAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getAccount" doc:name="call getAccount"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received getAccount(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/accounts/{id}:api-config">
-        <logger level="INFO" message="=== request data: #[payload]" category="com.l1p.interop"/>
-        <logger level="INFO" message="" category="com.l1p.interop"/>
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[message.inboundProperties.'http.uri.params'.id]" method="PUT" doc:name="HTTP"/>
-
         <object-to-string-transformer/>
-        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+        <logger level="INFO"
+                message="Calling putAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="putAccount" doc:name="call putAccount"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received putAccount(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
 
     <flow name="get:/transfers/{id}:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]" method="GET" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getTransfer" doc:name="call getTransfer"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received getTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/transfers/{id}:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]" method="PUT" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Calling putTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="putTransfer" doc:name="call putTransfer"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received putTransfer(#[id])response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/transfers/{id}/fulfillment:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[message.inboundProperties.'http.uri.params'.id]/fulfillment" method="PUT" doc:name="HTTP"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Calling executeTransfer([#id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="executeTransfer" doc:name="call executeTransfer"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received executeTransfer([#id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
 
     <flow name="get:/connectors:api-config">
-        <set-property propertyName="Authorization" value="Basic YWRtaW46Zm9v"/>
-        <set-payload value="#[NullPayload.getInstance()]" />
-        <http:request config-ref="ILP_Ledger_Configuration" path="/connectors" method="GET" doc:name="HTTP"/>
         <object-to-string-transformer/>
-        <logger level="INFO" message="=== response payload: #[payload]" category="com.l1p.interop"/>
+        <logger level="INFO"
+                message="Calling getConnectors for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getConnectors" doc:name="call getConnectors"/>
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Received getConnectors response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
 
 

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    
+	<!-- DFSP HTTP configuration for making REST call to the mock service -->
+	<http:request-config name="ILP_Ledger_Configuration" host="${ilp-ledger-proxy.host}" port="${ilp-ledger-proxy.port}" basePath="${ilp-ledger-proxy.basePath}" doc:name="HTTP Request Configuration"/>
+
+    <flow name="getLedgerMetadata">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/, method=get"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/" method="GET" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+
+    <flow name="getAccounts">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/accounts, method=get"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts" method="GET" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+    <flow name="getAccount">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/accounts/#[id], method=get"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="GET" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+    <flow name="putAccount">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/accounts/#[id], method=put"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="PUT" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+
+    <flow name="getTransfer">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/transfers/#[id], method=get"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="GET" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+    <flow name="putTransfer">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/transfers/#[id], method=put"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="PUT" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+    <flow name="executeTransfer">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="text/plain"/>
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/transfers/#[id]/fulfillment, method=put"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment" method="PUT" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+
+    <flow name="getConnectors">
+        <set-property propertyName="Authorization" value="#[message.inboundProperties.'Authorization']"/>
+        <set-property propertyName="Content-Type" value="application/json"/>
+        <set-payload value="#[NullPayload.getInstance()]" />
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger-service.host}:${ilp-ledger-service.port}${ilp-ledger-service.basePath}/connectors, method=get"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/connectors" method="GET" doc:name="HTTP"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+
+
+</mule>

@@ -19,7 +19,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <!-- Import common xml file that imports properties files at various levels -->
 	<spring:beans>
-		<spring:import resource="classpath:services-common.xml" />
+        <spring:import resource="classpath:services-common.xml" />
+        <spring:import resource="proxy/ilp-ledger-proxy.xml" />
 	</spring:beans>
 
     <spring:beans>
@@ -29,17 +30,16 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<apikit:config name="api-config" raml="ilp.ledger.raml" consoleEnabled="true" doc:name="Router" />
 
     <flow name="api-main">
-        <http:listener config-ref="api-httpListenerConfig" path="/ilp-ledger/v1/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="${ilpLedgerAdapterBasePath}/*" doc:name="HTTP"/>
         <set-session-variable variableName="interopID" value="#[java.util.UUID.randomUUID()]" doc:name="set-interopID"/>
         <logger level="INFO"
-                message="Received request for interopID=#[sessionVars.interopID] at path=#[message.inboundProperties.'http.request.path']"
+                message="Received request for interopID=#[sessionVars.interopID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-
         <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="api-console">
-        <http:listener config-ref="api-httpListenerConfig" path="${dfspConsolePath}" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="${ilpLedgerAdapterConsolePath}/*" doc:name="HTTP"/>
         <apikit:console config-ref="api-config" doc:name="APIkit Console"/>
     </flow>
 

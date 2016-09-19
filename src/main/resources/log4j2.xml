@@ -2,7 +2,7 @@
 <Configuration>
     <Properties>
         <Property name="logDir">${sys:mule.home}/logs</Property>
-        <Property name="appName">interop-dfsp-directory</Property>
+        <Property name="appName">interop-ilp-ledger</Property>
     </Properties>
     <Appenders>
         <RollingFile name="diagnostic" fileName="${logDir}/${appName}.log"
