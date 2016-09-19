@@ -29,9 +29,9 @@ import org.slf4j.LoggerFactory;
 
 public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
-	private final String accountsPath="/ilp-ledger/v1/accounts";
-	private final String transfersPath="/ilp-ledger/v1/transfers";
-	private final String connectorsPath="/ilp-ledger/v1/connectors";
+	private final String accountsPath="/ilp/ledger/v1/accounts";
+	private final String transfersPath="/ilp/ledger/v1/transfers";
+	private final String connectorsPath="/ilp/ledger/v1/connectors";
 	private final String serviceHost = "http://localhost:8081";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -100,7 +100,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Test
 	public void testValidGetMetadataShouldReturnValidResponse() throws Exception {
-		ClientResponse clientResponse = getRequest( "/ilp-ledger/v1/", null );
+		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/", null );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
