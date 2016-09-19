@@ -27,7 +27,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <spring:bean id="ExceptionTransformer" name="ExceptionTransformer" class="com.l1p.interop.L1PExceptionTransformer"/>
     </spring:beans>
 
-	<apikit:config name="api-config" raml="ilp.ledger.raml" consoleEnabled="true" doc:name="Router" />
+	<apikit:config name="api-config" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="${ilpLedgerAdapterBasePath}/*" doc:name="HTTP"/>
