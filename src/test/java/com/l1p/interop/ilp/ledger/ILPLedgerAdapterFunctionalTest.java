@@ -93,9 +93,17 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
+	}
 
-		System.out.println( "=== response content: " + responseContent );
-
+	@Test
+	public void testValidGetHealthShouldReturnValidResponse() throws Exception {
+		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/health", null );
+		String responseContent = null;
+		try {
+			responseContent = clientResponse.getEntity(String.class);
+		} catch ( Exception e ) {
+			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
+		}
 	}
 
 	@Test
@@ -107,23 +115,17 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
-
-		System.out.println( "=== response content: " + responseContent );
-
 	}
 
 	@Test
 	public void testValidGetAccountShouldReturnValidResponse() throws Exception {
-		ClientResponse clientResponse = getRequest( accountsPath + "/alice", null );
+		ClientResponse clientResponse = getRequest( accountsPath + "/bryan", null );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
-
-		System.out.println( "=== response content: " + responseContent );
-
 	}
 
 	@Test
@@ -135,9 +137,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
-
-		System.out.println( "=== response content: " + responseContent );
-
 	}
 
 	@Test
@@ -149,9 +148,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
-
-		System.out.println( "=== response content: " + responseContent );
-
 	}
 
 	private void validateResponse( String testName, ClientResponse clientResponse, int expectedStatus, String expectedContent ) throws Exception {

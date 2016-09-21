@@ -1,5 +1,5 @@
 #%RAML 1.0
-title: ILP Ledger Adapter
+title: ilp-ledger
 version: v1
 baseUri: http://localhost:8081/ilp/ledger/{version}
 
@@ -72,7 +72,7 @@ types:
         enum: [ prepared ]
 
   ServerMetadataResponse:
-    description: Information about the ILP Ledger Adapter
+    description: Metadata about the ilp ledger instance
     type: object
     properties:
       currency_code: string
@@ -102,6 +102,11 @@ types:
       id: string
       name: string
       connector: string
+
+  LedgerStatus:
+    type: object
+    properties:
+      status: string
 
   TransferStateResponse:
     type: object
@@ -191,13 +196,24 @@ types:
 /:
   displayName: GET /v1
   get:
-    description: Receive information about the ILP Ledger Adapter
+    description: Receive metadata about the ilp ledger instance
 
     responses:
       200:
         body:
           application/json:
             type: ServerMetadataResponse
+
+/health:
+  displayName: GET /v1/health
+  get:
+    description: Returns ledger health status
+
+    responses:
+      200:
+        body:
+          application/json:
+            type: LedgerStatus
 
 /accounts:
   displayName: GET /v1/accounts
@@ -361,16 +377,3 @@ types:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
-
-/connectors:
-      displayName: GET /v1/connectors
-      get:
-        description: Get all accounts of all connectors on this ledger.
-
-        responses:
-          200:
-            body:
-              application/json:
-                type: array
-                items: ConnectorDescriptor
-                minItems: 1
