@@ -76,7 +76,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="PUT" doc:name="HTTP">
-            <http:success-status-code-validator values="200,400,403"/>
+            <http:success-status-code-validator values="200,201,400,403"/>
         </http:request>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
