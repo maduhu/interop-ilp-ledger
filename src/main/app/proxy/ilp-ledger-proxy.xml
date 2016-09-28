@@ -54,6 +54,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <http:request config-ref="ILP_Ledger_Configuration" path="/health" method="GET" doc:name="HTTP">
             <http:success-status-code-validator values="200"/>
         </http:request>
+        <object-to-string-transformer/>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
 
@@ -63,10 +64,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts, method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts" method="GET" doc:name="HTTP">
             <http:success-status-code-validator values="200,403"/>
         </http:request>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
     <flow name="getAccount">
@@ -75,11 +78,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="GET" doc:name="HTTP">
             <http:success-status-code-validator values="200,400,404"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
     <flow name="putAccount">
@@ -87,11 +91,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="PUT" doc:name="HTTP">
             <http:success-status-code-validator values="200,201,400,403"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
 
@@ -101,11 +106,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="GET" doc:name="HTTP">
             <http:success-status-code-validator values="200,400,404"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
     <flow name="putTransfer">
@@ -113,11 +119,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="PUT" doc:name="HTTP">
             <http:success-status-code-validator values="200,201,400,422"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
     <flow name="executeTransfer">
@@ -125,12 +132,21 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment" method="PUT" doc:name="HTTP">
             <http:success-status-code-validator values="200,201,400,422"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
+    </flow>
+
+    <flow name="rejectTransfer">
+        <set-property propertyName="Content-Type" value="text/plain"/>
+        <logger level="INFO"
+                message="Mocking request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-property propertyName="http.status" value="200"/>
     </flow>
 
     <flow name="getConnectors">
@@ -139,11 +155,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/connectors, method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <transformer ref="RequestMapper" doc:name="RequestMapper"/>
+        <!--<transformer ref="RequestMapper" doc:name="RequestMapper"/>-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/connectors" method="GET" doc:name="HTTP">
             <http:success-status-code-validator values="200"/>
         </http:request>
-        <transformer ref="ResponseMapper" doc:name="ResponseMapper"/>
+        <object-to-string-transformer/>
+        <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
 </mule>

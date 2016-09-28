@@ -18,7 +18,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling getLedgerMetadata for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getLedgerMetadata" doc:name="call getLedgerMetadata"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getLedgerMetadata response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -29,7 +28,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling getLedgerHealth for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getLedgerHealth" doc:name="call getLedgerMetadata"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getLedgerHealth response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -41,7 +39,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling getAccounts for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getAccounts" doc:name="call getAccounts"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getAccounts response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -52,7 +49,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling getAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getAccount" doc:name="call getAccount"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getAccount(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -63,7 +59,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling putAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="putAccount" doc:name="call putAccount"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received putAccount(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -75,7 +70,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getTransfer" doc:name="call getTransfer"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -86,7 +80,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 message="Calling putTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="putTransfer" doc:name="call putTransfer"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received putTransfer(#[id])response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -94,22 +87,30 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="put:/transfers/{id}/fulfillment:api-config">
         <object-to-string-transformer/>
         <logger level="INFO"
-                message="Calling executeTransfer([#id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                message="Calling executeTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="executeTransfer" doc:name="call executeTransfer"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
-                message="Received executeTransfer([#id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Received executeTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
 
+    <flow name="put:/transfers/{id}/rejection:api-config">
+        <object-to-string-transformer/>
+        <logger level="INFO"
+                message="Calling rejectTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="rejectTransfer" doc:name="call executeTransfer"/>
+        <logger level="INFO"
+                message="Received rejectTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+    </flow>
     <flow name="get:/connectors:api-config">
         <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getConnectors for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getConnectors" doc:name="call getConnectors"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Received getConnectors response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>

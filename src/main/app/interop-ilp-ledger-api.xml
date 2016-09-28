@@ -30,7 +30,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<apikit:config name="api-config" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
     <flow name="api-main">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilpLedgerAdapterBasePath}/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
         <set-session-variable variableName="interopID" value="#[java.util.UUID.randomUUID()]" doc:name="set-interopID"/>
         <logger level="INFO"
                 message="Received request for interopID=#[sessionVars.interopID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']"
@@ -39,7 +39,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="api-console">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilpLedgerAdapterConsolePath}/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.consolePath}/*" doc:name="HTTP"/>
         <apikit:console config-ref="api-config" doc:name="APIkit Console"/>
     </flow>
 

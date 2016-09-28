@@ -365,3 +365,34 @@ types:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
+
+  /rejection:
+      displayName: GET /v1/transfers/:id/rejection
+      put:
+        description: Transfer - Reject a transfer
+        body:
+          text/plain:
+            type:  string
+            example: "cf:0:_v8"
+          application/json:
+            type:  string
+            example: "cf:0:_v8"
+
+        responses:
+          200:
+            body:
+              text/plain:
+                type:  string
+                example: "cf:0:_v8"
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              application/json:
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+                type: InvalidUriParameterError | InvalidBodyError
+
+          422:  #UnmetConditionError, UnprocessableEntityError
+            body:
+              application/json:
+                description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
+                type: UnmetConditionError | UnprocessableEntityError

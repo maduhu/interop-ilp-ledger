@@ -107,6 +107,17 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	}
 
 	@Test
+	public void testRejectTransferShouldReturnValidResponse() throws Exception {
+		ClientResponse clientResponse = putRequestWithQueryParams( "/ilp/ledger/v1/transfers/12345/rejection", null, "cf:0:_v8" );
+		String responseContent = null;
+		try {
+			responseContent = clientResponse.getEntity(String.class);
+		} catch ( Exception e ) {
+			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
+		}
+	}
+
+	@Test
 	public void testValidGetMetadataShouldReturnValidResponse() throws Exception {
 		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1", null );
 		String responseContent = null;

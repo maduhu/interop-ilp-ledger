@@ -47,7 +47,11 @@ public class LedgerMetadataTransformer extends AbstractMessageTransformer {
         updateProperty( "transfer_state", ledgerAdapterURL + "/transfers/:id/state", urls );
         updateProperty( "accounts", ledgerAdapterURL + "/accounts", urls );
         updateProperty( "account", ledgerAdapterURL + "/accounts/:name", urls );
-        urls.put( "account_transfers", ledgerAccountTransfersURL );
+        urls.put( "transfer_rejection", ledgerAdapterURL + "/transfers/:id/rejection" );
+
+        if ( !urls.containsKey( "account_transfer" ) ) {
+            urls.put("account_transfers", ledgerAccountTransfersURL);
+        }
 
         return JsonTransformer.mapToString( jsonPayload );
     }
