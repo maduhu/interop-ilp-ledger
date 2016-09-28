@@ -20,17 +20,19 @@ types:
       name: string
       balance: string
 
-  PutAccountResponse:
+  AccountResponse:
     type: object
     properties:
-      name: string
-      balance: string
       id: string
-      minimum_allowed_balance: string
+      name: string
+      ledger: string
 
-  GetAccountsResponse:
-    type: array
-    items: object
+  AuthorizedAccountResponse:
+    type: AccountResponse
+    properties:
+      balance: string
+      minimum_allowed_balance: string
+      is_disabled: boolean
 
   Funds:
     type: object
@@ -224,7 +226,7 @@ types:
       200:
         body:
           application/json:
-            type: GetAccountsResponse
+            type: AccountResponse[] | AuthorizedAccountResponse[]
 
       403:  #UnauthorizedError
         description: HTTP/1.1 403 Forbidden - UnauthorizedError
@@ -243,21 +245,7 @@ types:
           200:
             body:
               application/json:
-                type: object
-                properties:
-                  id: string
-                  name: string
-                  #UnauthenticatedResponse
-                  ledger:
-                    type: string
-                    required: false
-                  #AuthenticatedResponse
-                  balance:
-                    type: string
-                    required: false
-                  is_disabled:
-                    type: boolean
-                    required: false
+                type: AccountResponse | AuthorizedAccountResponse
 
           400:  #InvalidUriParameterError
             body:
@@ -280,7 +268,7 @@ types:
         200:
           body:
             application/json:
-              type: PutAccountResponse
+              type: AuthorizedAccountResponse
 
         400:  #InvalidUriParameterError, InvalidBodyError
           body:

@@ -17,20 +17,15 @@ import java.util.Map;
 public class LedgerMetadataTransformer extends AbstractMessageTransformer {
 
     //private static final Logger logger = LogManager.getLogger(GetAccountTransformer.class);
-    String ledgerURL = null;
+    final String ledgerAdapterURL;
+    final String ledgerAccountTransfersURL;
 
-    public LedgerMetadataTransformer() {
+    public LedgerMetadataTransformer( final String ledgerAdapterURL, final String ledgerAccountTransfersURL ) {
         registerSourceType(DataTypeFactory.create(String.class));
         setReturnDataType((DataTypeFactory.create(String.class)));
         setName("ServerMetadataTransformer");
-    }
-
-    public String getLedgerURL() {
-        return ledgerURL;
-    }
-
-    public void setLedgerURL(String ledgerURL) {
-        this.ledgerURL = ledgerURL;
+        this.ledgerAdapterURL = ledgerAdapterURL;
+        this.ledgerAccountTransfersURL = ledgerAccountTransfersURL;
     }
 
     /**
@@ -46,12 +41,13 @@ public class LedgerMetadataTransformer extends AbstractMessageTransformer {
         Map<String,Object> jsonPayload = JsonTransformer.stringToMap( (String)muleMessage.getPayload() );
 
         Map<String,Object> urls = (Map<String,Object>)jsonPayload.get( "urls" );
-        updateProperty( "health", ledgerURL + "/health", urls );
-        updateProperty( "transfer", ledgerURL + "/transfers", urls );
-        updateProperty( "transfer_fulfillment", ledgerURL + "/transfers/:id", urls );
-        updateProperty( "transfer_state", ledgerURL + "/transfers/:id/state", urls );
-        updateProperty( "accounts", ledgerURL + "/accounts", urls );
-        updateProperty( "account", ledgerURL + "/accounts/:name", urls );
+        updateProperty( "health", ledgerAdapterURL + "/health", urls );
+        updateProperty( "transfer", ledgerAdapterURL + "/transfers", urls );
+        updateProperty( "transfer_fulfillment", ledgerAdapterURL + "/transfers/:id", urls );
+        updateProperty( "transfer_state", ledgerAdapterURL + "/transfers/:id/state", urls );
+        updateProperty( "accounts", ledgerAdapterURL + "/accounts", urls );
+        updateProperty( "account", ledgerAdapterURL + "/accounts/:name", urls );
+        urls.put( "account_transfers", ledgerAccountTransfersURL );
 
         return JsonTransformer.mapToString( jsonPayload );
     }

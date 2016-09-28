@@ -108,7 +108,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Test
 	public void testValidGetMetadataShouldReturnValidResponse() throws Exception {
-		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/", null );
+		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1", null );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
@@ -119,7 +119,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Test
 	public void testValidGetAccountShouldReturnValidResponse() throws Exception {
-		ClientResponse clientResponse = getRequest( accountsPath + "/bryan", null );
+		ClientResponse clientResponse = getRequest( accountsPath + "/alice", null );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
