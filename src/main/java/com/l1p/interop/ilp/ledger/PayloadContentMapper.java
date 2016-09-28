@@ -13,15 +13,15 @@ import java.util.Map;
 public class PayloadContentMapper extends AbstractMessageTransformer {
 
     //private static final Logger logger = LogManager.getLogger(PayloadContentMapper.class);
-    final String sourceVale;
+    final String sourceValue;
     final String targetValue;
 
-    public PayloadContentMapper(final String sourceVale, final String targetValue ) {
+    public PayloadContentMapper(final String sourceValue, final String targetValue ) {
         registerSourceType(DataTypeFactory.create(String.class));
         setReturnDataType((DataTypeFactory.create(String.class)));
         setName("PayloadContentMapper");
 
-        this.sourceVale = sourceVale;
+        this.sourceValue = sourceValue;
         this.targetValue = targetValue;
     }
 
@@ -36,6 +36,6 @@ public class PayloadContentMapper extends AbstractMessageTransformer {
     public Object transformMessage(MuleMessage muleMessage, String s) throws TransformerException {
         String payload = (String)muleMessage.getPayload();
 
-        return payload != null ? payload.replaceAll( sourceVale, targetValue ) : payload;
+        return payload != null ? payload.replaceAll( sourceValue, targetValue ) : payload;
     }
 }
