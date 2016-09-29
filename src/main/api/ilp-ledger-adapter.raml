@@ -40,6 +40,7 @@ types:
       account: string
       amount: string
       authorized?: boolean
+      memo?: Memo
 
   TransferRequest:
     type: object
@@ -54,6 +55,31 @@ types:
       credits:
         type: Funds[]
         minItems: 1
+
+  Memo:
+    type: object
+    additionalProperties: true
+    properties:
+      ilp_header:
+        type: object
+        additionalProperties: true
+        required: false
+        properties:
+          account?: string
+          amount?: string
+          data:
+            type: object
+            additionalProperties: true
+            required: false
+            properties:
+              expires_at?: string
+              data:
+                type: object
+                additionalProperties: true
+                required: false
+                properties:
+                  sender_identifier?: string
+                  memo?: string
 
   ProposeTransferRequest:
     type: TransferRequest
