@@ -72,6 +72,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
+    
     <flow name="getAccount">
         <set-property propertyName="Content-Type" value="application/json"/>
         <set-payload value="#[NullPayload.getInstance()]" />
@@ -86,6 +87,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
+    
     <flow name="putAccount">
         <set-property propertyName="Content-Type" value="application/json"/>
         <logger level="INFO"
@@ -114,6 +116,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
+    
     <flow name="putTransfer">
         <set-property propertyName="Content-Type" value="application/json"/>
         <logger level="INFO"
@@ -127,6 +130,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <!--<transformer ref="ResponseMapper" doc:name="ResponseMapper"/>-->
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']"/>
     </flow>
+    
     <flow name="executeTransfer">
         <set-property propertyName="Content-Type" value="text/plain"/>
         <logger level="INFO"

@@ -20,6 +20,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <!-- Import common xml file that imports properties files at various levels -->
 	<spring:beans>
         <spring:import resource="classpath:services-common.xml" />
+        <spring:import resource="classpath:metrics.xml" />
         <spring:import resource="proxy/ilp-ledger-proxy.xml" />
 	</spring:beans>
 
