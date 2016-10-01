@@ -13,7 +13,6 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <flow name="get:/:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -23,7 +22,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="get:/health:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getLedgerHealth for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -34,7 +32,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
 
     <flow name="get:/accounts:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getAccounts for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -44,7 +41,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="get:/accounts/{id}:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -54,7 +50,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/accounts/{id}:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling putAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -65,7 +60,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
 
     <flow name="get:/transfers/{id}:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -75,7 +69,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/transfers/{id}:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling putTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -85,7 +78,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="put:/transfers/{id}/fulfillment:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling executeTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -96,7 +88,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
 
     <flow name="put:/transfers/{id}/rejection:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling rejectTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -106,7 +97,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
     </flow>
     <flow name="get:/connectors:api-config">
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getConnectors for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>

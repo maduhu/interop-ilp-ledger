@@ -13,6 +13,7 @@ import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.net.MediaType;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -65,6 +66,25 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		ClientResponse clientResponse = postRequest(invalidPath, notJSON);
 		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "Resource not found");
 	}
+
+	@Test
+	public void testValidPutTransferFulfillmentShouldReturnValidResponse() throws Exception {
+		Map<String, String> params = new HashMap<String,String>();
+		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+
+		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + "/12345/fulfillment", params, "123:45676:123" );
+		String responseContent = null;
+		try {
+			responseContent = clientResponse.getEntity(String.class);
+		} catch ( Exception e ) {
+			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
+		}
+
+		System.out.println( "=== response content: " + responseContent );
+
+	}
+
+
 
 	@Test
 	public void testValidPutAccountShouldReturnValidResponse() throws Exception {
@@ -222,5 +242,26 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		}
 
 		return putResource.path( path ).type( "application/json").put(ClientResponse.class, requestData);
+	}
+
+
+	/**
+	 * Convenience method to make a PUT request to the specified path, with query parameters
+	 *
+	 * @param path - path to post to
+	 * @param params - Map of queryParameters
+	 * @param requestData - JSON formatted request string
+	 * @return ClientResponse instance representing the response from the service
+	 */
+	private ClientResponse putRequestWithQueryParamsNullContentType( String path, Map<String,String> params , String requestData) {
+		WebResource putResource = webService;
+
+		if ( params != null ) {
+			for ( String nextKey : params.keySet() ) {
+				putResource = putResource.queryParam( nextKey, params.get( nextKey ) );
+			}
+		}
+
+		return putResource.path( path ).type( "*/*" ).put(ClientResponse.class, requestData);
 	}
 }
