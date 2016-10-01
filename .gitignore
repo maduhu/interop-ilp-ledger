@@ -58,3 +58,4 @@ fhlb-demo/mule-project.xml
 # --------------- #
 .idea/*
 **/*.iml
+MetricsTest/
