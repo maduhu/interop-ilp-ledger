@@ -16,7 +16,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="get:/:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -34,7 +33,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <flow name="get:/health:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getLedgerHealth for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -52,7 +50,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="get:/accounts:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getAccounts for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -70,7 +67,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <flow name="get:/accounts/{id}:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -88,7 +84,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <flow name="put:/accounts/{id}:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.accounts-id.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling putAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -106,7 +101,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="get:/transfers/{id}:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -124,7 +118,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <flow name="put:/transfers/{id}:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling putTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -142,7 +135,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     
     <flow name="put:/transfers/{id}/fulfillment:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling executeTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -160,7 +152,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="put:/transfers/{id}/rejection:api-config">
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling rejectTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -177,7 +168,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
     <flow name="get:/connectors:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
-        <object-to-string-transformer/>
         <logger level="INFO"
                 message="Calling getConnectors for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
