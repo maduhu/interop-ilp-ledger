@@ -3,7 +3,7 @@ This project provides an interop API implementation of ILP Ledger Service.
 
 Below is the RAML for reference. However, the responses are generated based on specifications mentioned here: https://github.com/LevelOneProject/Docs/issues/205
 
-This is currently hosted as a service in the URL that looks like this:  http://<awshost:port>/ilp/backend/v1/console/ , the host details have been communicated via e-mails and slack
+This is currently hosted as a service in the URL that looks like this:  http://\<awshost:port\>/ilp/backend/v1/console/ , the host details have been communicated via e-mails and slack
 
 The following RAML file provides methods for the following:
 
