@@ -1,0 +1,302 @@
+swagger: '2.0'
+info:
+  title: ilp-ledger-adapter
+  description: ILP Ledger Adapter
+  version: V1
+
+host: ilp-ledger-adapter.levelone.org
+
+schemes:
+  - http
+
+basePath: /ilp-ledger/{version}
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  TransferState:
+    type: string
+    enum:
+    - proposed
+    - prepared
+    - executed
+    - cancelled
+
+  Timeline:
+    type: object
+    properties:
+      proposedAt:
+        type: string
+      executedAt:
+        type: string
+      preparedAt:
+        type: string
+
+  Uri:
+    type: string
+
+  Debit:
+    type: object
+    properties:
+      account:
+        type: string
+      amount:
+        type: string
+      invoice:
+        type: string
+      memo:
+        type: string
+
+  Credit:
+    allOf:
+      - $ref: "#/definitions/Debit"
+      - type: object
+
+  Transfer:
+    type: object
+    required:
+      - debits
+      - credits
+    properties:
+      additionalInfo:
+        type: object
+      cancellationCondition:
+        type: string
+      debits:
+        type: array
+        items:
+          $ref: "#/definitions/Debit"
+      credits:
+        type: array
+        items:
+          $ref: "#/definitions/Credit"
+      executionCondition:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: string
+      ledger:
+        type: string
+      rejectionReason:
+        type: string
+        enum:
+        - cancelled
+        - expired
+      state:
+        $ref: "#/definitions/TransferState"
+      timeline:
+        $ref: "#/definitions/Timeline"
+
+  Notification:
+    type: object
+    properties:
+      id:
+        type: string
+      relatedResources:
+        type: object
+        properties:
+          cancellationConditionFulfillment:
+            type: string
+          executionConditionFulfillment:
+            type: string
+
+  ValidationError:
+    type: object
+    properties:
+      message:
+        type: string
+      params:
+        type: object
+        additionalProperties:
+          type: string
+      code:
+        type: string
+      dataPath:
+        type: string
+      schemaPath:
+        type: string
+      subErrors:
+        type: string
+      stack:
+        type: string
+
+  Error:
+    type: object
+    discriminator: id
+    required:
+    - id
+    - message
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+
+  NotFoundError:
+    allOf:
+      - $ref: "#/definitions/Error"
+      - type: object
+
+  InvalidUriParameterError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+      properties:
+        validationErrors:
+          type: array
+          items:
+            $ref: "#/definitions/ValidationError"
+
+  InvalidBodyError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+      properties:
+        validationErrors:
+          type: array
+          items:
+            $ref: "#/definitions/ValidationError"
+
+  UnprocessableEntityError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+
+  InsufficientFundsError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+
+  AlreadyExistsError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+
+  UnauthorizedError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+
+  UnmetConditionError:
+    allOf:
+    - $ref: "#/definitions/Error"
+    - type: object
+      properties:
+        condition:
+          type: string
+        fulfillment:
+          type: string
+
+  ServerMetadata:
+    type: object
+    properties:
+      currencyCode:
+        type: string
+      currencySymbol:
+        type: string
+      precision:
+        type: integer
+      scale:
+        type: integer
+      urls:
+        type: object
+        additionalProperties:
+          type: string
+    additionalProperties:
+      type: string
+
+paths:
+  /:
+    get:
+      description: "Receive information about the ILP Ledger Adapter"
+      responses:
+        200:
+          description: "Server Metadata"
+          schema:
+            $ref: "#/definitions/ServerMetadata"
+
+
+  /transfers/{id}:
+    parameters:
+      - name: id
+        type: string
+        in: path
+        required: true
+    put:
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Transfer"
+      responses:
+        201:
+          description: ""
+          schema:
+            $ref: "#/definitions/Transfer"
+        400:
+          description: ""
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: ""
+          schema:
+            $ref: "/definitions/Error"
+    get:
+      description: Check the details or status of a local transfer
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/Transfer"
+        400:
+          description: "NotFoundError"
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: "InvalidUriParameterError"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /transfers/{id}/fulfillment:
+    parameters:
+      - name: id
+        type: string
+        in: path
+        required: true
+    put:
+      consumes:
+        - text/plain
+      produces:
+        - text/plain
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: "success"
+          schema:
+            type: string
+        400:
+          description: "InvalidUriParameterError/InvalidBodyError"
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: "UnmetConditionError/UnprocessableEntityError"
+          schema:
+            $ref: "/definitions/Error"
+    get:
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: "ok"
+          schema:
+            type: string
+
