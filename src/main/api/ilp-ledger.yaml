@@ -4,12 +4,14 @@ info:
   description: ILP Ledger Adapter
   version: V1
 
-host: ilp-ledger-adapter.levelone.org
-
+#host: ilp-ledger-adapter.levelone.org
+#http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/
+host: ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088
 schemes:
   - http
 
-basePath: /ilp-ledger/{version}
+#basePath: /ilp-ledger/{version}
+basePath: /ledger
 consumes:
   - application/json
 produces:
