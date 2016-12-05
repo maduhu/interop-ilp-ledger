@@ -1,0 +1,14 @@
+{
+  "id": "http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
+  "ledger": "http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8014/ledger",
+  "debits": [{
+    "account": "http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice",
+    "amount": "50"
+  }],
+  "credits": [{
+    "account": "http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob",
+    "amount": "50"
+  }],
+  "execution_condition": "cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2",
+  "expires_at": "2016-11-27T00:00:01.000Z"
+}

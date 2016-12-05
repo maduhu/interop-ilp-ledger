@@ -1,5 +1,5 @@
 #%RAML 1.0
-title: ILP Ledger Adapter
+title: ilp-ledger
 version: v1
 baseUri: http://localhost:8081/ilp/ledger/{version}
 
@@ -20,17 +20,19 @@ types:
       name: string
       balance: string
 
-  PutAccountResponse:
+  AccountResponse:
     type: object
     properties:
-      name: string
-      balance: string
       id: string
-      minimum_allowed_balance: string
+      name: string
+      ledger: string
 
-  GetAccountsResponse:
-    type: array
-    items: object
+  AuthorizedAccountResponse:
+    type: AccountResponse
+    properties:
+      balance: string
+      minimum_allowed_balance: string
+      is_disabled: boolean
 
   Funds:
     type: object
@@ -38,6 +40,7 @@ types:
       account: string
       amount: string
       authorized?: boolean
+      memo?: Memo
 
   TransferRequest:
     type: object
@@ -52,6 +55,9 @@ types:
       credits:
         type: Funds[]
         minItems: 1
+
+  Memo:
+    type: object
 
   ProposeTransferRequest:
     type: TransferRequest
@@ -72,7 +78,7 @@ types:
         enum: [ prepared ]
 
   ServerMetadataResponse:
-    description: Information about the ILP Ledger Adapter
+    description: Metadata about the ilp ledger instance
     type: object
     properties:
       currency_code: string
@@ -102,6 +108,11 @@ types:
       id: string
       name: string
       connector: string
+
+  LedgerStatus:
+    type: object
+    properties:
+      status: string
 
   TransferStateResponse:
     type: object
@@ -191,13 +202,24 @@ types:
 /:
   displayName: GET /v1
   get:
-    description: Receive information about the ILP Ledger Adapter
+    description: Receive metadata about the ilp ledger instance
 
     responses:
       200:
         body:
           application/json:
             type: ServerMetadataResponse
+
+/health:
+  displayName: GET /v1/health
+  get:
+    description: Returns ledger health status
+
+    responses:
+      200:
+        body:
+          application/json:
+            type: LedgerStatus
 
 /accounts:
   displayName: GET /v1/accounts
@@ -208,7 +230,7 @@ types:
       200:
         body:
           application/json:
-            type: GetAccountsResponse
+            type: AccountResponse[] | AuthorizedAccountResponse[]
 
       403:  #UnauthorizedError
         description: HTTP/1.1 403 Forbidden - UnauthorizedError
@@ -227,21 +249,7 @@ types:
           200:
             body:
               application/json:
-                type: object
-                properties:
-                  id: string
-                  name: string
-                  #UnauthenticatedResponse
-                  ledger:
-                    type: string
-                    required: false
-                  #AuthenticatedResponse
-                  balance:
-                    type: string
-                    required: false
-                  is_disabled:
-                    type: boolean
-                    required: false
+                type: AccountResponse | AuthorizedAccountResponse
 
           400:  #InvalidUriParameterError
             body:
@@ -264,7 +272,7 @@ types:
         200:
           body:
             application/json:
-              type: PutAccountResponse
+              type: AuthorizedAccountResponse
 
         400:  #InvalidUriParameterError, InvalidBodyError
           body:
@@ -362,15 +370,33 @@ types:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
 
-/connectors:
-      displayName: GET /v1/connectors
-      get:
-        description: Get all accounts of all connectors on this ledger.
+  /rejection:
+      displayName: GET /v1/transfers/:id/rejection
+      put:
+        description: Transfer - Reject a transfer
+        body:
+          text/plain:
+            type:  string
+            example: "cf:0:_v8"
+          application/json:
+            type:  string
+            example: "cf:0:_v8"
 
         responses:
           200:
             body:
+              text/plain:
+                type:  string
+                example: "cf:0:_v8"
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
               application/json:
-                type: array
-                items: ConnectorDescriptor
-                minItems: 1
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+                type: InvalidUriParameterError | InvalidBodyError
+
+          422:  #UnmetConditionError, UnprocessableEntityError
+            body:
+              application/json:
+                description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
+                type: UnmetConditionError | UnprocessableEntityError
