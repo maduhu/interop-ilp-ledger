@@ -70,7 +70,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	}
 
 	@Test
-	public void testPutAccounts() throws Exception {
+	public void testAccounts() throws Exception {
 		final String putAccountJSON = loadResourceAsString("testData/putAccount-Alice.json");
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
@@ -78,6 +78,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		String idValue = "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8014/ledger/accounts/alice";
 
 		//Invalid PUT duplicate - invalid because record already exists
+		Thread.sleep(2000);
 		ClientResponse clientResponse = putRequestWithQueryParams( accountsPath + id, params, putAccountJSON );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "AccountsPutInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
@@ -118,27 +119,55 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "AccountsPutInvalidNoAuth" + ": Did not receive status 404", 404, clientResponse.getStatus());
 		*/
+		
+		//Map<String, String> params = new HashMap<String,String>();
+		params.clear();
+		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		//This account should already be present (considering that account 'alice' exists)
+		//String id = "alice";
+		id = "alice";
+		String is_disabled = "1";
+		
+		//Valid GET for account alice, run this separately, if needed
+		clientResponse = getRequest( accountsPath + id, params );
+		jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		assertEquals( "AccountsGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+		assertEquals( "Response field name did not contain expected value", id, jsonReponse.get( "name" ) );
+		assertEquals( "Response field is_disabled did not contain expected value", is_disabled, jsonReponse.get( "is_disabled" ) );
+		assertTrue( "response field is_disabled was not present in response", jsonReponse.get( "id") != null );
+		assertTrue( "response field balance was not present in response", jsonReponse.get( "balance") != null );
+		assertTrue( "response field balance was not present in response", jsonReponse.get( "ledger") != null );
+		
+		//InValid GET for account that doesn't exist
+		String invalidId = java.util.UUID.randomUUID().toString() + java.util.UUID.randomUUID().toString();
+		clientResponse = getRequest( accountsPath + invalidId, params );
+		jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		assertEquals( "AccountsGetInValid" + ": Did not receive status 404", 404, clientResponse.getStatus());
+		assertEquals( "Response field id did not contain expected value", "NotFoundError", jsonReponse.get( "id" ) );
+		assertEquals( "Response field message did not contain expected value", "Unknown account.", jsonReponse.get( "message" ) );
 
 	}
 
-	@Test
+	/* Added testGetAccounts() to testPutAccounts() and renamed the test to testAccounts()
+	 * @Test
 	public void testGetAccounts() throws Exception {
 		
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		//This account should already be present (considering that account 'alice' exists)
-		String id = "bob";
+		String id = "alice";
 		String is_disabled = "1";
 		
-		//Valid GET for account alice
+		//Valid GET for account alice, run this separately, if needed
+		Thread.sleep(2000);
 		ClientResponse clientResponse = getRequest( accountsPath + id, params );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "AccountsGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
 		assertEquals( "Response field name did not contain expected value", id, jsonReponse.get( "name" ) );
 		assertEquals( "Response field is_disabled did not contain expected value", is_disabled, jsonReponse.get( "is_disabled" ) );
-		assertTrue( "response field is_disabled was not present in resposne", jsonReponse.get( "id") != null );
-		assertTrue( "response field balance was not present in resposne", jsonReponse.get( "balance") != null );
-		assertTrue( "response field balance was not present in resposne", jsonReponse.get( "ledger") != null );
+		assertTrue( "response field is_disabled was not present in response", jsonReponse.get( "id") != null );
+		assertTrue( "response field balance was not present in response", jsonReponse.get( "balance") != null );
+		assertTrue( "response field balance was not present in response", jsonReponse.get( "ledger") != null );
 		
 		//InValid GET for account that doesn't exist
 		String testId = java.util.UUID.randomUUID().toString() + java.util.UUID.randomUUID().toString();
@@ -147,8 +176,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "AccountsGetInValid" + ": Did not receive status 404", 404, clientResponse.getStatus());
 		assertEquals( "Response field id did not contain expected value", "NotFoundError", jsonReponse.get( "id" ) );
 		assertEquals( "Response field message did not contain expected value", "Unknown account.", jsonReponse.get( "message" ) );
-		
 	}
+	*/
 	
 	@Test
 	public void testGetTransfer() throws Exception {
