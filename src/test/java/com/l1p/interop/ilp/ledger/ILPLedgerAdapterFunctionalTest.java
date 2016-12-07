@@ -75,13 +75,16 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		String id = "alice";
+		String idValue = "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8014/ledger/accounts/alice";
 
 		//Invalid PUT duplicate - invalid because record already exists
 		ClientResponse clientResponse = putRequestWithQueryParams( accountsPath + id, params, putAccountJSON );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
-		assertEquals( "AccountsPutInValid" + ": Did not receive status 400", 400, clientResponse.getStatus());
-		assertEquals( "Response field id did not contain expected value", "PortPostgreSQL", jsonReponse.get( "id" ) );
-		assertEquals( "Response field message did not contain expected value", "duplicate key value violates unique constraint \"ukLedgerAccountAccountNumber\"", jsonReponse.get( "message" ) );
+		assertEquals( "AccountsPutInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+		assertEquals( "Response field id did not contain expected value", idValue, jsonReponse.get( "id" ) );
+		assertEquals( "Response field id did not contain expected value", id, jsonReponse.get( "name" ) );
+		assertEquals( "Response field id did not contain expected value", "USD", jsonReponse.get( "currency" ) );
+		//assertEquals( "Response field message did not contain expected value", "duplicate key value violates unique constraint \"ukLedgerAccountAccountNumber\"", jsonReponse.get( "message" ) );
 		
 		//Valid PUT, to create a new ID every time the test runs, using random
 		//This test is working fine but disabling this currently, because every time this test runs, an account is added,
@@ -124,7 +127,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		//This account should already be present (considering that account 'alice' exists)
-		String id = "alice";
+		String id = "bob";
 		String is_disabled = "1";
 		
 		//Valid GET for account alice
@@ -144,6 +147,24 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "AccountsGetInValid" + ": Did not receive status 404", 404, clientResponse.getStatus());
 		assertEquals( "Response field id did not contain expected value", "NotFoundError", jsonReponse.get( "id" ) );
 		assertEquals( "Response field message did not contain expected value", "Unknown account.", jsonReponse.get( "message" ) );
+		
+	}
+	
+	@Test
+	public void testGetTransfer() throws Exception {
+		Map<String, String> params = new HashMap<String,String>();
+		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613";
+		
+		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
+		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
+		//Invalid Get Transfer - Transfer not found
+		ClientResponse clientResponse = getRequest( transfersPath + id, params );
+		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+		assertEquals( "Response field id did not contain expected value", "InvalidUriParameterError", jsonReponse.get( "id" ) );
+		assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
+		assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
 		
 	}
 
@@ -225,24 +246,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		System.out.println( "=== response content: " + responseContent );
 
 	}
-	
-	@Test
-	public void testGetTransfer() throws Exception {
-		Map<String, String> params = new HashMap<String,String>();
-		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613";
-		
-		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
-		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
-		//Invalid Get Transfer - Transfer not found
-		ClientResponse clientResponse = getRequest( transfersPath + id, params );
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
-		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
-		assertEquals( "Response field id did not contain expected value", "InvalidUriParameterError", jsonReponse.get( "id" ) );
-		assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
-		assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
-		
-	}
+
 
 	@Test
 	public void testGetConnectors() throws Exception {
