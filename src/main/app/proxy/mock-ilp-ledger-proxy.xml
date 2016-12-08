@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<flow name="get:/transfers/{id}:mock-api-config">
+    	<set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
+    </flow>
+    
+    <flow name="put:/transfers/{id}:mock-api-config">
+    	<set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;prepared&quot;}"></set-payload>
+    </flow>
+    
+    <flow name="put:/transfers/{id}/fulfillment:mock-api-config">
+    	<set-payload value="cf:0:_v8" doc:name="Set Payload"/>
+    </flow>
+
+</mule>
