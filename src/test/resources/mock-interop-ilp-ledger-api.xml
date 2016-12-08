@@ -27,20 +27,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <spring:bean id="MockExceptionTransformer" name="ExceptionTransformer" class="com.l1p.interop.L1PExceptionTransformer"/>
     </spring:beans>
 
-	<apikit:config name="mock-api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
+	<apikit:config name="test-api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
-    <flow name="mock-api-main">
+    <flow name="test-api-main">
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
-        <object-to-string-transformer/>
+        <object-to-string-transformer doc:name="Object to String"/>
         <set-session-variable variableName="interopID" value="#[java.util.UUID.randomUUID()]" doc:name="set-interopID"/>
         <logger level="INFO"
                 message="Received request for interopID=#[sessionVars.interopID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <apikit:router config-ref="mock-api-config" doc:name="APIkit Router"/>
-        <exception-strategy ref="mock-api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+        <apikit:router config-ref="test-api-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="test-api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
 
-    <apikit:mapping-exception-strategy name="mock-api-apiKitGlobalExceptionMapping">
+    <apikit:mapping-exception-strategy name="test-api-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
             <!--<logger level="ERROR"-->
                     <!--message="Received 404 error - org.mule.module.apikit.exception.NotFoundException: #[exception.getCauseException().getMessage();]"-->

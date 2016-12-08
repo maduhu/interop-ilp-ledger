@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-    <flow name="get:/:mock-api-config">
+    <flow name="get:/:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for interopID=#[sessionVars.interopID]: #[payload]"
@@ -44,11 +44,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="get:/health:mock-api-config">
+    <flow name="get:/health:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerHealth for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received getLedgerHealth response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -60,11 +61,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
 
-    <flow name="get:/accounts:mock-api-config">
+    <flow name="get:/accounts:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccounts for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received getAccounts response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -76,7 +78,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="get:/accounts/{id}:mock-api-config">
+    <flow name="get:/accounts/{id}:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
@@ -101,7 +103,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="put:/accounts/{id}:mock-api-config">
+    <flow name="put:/accounts/{id}:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling putAccount(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
@@ -124,7 +126,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
 
-    <flow name="get:/transfers/{id}:mock-api-config">
+    <flow name="get:/transfers/{id}:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
@@ -154,11 +156,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="put:/transfers/{id}:mock-api-config">
+    <flow name="put:/transfers/{id}:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling putTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;prepared&quot;}"></set-payload>
         <logger level="INFO"
                 message="Received putTransfer(#[id])response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -170,11 +173,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="put:/transfers/{id}/fulfillment:mock-api-config">
+    <flow name="put:/transfers/{id}/fulfillment:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling executeTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload value="cf:0:_v8" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received executeTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -186,7 +190,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
 
-    <flow name="put:/transfers/{id}/rejection:mock-api-config">
+    <flow name="put:/transfers/{id}/rejection:test-api-config">
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling rejectTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
@@ -202,11 +206,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <metrics:metric-keys><metrics:metric-key>TransfersRejectionPutRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
-    <flow name="get:/connectors:mock-api-config">
+    <flow name="get:/connectors:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getConnectors for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received getConnectors response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
