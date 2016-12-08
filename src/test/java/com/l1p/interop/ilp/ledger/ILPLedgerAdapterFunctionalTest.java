@@ -169,7 +169,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field id did not contain expected value", "InvalidUriParameterError", jsonReponse.get( "id" ) );
 		assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
 		assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
-		
 	}
 
 	@Test
@@ -250,8 +249,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		System.out.println( "=== response content: " + responseContent );
 
 	}
-
-
+	
 	@Test
 	public void testGetConnectors() throws Exception {
 		//TODO: This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now

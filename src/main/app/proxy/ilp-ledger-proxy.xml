@@ -12,8 +12,8 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
     
-	<!-- DFSP HTTP configuration for making REST call to the mock service -->
-	<http:request-config protocol="HTTP" name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
+	<!-- DFSP HTTP configuration for making REST call to the ilp service -->
+    <http:request-config protocol="HTTP" name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
         <http:basic-authentication username="${ilp-ledger.userName}" password="${ilp-ledger.password}"/>
     </http:request-config>
 
