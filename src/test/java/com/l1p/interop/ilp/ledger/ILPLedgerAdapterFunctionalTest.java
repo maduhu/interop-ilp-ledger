@@ -251,25 +251,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	}
 	
 	@Test
-	public void testGetTransfer() throws Exception {
-		Map<String, String> params = new HashMap<String,String>();
-		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613";
-		
-		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
-		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
-		//Invalid Get Transfer - Transfer not found
-		ClientResponse clientResponse = getRequest( transfersPath + id, params );
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
-		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
-		assertEquals( "Response field id did not contain expected value", "InvalidUriParameterError", jsonReponse.get( "id" ) );
-		assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
-		assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
-		
-	}
-
-
-	@Test
 	public void testGetConnectors() throws Exception {
 		//TODO: This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
 		
