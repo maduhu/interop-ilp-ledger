@@ -16,7 +16,7 @@ public class NotificationClient {
   public static void main(String[] args) throws Exception {
     try {
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-      String uri = "ws://localhost:10001/websocket";
+      String uri = "ws://localhost:8089/websocket";
       System.out.println("Connecting to " + uri);
       container.connectToServer(WebsocketClientEndpoint.class, URI.create(uri));
       messageLatch.await(300, TimeUnit.SECONDS);

@@ -7,21 +7,33 @@ import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
 import org.glassfish.grizzly.websockets.WebSocketEngine;
+import org.mule.api.MuleException;
+import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.lifecycle.LifecycleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class LedgerNotificationRegistrationServer {
+public class LedgerNotificationRegistrationServer implements org.mule.api.lifecycle.Lifecycle {
   private static final Logger log = LoggerFactory.getLogger(LedgerNotificationRegistrationServer.class);
+  private HttpServer server;
+  private String docRoot;
+  private int port;
+  private String path;
+  private WebSocketApplication ledgerNotificationRegistrationApplication;
 
   public LedgerNotificationRegistrationServer(String staticContentDocRoot, int port, String webSocketPath, WebSocketApplication ledgerNotificationRegistrationApplication) {
-    startServer(staticContentDocRoot, port, webSocketPath, ledgerNotificationRegistrationApplication);
+    this.docRoot = staticContentDocRoot;
+    this.port = port;
+    this.path = webSocketPath;
+    this.ledgerNotificationRegistrationApplication = ledgerNotificationRegistrationApplication;
   }
 
-  public void startServer(String docRoot, int port, String path, WebSocketApplication ledgerNotificationRegistrationApplication) {
-    final HttpServer server = HttpServer.createSimpleServer(docRoot, port);
+  @Override
+  public void initialise() throws InitialisationException {
+    server = HttpServer.createSimpleServer(docRoot, port);
     final WebSocketAddOn addon = new WebSocketAddOn();
     for (NetworkListener listener : server.getListeners()) {
       listener.registerAddOn(addon);
@@ -29,23 +41,36 @@ public class LedgerNotificationRegistrationServer {
 
     server.getListener("grizzly").registerAddOn(new WebSocketAddOn());
     WebSocketEngine.getEngine().register("", path, ledgerNotificationRegistrationApplication);
+    log.info("Initialized websocket server");
+  }
 
+  @Override
+  public void start() throws MuleException {
     try {
       server.start();
     } catch (IOException e) {
       final String msg = "Failed to start notification server";
       log.error(msg, e);
-      throw new RuntimeException(msg, e);
+      throw new LifecycleException(e, this);
     }
+    log.info("Started websocket server");
   }
 
-  public void shutdownServer() {
-    log.info("need to shutdown server");
+  @Override
+  public void stop() throws MuleException {
+    log.info("Shutting down grizzly websocket server");
+    if (server.isStarted()) server.shutdown();
+  }
+
+  @Override
+  public void dispose() {
   }
 
   public static void main(String[] args) throws Exception {
     final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication();
     final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
+    server.initialise();
+    server.start();
     Thread notificationSender = new Thread(new Runnable() {
       @Override
       public void run() {
@@ -67,7 +92,11 @@ public class LedgerNotificationRegistrationServer {
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
       @Override
       public void run() {
-        server.shutdownServer();
+        try {
+          server.stop();
+        } catch (MuleException e) {
+          e.printStackTrace();
+        }
       }
     }));
     System.in.read();
