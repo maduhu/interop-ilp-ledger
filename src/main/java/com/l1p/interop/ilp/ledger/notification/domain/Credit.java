@@ -5,6 +5,9 @@ public class Credit {
   private String amount;
   private Object memo;
 
+  public Credit() {
+  }
+
   public Credit(String account, String amount, Object memo) {
     this.account = account;
     this.amount = amount;

@@ -29,6 +29,9 @@ public class Transfer {
   private String state;
   private Timeline timeline;
 
+  public Transfer() {
+  }
+
   public Object getAdditionalInfo() {
     return additionalInfo;
   }
@@ -118,11 +121,3 @@ public class Transfer {
   }
 }
 
-class Timeline {
-  @JsonProperty(value = "prepared_at")
-  private Date preparedAt;
-  @JsonProperty(value = "executed_at")
-  private Date executedAt;
-  @JsonProperty(value = "rejected_at")
-  private Date rejectedAt;
-}
