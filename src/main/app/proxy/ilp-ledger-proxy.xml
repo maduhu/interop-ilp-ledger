@@ -133,10 +133,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
-        <logger level="INFO"
-                message="Send notification for prepared"
-                category="com.l1p.interop.dfsp.ledger.notification" doc:name="Logger"/>
-        <!--<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferPreparedNotification(payload)]]></expression-component>-->
+        <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferPreparedNotification(payload)]]></expression-component>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
     
@@ -150,7 +147,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
-        <!--<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferExecutedNotification(payload)]]></expression-component>-->
+        <set-variable variableName="payloadToReturn" value="#[payload]"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="GET" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200,201,400,404,422"/>-->
+            <http:success-status-code-validator values="200..500"/>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(payload)]]></expression-component>
+        <set-payload value="#[flowVars.payloadToReturn]"/>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
 
