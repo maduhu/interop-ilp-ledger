@@ -99,6 +99,23 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
   }
 
+
+  public void sendTransferPreparedNotification(String transfer) {
+    try {
+      sendTransferPreparedNotification(mapper.readValue(transfer, Transfer.class));
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to convert to Transfer", e);
+    }
+  }
+
+  public void sendTranferExecutedNotification(String transfer) {
+    try {
+      sendTranferExecutedNotification(mapper.readValue(transfer, Transfer.class));
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to convert to Transfer", e);
+    }
+  }
+
   public void sendTransferPreparedNotification(Transfer transfer) {
     sendTransferNotification(TransferParams.TRANSFER_CREATE, transfer);
   }
@@ -109,6 +126,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
   private void sendTransferNotification(String transferType, Transfer transfer) {
     try {
+      log.warn("Received notification for publishing");
       final Notification notification = new Notification();
       TransferParams params = new TransferParams(transferType, transfer);
       notification.setParams(params);
