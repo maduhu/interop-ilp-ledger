@@ -9,7 +9,7 @@ schemes:
   - http
   - https
 
-basePath: /ledger
+basePath: ilp/ledger/v1
 consumes:
   - application/json
 produces:
@@ -125,10 +125,10 @@ definitions:
 
   Error:
     type: object
-    discriminator: id
+    #discriminator: id
     required:
-    - id
-    - message
+      - id
+      - message
     properties:
       id:
         type: string
