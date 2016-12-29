@@ -26,7 +26,7 @@ public class PayloadContentMapper extends AbstractMessageTransformer {
     }
 
     /**
-     * Message Transformer to replace all occurences of a source value in the payload with a target value
+     * Message Transformer to replace all occurrences of a source value in the payload with a target value
      *
      * @param muleMessage
      * @param s
