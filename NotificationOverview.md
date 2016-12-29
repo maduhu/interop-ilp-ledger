@@ -1,23 +1,19 @@
-This document provides a general overview of how the notification process shall work.
+**This document provides a general overview of how the notification process shall work.**
 
 
-Logical flow of Notifications (This could bececome a sequence diagram)
+***Logical flow of Notifications (This could become a sequence diagram)***
 
 1. (Server) When ILP Ledger (Mule) starts up, it starts up the Java Web Socket Server and is ready for clients to start registering Accounts for notifications.
 2. (Client) A client that wants to receive notifications for an account, must register against the Web Socket in  interop_ilp_ledger adapter (Mule application). This will probably happen during the Setup phase of SPSP.
 3. (Server) An entry is made into the notification list on the Web Socket server.
 4. (Client) A payment sends either (Prepare) or (Execute).
-5. (Server) interop_ilp_ledger adapter API receives the request and process as normal.
-    1. When API calls returns from ILP Connector or ILP Ledger, it attempts to send a notification
-    2. It checks the Notification Array for an registered account, if it finds one or more for the same account, it sends a notification to all registered clients.
+5. (Server) interop-ilp-ledger app receives the request and processes as normal.
+    1. When API calls receive responses from ILP Connector or ILP Ledger, it attempts to send notification(s)
+    2. It checks the "Notification Array" for a registered account, if it finds one or more for the same account, it sends a notification to all registered clients.
     3. If no client is registered on the account, the message is thrown away.
 
-Ripple has provided a detail API documentation on the expected behaviors of the final design.
+Below is an overview of the Notification process.  For the full details, see the following link: 
 https://github.com/LevelOneProject/Docs/blob/master/ILP/ledger-adapter.md#subscribe-to-account
-
-
-
-
 
 **Receivers / Subscribers of notifications**
 
@@ -25,6 +21,9 @@ https://github.com/LevelOneProject/Docs/blob/master/ILP/ledger-adapter.md#subscr
 
 From Evan:
 “Any account holder + admins should be able to subscribe to notifications. In practice some of the parties that definitely will subscribe are the ILP Connectors, the ILP/SPSP Client and Server (using admin credentials)”
+
+**Subscribers of notifications**
+Below is the overview of the basic functionality  
 
 How to subscribe:
 Clients can subscribe to live, read-only notifications of ledger activity by opening a WebSocket connection to the /websocket path and sending a subscription request.
@@ -44,10 +43,10 @@ The only subscription type defined at this time is "Subscribe to Account."
 
 Reference to ILP Ledger Web Socket Subscribe
 
-**Message formats**
+**Message format**
 
 For output.  Is the transfer object that is all at this point for the return message (on successful execution)
-Error message return format: 
+Error message return 
 
 
 
@@ -60,5 +59,3 @@ http://stackoverflow.com/questions/10882370/websocket-request-response-subprotoc
 "The WebSocket Application Messaging Protocol (WAMP) http://wamp.ws/ provides RPC (Remote Procedure Call) and PubSub (Publish & Subscribe) messaging patterns on top of raw WebSocket for that purpose.
 WAMP is a proper WebSocket subprotocol, uses WebSocket as transport and JSON as a payload format. RPC is implemented using 3 messages, and those messages contain a "Call ID" to correlate asynchronous RPC server responses to client initiated procedure calls.
 Disclaimer: I am author of WAMP and some (open-source) WAMP implementations. Its an open initiative, with others already started to get on the boat. Ultimately, there should be a WAMP RFC properly defining the protocol .. but its still in the early stages."
-
-
