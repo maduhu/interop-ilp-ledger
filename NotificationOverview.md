@@ -7,9 +7,9 @@
 2. (Client) A client that wants to receive notifications for an account, must register against the Web Socket in  interop_ilp_ledger adapter (Mule application). This will probably happen during the Setup phase of SPSP.
 3. (Server) An entry is made into the notification list on the Web Socket server.
 4. (Client) A payment sends either (Prepare) or (Execute).
-5. (Server) interop_ilp_ledger adapter API receives the request and process as normal.
-    1. When API calls returns from ILP Connector or ILP Ledger, it attempts to send a notification
-    2. It checks the Notification Array for an registered account, if it finds one or more for the same account, it sends a notification to all registered clients.
+5. (Server) interop-ilp-ledger app receives the request and processes as normal.
+    1. When API calls receive responses from ILP Connector or ILP Ledger, it attempts to send notification(s)
+    2. It checks the "Notification Array" for a registered account, if it finds one or more for the same account, it sends a notification to all registered clients.
     3. If no client is registered on the account, the message is thrown away.
 
 Below is an overview of the Notification process.  For the full details, see the following link: 
@@ -23,7 +23,7 @@ From Evan:
 “Any account holder + admins should be able to subscribe to notifications. In practice some of the parties that definitely will subscribe are the ILP Connectors, the ILP/SPSP Client and Server (using admin credentials)”
 
 **Subscribers of notifications**
-Below are sis the overview of the basic functionality  
+Below is the overview of the basic functionality  
 
 How to subscribe:
 Clients can subscribe to live, read-only notifications of ledger activity by opening a WebSocket connection to the /websocket path and sending a subscription request.
@@ -59,5 +59,3 @@ http://stackoverflow.com/questions/10882370/websocket-request-response-subprotoc
 "The WebSocket Application Messaging Protocol (WAMP) http://wamp.ws/ provides RPC (Remote Procedure Call) and PubSub (Publish & Subscribe) messaging patterns on top of raw WebSocket for that purpose.
 WAMP is a proper WebSocket subprotocol, uses WebSocket as transport and JSON as a payload format. RPC is implemented using 3 messages, and those messages contain a "Call ID" to correlate asynchronous RPC server responses to client initiated procedure calls.
 Disclaimer: I am author of WAMP and some (open-source) WAMP implementations. Its an open initiative, with others already started to get on the boat. Ultimately, there should be a WAMP RFC properly defining the protocol .. but its still in the early stages."
-
-
