@@ -49,28 +49,35 @@ Upon a successful ILP Ledger transaction, the representation for the transfer is
 For example:
 
 {
-  "id": "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
-  "ledger": "http://usd-ledger.example",
-  "debits": [
-    {
-      "account": "http://usd-ledger.example/accounts/alice",
-      "amount": "50",
-      "authorized": true
-    }
-  ],
-  "credits": [
-    {
-      "account": "http://usd-ledger.example/accounts/bob",
-      "amount": "50"
-    }
-  ],
-  "execution_condition": "cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2",
-  "expires_at": "2015-06-16T00:00:01.000Z",
-  "state": "executed",
-  "timeline": {
-    "prepared_at": "2015-06-16T00:00:00.500Z",
-    "executed_at": "2015-06-16T00:00:00.999Z"
-  }
+	"jsonRpc": "2.0",
+	"method": "notify",
+	"id": null,
+	"params": {
+		"resource": {
+			"credits": [{
+				"account": "http://usd-ledger.example/accounts/bob",
+				"amount": "50",
+				"memo": null
+			}],
+			"debits": [{
+				"account": "http://usd-ledger.example/accounts/alice",
+				"amount": "50",
+				"memo": null,
+				"authorized": true
+			}],
+			"id": "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
+			"ledger": "http://usd-ledger.example",
+			"state": "prepared",
+			"timeline": null,
+			"additional_info": null,
+			"cancellation_condition": null,
+			"execution_condition": "cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2",
+			"expires_at": 1434412801000,
+			"rejection_reason": null
+		},
+		"event": "transfer.create",
+		"related_resources": null
+	}
 }
 
 
