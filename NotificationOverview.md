@@ -1,7 +1,7 @@
-This document provides a general overview of how the notification process shall work.
+**This document provides a general overview of how the notification process shall work.**
 
 
-Logical flow of Notifications (This could bececome a sequence diagram)
+***Logical flow of Notifications (This could bececome a sequence diagram)***
 
 1. (Server) When ILP Ledger (Mule) starts up, it starts up the Java Web Socket Server and is ready for clients to start registering Accounts for notifications.
 2. (Client) A client that wants to receive notifications for an account, must register against the Web Socket in  interop_ilp_ledger adapter (Mule application). This will probably happen during the Setup phase of SPSP.
@@ -14,8 +14,6 @@ Logical flow of Notifications (This could bececome a sequence diagram)
 
 Ripple has provided a detail API documentation on the expected behaviors of the final design.
 https://github.com/LevelOneProject/Docs/blob/master/ILP/ledger-adapter.md#subscribe-to-account
-
-
 
 
 
