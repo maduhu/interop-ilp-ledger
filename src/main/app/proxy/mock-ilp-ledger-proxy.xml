@@ -14,7 +14,48 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 	<flow name="get:/transfers/{id}:mock-api-config">
-    	<set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
+    	<set-payload doc:name="Set Payload" value="{
+  &quot;id&quot;: &quot;http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger/transfers/6ca071e5-09e2-4e20-8843-d3e8a0dd1f55&quot;,
+  &quot;ledger&quot;: &quot;http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger&quot;,
+  &quot;debits&quot;: [
+    {
+      &quot;account&quot;: &quot;http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger/accounts/dfsp1connector&quot;,
+      &quot;memo&quot;: {
+        &quot;source_transfer_ledger&quot;: &quot;levelone.ist.&quot;,
+        &quot;source_transfer_id&quot;: &quot;e829a9bf-b87b-4d84-87f3-18dc467ae7c7&quot;
+      },
+      &quot;amount&quot;: &quot;7.00&quot;
+    }
+  ],
+  &quot;credits&quot;: [
+    {
+      &quot;account&quot;: &quot;http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger/accounts/merchant&quot;,
+      &quot;memo&quot;: {
+        &quot;ilp_header&quot;: {
+          &quot;account&quot;: &quot;levelone.dfsp1.merchant.4bf0ee9d-1244-4e77-8951-f05a07f4f8a1&quot;,
+          &quot;amount&quot;: &quot;7&quot;,
+          &quot;data&quot;: {
+            &quot;data&quot;: {
+              &quot;memo&quot;: {
+                &quot;fee&quot;: 0,
+                &quot;transferCode&quot;: &quot;invoice&quot;,
+                &quot;debitName&quot;: &quot;bob&quot;,
+                &quot;creditName&quot;: &quot;merchant&quot;
+              }
+            },
+            &quot;expires_at&quot;: &quot;2016-12-23T13:59:26.173Z&quot;
+          }
+        }
+      },
+      &quot;amount&quot;: &quot;7.00&quot;
+    }
+  ],
+  &quot;execution_condition&quot;: &quot;cc:0:3:iLS9w-CiypRGXk3VmvJsKlcfOnH0kXvdxL5EIcdjSjI:32&quot;,
+  &quot;cancellation_condition&quot;: null,
+  &quot;state&quot;: &quot;executed&quot;,
+  &quot;expires_at&quot;: &quot;2016-12-23T13:59:24.173Z&quot;
+}
+" mimeType="application/json"/>
     </flow>
     
     <flow name="put:/transfers/{id}:mock-api-config">
