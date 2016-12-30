@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -19,8 +21,12 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
   private ConcurrentHashMap<String, Set<WebSocket>> subscriptions;
   private final ObjectMapper mapper;
   private final Broadcaster broadcaster;
+  private final String urlRemappingRegex;
+  private final String urlLedgerAdapterReplacementUrl;
 
-  public LedgerNotificationRegistrationApplication() {
+  public LedgerNotificationRegistrationApplication(String urlRemappingRegex, String urlLedgerAdapterReplacementUrl) {
+    this.urlRemappingRegex = urlRemappingRegex;
+    this.urlLedgerAdapterReplacementUrl = urlLedgerAdapterReplacementUrl;
     subscriptions = new ConcurrentHashMap<String, Set<WebSocket>>();
     mapper = new ObjectMapper();
     broadcaster = new OptimizedBroadcaster();
@@ -100,17 +106,25 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
   }
 
 
-  public void sendTransferPreparedNotification(String transfer) {
+  public void sendTransferPreparedNotification(String transferJson) {
     try {
-      sendTransferPreparedNotification(mapper.readValue(transfer, Transfer.class));
+      log.info("********** incoming transfer **************");
+      log.info(transferJson);
+      final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
+      remapUrlToIlpAdapterLedger(transfer);
+      sendTransferPreparedNotification(transfer);
     } catch (IOException e) {
       throw new RuntimeException("Failed to convert to Transfer", e);
     }
   }
 
-  public void sendTranferExecutedNotification(String transfer) {
+  public void sendTranferExecutedNotification(String transferJson) {
     try {
-      sendTranferExecutedNotification(mapper.readValue(transfer, Transfer.class));
+      log.info("********** incoming transfer **************");
+      log.info(transferJson);
+      final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
+      remapUrlToIlpAdapterLedger(transfer);
+      sendTranferExecutedNotification(transfer);
     } catch (IOException e) {
       throw new RuntimeException("Failed to convert to Transfer", e);
     }
@@ -122,6 +136,19 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
   public void sendTranferExecutedNotification(Transfer transfer) {
       sendTransferNotification(TransferParams.TRANSFER_UPDATE, transfer);
+  }
+
+  private void remapUrlToIlpAdapterLedger(Transfer transfer) throws MalformedURLException {
+    transfer.setId(transfer.getId().replaceFirst(urlRemappingRegex, urlLedgerAdapterReplacementUrl));
+    transfer.setLedger(transfer.getLedger().replaceFirst(urlRemappingRegex, urlLedgerAdapterReplacementUrl));
+
+    for (Credit credit : transfer.getCredits()) {
+      credit.setAccount(credit.getAccount().replaceFirst(urlRemappingRegex, urlLedgerAdapterReplacementUrl));
+    }
+
+    for (Debit debit : transfer.getDebits()) {
+      debit.setAccount(debit.getAccount().replaceFirst(urlRemappingRegex, urlLedgerAdapterReplacementUrl));
+    }
   }
 
   private void sendTransferNotification(String transferType, Transfer transfer) {

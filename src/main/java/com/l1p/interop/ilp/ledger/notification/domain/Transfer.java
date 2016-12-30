@@ -1,5 +1,6 @@
 package com.l1p.interop.ilp.ledger.notification.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collections;
@@ -19,6 +20,7 @@ public class Transfer {
   private String executionCondition;
 
   @JsonProperty(value = "expires_at")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   private Date expiresAt;
   private String id;
   private String ledger;
