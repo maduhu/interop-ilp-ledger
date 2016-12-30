@@ -30,7 +30,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <spring:constructor-arg value="${ilp-ledger.ledgerURL}"/>
             <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
         </spring:bean>
-        <spring:bean id="notificationRegistrationApp" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication"/>
+        <spring:bean id="notificationRegistrationApp" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication">
+            <spring:constructor-arg value=".*/ledger"/>
+            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
+        </spring:bean>
         <spring:bean id="notificationRegistrationServer" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationServer">
             <spring:constructor-arg value="/tmp"/>
             <spring:constructor-arg value="${ilp-ledger.notification.registration.port}"/>
