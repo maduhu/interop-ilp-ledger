@@ -67,7 +67,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   }
 
   public static void main(String[] args) throws Exception {
-    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication();
+    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(".*/ledger/", "http://0.0.0.0/ledger/base/path");
     final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
     server.initialise();
     server.start();
@@ -78,7 +78,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
           for (int i = 0; i < 100; i++) {
             Thread.sleep(5000);
             final Transfer transfer = new Transfer();
-            final Credit credit = new Credit("https://ledger.example/accounts/alice", "100", "memo: ninguna vez");
+            final Credit credit = new Credit("https://ledger.example/accounts/alice", "100", null);
             transfer.setCredits(new ArrayList<Credit>(){{add(credit);}});
             app.sendTransferPreparedNotification(transfer);
             log.info("sent prepared transfer");
