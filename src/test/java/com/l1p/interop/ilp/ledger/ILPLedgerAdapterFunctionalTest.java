@@ -35,6 +35,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	private final String accountsPath="/ilp/ledger/v1/accounts/";
 	private final String transfersPath="/ilp/ledger/v1/transfers/";
 	private final String connectorsPath="/ilp/ledger/v1/connectors";
+	private final String messagesPath = "ilp/ledger/v1/messages";
 	private final String serviceHost = "http://localhost:8081";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -43,7 +44,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Override
 	protected String getConfigResources() {
-		return "test-resources.xml,mock-interop-ilp-ledger-api.xml,mock-interop-ilp-ledger.xml";
+		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml, mock-ilp-ledger.xml,mock-ilp-ledger-api.xml";
 	}
 
 	@BeforeClass
@@ -156,7 +157,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	public void testGetTransfer() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613";
+		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613123";
 		
 		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
 		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
@@ -164,9 +165,9 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		ClientResponse clientResponse = getRequest( transfersPath + id, params );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
-		assertEquals( "Response field id did not contain expected value", "InvalidUriParameterError", jsonReponse.get( "id" ) );
-		assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
-		assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
+		assertEquals( "Response field id did not contain expected value", "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204", jsonReponse.get( "id" ) );
+		//assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
+		//assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
 	}
 
 	@Test
@@ -231,15 +232,16 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	@Test
 	public void testPutTransferFulfillment() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
-		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
-		final String putTransferJSON = loadResourceAsString("testData/proposeTransferBody.json");
+		final String putTransferJSON = "cf:0:_v8";
 
-		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id, params, putTransferJSON );
+		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id+"/fulfillment", params, putTransferJSON );
 		//ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id + "/fulfillment", params, putTransferJSON );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
+			assertEquals("response does not have the crypto condition fulfillment.","cf:0:_v8",responseContent);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
@@ -256,6 +258,18 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
+		} catch ( Exception e ) {
+			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
+		}
+	}
+	
+	@Test
+	public void testPostMessages() throws Exception {
+		ClientResponse clientResponse = postRequest( messagesPath, loadResourceAsString("testData/postMessagesBody.json") );
+		String responseContent = null;
+		try {
+			responseContent = clientResponse.getEntity(String.class);
+			assertEquals("Response is not blank as expected.","",responseContent);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
@@ -342,6 +356,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 			}
 		}
 
-		return putResource.path( path ).type( "*/*" ).put(ClientResponse.class, requestData);
+		//return putResource.path( path ).type( "*/*" ).put(ClientResponse.class, requestData);
+		return putResource.path( path ).type( "text/plain" ).put(ClientResponse.class, requestData);
 	}
 }

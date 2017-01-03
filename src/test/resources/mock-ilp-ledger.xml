@@ -131,20 +131,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Calling getTransfer(#[id]) for interopID=#[sessionVars.interopID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <set-payload doc:name="Set Payload" value="{
-  &quot;id&quot;: &quot;InvalidUriParameterError&quot;,
-  &quot;message&quot;: &quot;id is not a valid Uuid&quot;,
-  &quot;validationErrors&quot;: [
-    {
-      &quot;message&quot;: &quot;\&quot;id\&quot; with value \&quot;3a2a1d9e-8640-4d2d-b06c-84f2cd613\&quot; fails to match the required pattern: /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/&quot;,
-      &quot;params&quot;: {
-        &quot;pattern&quot;: {},
-        &quot;value&quot;: &quot;3a2a1d9e-8640-4d2d-b06c-84f2cd613&quot;,
-        &quot;key&quot;: &quot;id&quot;
-      }
-    }
-  ]
-}"/>
+        <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
         <logger level="INFO"
                 message="Received getTransfer(#[id]) response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -222,5 +209,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
-
+	<flow name="post:/messages:test-api-config">
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Received postMessages request for interopID=#[sessionVars.interopID]: #[payload] in mock"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload value="{}" doc:name="Set Payload"/>
+        <logger level="INFO"
+                message="Sending postMessages response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload] from mock"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
+        
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
 </mule>

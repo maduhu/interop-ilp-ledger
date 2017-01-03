@@ -7,18 +7,13 @@ types:
   TransferState:
     enum: [ proposed, prepared, executed, cancelled ]
 
+#Base Objects
   Timeline:
     type: object
     properties:
-      proposed_at?: string
-      prepared_at?: string
-      executed_at?: string
-
-  PutAccountRequest:
-    type: object
-    properties:
-      name: string
-      balance: string
+      prepared_at: datetime
+      executed_at?: datetime
+      rejected_at?: datetime
 
   AccountResponse:
     type: object
@@ -26,13 +21,6 @@ types:
       id: string
       name: string
       ledger: string
-
-  AuthorizedAccountResponse:
-    type: AccountResponse
-    properties:
-      balance: string
-      minimum_allowed_balance: string
-      is_disabled: boolean
 
   Funds:
     type: object
@@ -42,25 +30,73 @@ types:
       authorized?: boolean
       memo?: Memo
 
-  TransferRequest:
+  Transfer:
     type: object
     properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
+      id: 
+        type: string
+        pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+      ledger: 
+        type: string
+        pattern: ^(((ht|f)tp(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+      rejection_reason: string
+      execution_condition: 
+        type: string
+        pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
+      cancellation_condition: 
+        type: string
+        pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
+      expires_at: datetime
+      state: string
       debits:
         type: Funds[]
         minItems: 1
       credits:
         type: Funds[]
         minItems: 1
-
+      timeline?: Timeline
+      additional_info?: object
+      
   Memo:
     type: object
+    
+  Message:
+    type: object
+    properties:
+      ledger:
+        type: string
+        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+      from:
+        type: string
+        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+      to:
+        type: string
+        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+      data:
+        type: object
+        
+      
 
+#Composite Objects
+
+#Account related objects
+  PutAccountRequest:
+    type: object
+    properties:
+      name: string
+      balance: string
+
+  AuthorizedAccountResponse:
+    type: AccountResponse
+    properties:
+      balance: string
+      minimum_allowed_balance: string
+      is_disabled: boolean
+
+
+#Transfer related objects
   ProposeTransferRequest:
-    type: TransferRequest
+    type: Transfer
 
   ProposedTransferResponse:
     type: ProposeTransferRequest
@@ -69,29 +105,16 @@ types:
         enum: [ proposed ]
 
   PrepareTransferRequest:
-    type: TransferRequest
+    type: Transfer
 
   PreparedTransferResponse:
     type: PrepareTransferRequest
     properties:
       state:
         enum: [ prepared ]
-
-  ServerMetadataResponse:
-    description: Metadata about the ilp ledger instance
-    type: object
-    properties:
-      currency_code: string
-      currency_symbol: string
-      precision: integer
-      scale: integer
-      urls:
-        description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
-        type: object
-        required: false
-
+        
   TransferResponse:
-    type: TransferRequest
+    type: Transfer
     properties:
       timeline:
         type: Timeline
@@ -101,18 +124,6 @@ types:
     type: array
     items: TransferResponse
     minItems: 1
-
-  ConnectorDescriptor:
-    type: object
-    properties:
-      id: string
-      name: string
-      connector: string
-
-  LedgerStatus:
-    type: object
-    properties:
-      status: string
 
   TransferStateResponse:
     type: object
@@ -126,6 +137,35 @@ types:
       signer: string
       public_key: string
       signature: string
+      
+  ServerMetadataResponse:
+    description: Metadata about the ilp ledger instance
+    type: object
+    properties:
+      currency_code: string
+      currency_symbol: string
+      connectors: 
+        type: ConnectorDescriptor[]
+      precision: integer
+      scale: integer
+      urls:
+        description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
+        type: object
+        required: false
+
+  ConnectorDescriptor:
+    type: object
+    properties:
+      id: string
+      name: string
+      connector?: string
+
+  LedgerStatus:
+    type: object
+    properties:
+      status: string
+
+  
 
   #Error Definitions
   Error:
@@ -287,11 +327,13 @@ types:
               type: UnauthorizedError
 
 /transfers/{id}:
-  displayName: POST /v1/transfers/:id
+  displayName: Details about a specific transfer
   uriParameters:
-    id: string
+    id: 
+      type: string
+      pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
   get:
-    description: Transfer - Get local transfer object
+    description: Transfer - Get details about a specific transfer
 
     responses:
       200:
@@ -315,18 +357,13 @@ types:
     description:
     body:
       application/json:
-        type: ProposeTransferRequest | PrepareTransferRequest
+        type: PrepareTransferRequest
     responses:
-      200:  #prepared success
+      201:  #prepared success
         body:
           application/json:
             type: PreparedTransferResponse
-
-      201:  #proposed success
-        body:
-          application/json:
-            type: ProposedTransferResponse
-
+      
       400:  #InvalidUriParameterError, InvalidBodyError
         body:
           application/json:
@@ -340,22 +377,21 @@ types:
             type: InsufficientFundsError | UnprocessableEntityError | AlreadyExistsError
 
   /fulfillment:
-      displayName: GET /v1/transfers/:id/fulfillment
+      displayName:  /v1/transfers/:id/fulfillment
       put:
         description: Transfer - Execute a prepared transfer
         body:
           text/plain:
             type:  string
+            pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
             example: "cf:0:_v8"
-          application/json:
-            type:  string
-            example: "cf:0:_v8"
-
+         
         responses:
           200:
             body:
               text/plain:
                 type:  string
+                pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
                 example: "cf:0:_v8"
 
           400:  #InvalidUriParameterError, InvalidBodyError
@@ -371,23 +407,19 @@ types:
                 type: UnmetConditionError | UnprocessableEntityError
 
   /rejection:
-      displayName: GET /v1/transfers/:id/rejection
+      displayName:  /v1/transfers/:id/rejection
       put:
         description: Transfer - Reject a transfer
         body:
           text/plain:
             type:  string
-            example: "cf:0:_v8"
-          application/json:
-            type:  string
-            example: "cf:0:_v8"
-
+            example: "BlacklistedSender"
+         
         responses:
           200:
             body:
-              text/plain:
-                type:  string
-                example: "cf:0:_v8"
+              application/json:
+                type: TransferResponse
 
           400:  #InvalidUriParameterError, InvalidBodyError
             body:
@@ -400,3 +432,24 @@ types:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
+
+/messages:
+  displayName: Used to send notification to other accounts
+  post:
+    description: method to create 
+    body:
+      application/json:
+        type: Message
+    responses:
+      201:
+      400:  #InvalidUriParameterError, InvalidBodyError
+        body:
+          application/json:
+            description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+            type: InvalidUriParameterError | InvalidBodyError
+
+      422: #UnprocessableEntityError
+        body:
+          application/json:
+            description: HTTP/1.1 422 Unprocessable Entity -  UnprocessableEntityError
+            type: UnprocessableEntityError

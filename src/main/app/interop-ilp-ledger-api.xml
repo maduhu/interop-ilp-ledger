@@ -31,7 +31,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
-        <object-to-string-transformer/>
+        <object-to-string-transformer doc:name="Object to String"/>
         <set-session-variable variableName="interopID" value="#[java.util.UUID.randomUUID()]" doc:name="set-interopID"/>
         <logger level="INFO"
                 message="Received request for interopID=#[sessionVars.interopID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"

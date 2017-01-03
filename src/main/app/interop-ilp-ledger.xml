@@ -178,5 +178,20 @@
             <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
-
+	<flow name="post:/messages:api-config">
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Calling post messages for interopID=#[sessionVars.interopID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="postMessages" doc:name="call postMessages"/>
+        <logger level="INFO"
+                message="Received postMessages response for interopID=#[sessionVars.interopID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
+        
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
 </mule>

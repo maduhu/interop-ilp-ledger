@@ -30,7 +30,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<apikit:config name="test-api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
     <flow name="test-api-main">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="/mock/ledger/*" doc:name="HTTP"/>
         <object-to-string-transformer doc:name="Object to String"/>
         <set-session-variable variableName="interopID" value="#[java.util.UUID.randomUUID()]" doc:name="set-interopID"/>
         <logger level="INFO"

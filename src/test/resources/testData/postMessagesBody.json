@@ -1,0 +1,8 @@
+{
+  "ledger": "http://usd-ledger.example",
+  "from": "http://usd-ledger.example/accounts/bob",
+  "to": "http://usd-ledger.example/accounts/alice",
+  "data": {
+    "foo": "bar"
+  }
+}

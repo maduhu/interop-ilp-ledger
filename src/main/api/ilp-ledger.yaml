@@ -19,20 +19,21 @@ definitions:
   TransferState:
     type: string
     enum:
-    - proposed
     - prepared
     - executed
     - cancelled
 
   Timeline:
     type: object
+    required:
+      - preparedAt
     properties:
-      proposedAt:
-        type: string
-      executedAt:
-        type: string
       preparedAt:
-        type: string
+        type: datetime
+      executedAt:
+        type: datetime
+      preparedAt:
+        type: datetime
 
   Uri:
     type: string
@@ -207,6 +208,19 @@ definitions:
           type: string
     additionalProperties:
       type: string
+      
+  ConnectorDescriptor:
+    type: object
+    required:
+      - id
+      - type
+    properties:
+      id: 
+        type: string
+      name: 
+        type: string
+      connector: 
+        type: string
 
 paths:
   /:

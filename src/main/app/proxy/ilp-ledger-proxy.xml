@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:json="http://www.mulesoft.org/schema/mule/json"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
     
 	<!-- DFSP HTTP configuration for making REST call to the ilp service -->
-    <http:request-config  protocol="HTTP" name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
+    <http:request-config   name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
         <http:basic-authentication username="${ilp-ledger.userName}" password="${ilp-ledger.password}"/>
     </http:request-config>
 
@@ -93,6 +95,16 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
+        <scripting:transformer doc:name="Groovy">
+			<scripting:script engine="Groovy">
+				<property key="ilp_ledger_host" value="${ilp-ledger.host}" />
+                                <property key="ilp_ledger_port" value="${ilp-ledger.port}" />
+				<property key="proxy_service_port" value="${proxy-service.port}" />
+				<scripting:text>
+                        return payload.toString().replaceAll("localhost", "$ilp_ledger_host").replaceAll("$ilp_ledger_port", "$proxy_service_port")
+                     </scripting:text>
+			</scripting:script>
+		</scripting:transformer>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
     
@@ -147,14 +159,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
-        <set-variable variableName="payloadToReturn" value="#[payload]"/>
+        <set-variable variableName="payloadToReturn" value="#[payload]" doc:name="Variable"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,404,422"/>-->
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
         <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(payload)]]></expression-component>
-        <set-payload value="#[flowVars.payloadToReturn]"/>
+        <set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload"/>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
 
@@ -179,4 +191,19 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <object-to-string-transformer doc:name="Object to String"/>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
+    
+    <flow name="postMessages">
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <logger level="INFO"
+                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/messages, method=post"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <http:request config-ref="ILP_Ledger_Configuration" path="/messages" method="POST" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200"/>-->
+            <http:success-status-code-validator values="200..500"/>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
+    </flow>
+    
 </mule>
