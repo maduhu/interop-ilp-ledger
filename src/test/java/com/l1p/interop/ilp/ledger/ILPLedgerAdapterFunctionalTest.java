@@ -44,7 +44,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@Override
 	protected String getConfigResources() {
-		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml, mock-ilp-ledger.xml,mock-ilp-ledger-api.xml";
+		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml, proxy/mock-ilp-ledger.xml,proxy/mock-ilp-ledger-api.xml";
 	}
 
 	@BeforeClass
