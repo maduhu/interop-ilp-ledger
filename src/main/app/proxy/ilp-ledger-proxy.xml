@@ -33,6 +33,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
         </spring:bean>
         <spring:bean id="notificationRegistrationApp" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication">
+            <spring:constructor-arg ref="ledgerUrlMapper"/>
+        </spring:bean>
+        <spring:bean id="ledgerUrlMapper" class="com.l1p.interop.ilp.ledger.LedgerUrlMapper">
             <spring:constructor-arg value=".*/ledger"/>
             <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
         </spring:bean>
@@ -98,16 +101,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
-        <scripting:transformer doc:name="Groovy">
-			<scripting:script engine="Groovy">
-				<property key="ilp_ledger_host" value="${ilp-ledger.host}" />
-                                <property key="ilp_ledger_port" value="${ilp-ledger.port}" />
-				<property key="proxy_service_port" value="${proxy-service.port}" />
-                <scripting:text><![CDATA[
-                        return payload.toString().replaceAll("localhost", "$ilp_ledger_host").replaceAll("$ilp_ledger_port", "$proxy_service_port")
-                     ]]></scripting:text>
-			</scripting:script>
-		</scripting:transformer>
+        <custom-transformer mimeType="application/json" class="com.l1p.interop.LedgerUrlMapperTransformer" doc:name="Transform DFSP Ledger Urls">
+            <spring:property name="ledgerUrlMapper" ref="ledgerUrlMapper"/>
+        </custom-transformer>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
     
