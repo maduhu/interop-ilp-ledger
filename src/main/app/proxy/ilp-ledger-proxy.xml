@@ -7,8 +7,8 @@
       xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:json="http://www.mulesoft.org/schema/mule/json"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
@@ -103,9 +103,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				<property key="ilp_ledger_host" value="${ilp-ledger.host}" />
                                 <property key="ilp_ledger_port" value="${ilp-ledger.port}" />
 				<property key="proxy_service_port" value="${proxy-service.port}" />
-				<scripting:text>
+                <scripting:text><![CDATA[
                         return payload.toString().replaceAll("localhost", "$ilp_ledger_host").replaceAll("$ilp_ledger_port", "$proxy_service_port")
-                     </scripting:text>
+                     ]]></scripting:text>
 			</scripting:script>
 		</scripting:transformer>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
