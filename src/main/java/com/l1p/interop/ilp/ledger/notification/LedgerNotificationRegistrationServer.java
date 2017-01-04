@@ -1,7 +1,8 @@
 package com.l1p.interop.ilp.ledger.notification;
 
-import com.l1p.interop.ilp.ledger.notification.domain.Credit;
-import com.l1p.interop.ilp.ledger.notification.domain.Transfer;
+import com.l1p.interop.ilp.ledger.LedgerUrlMapper;
+import com.l1p.interop.ilp.ledger.domain.Credit;
+import com.l1p.interop.ilp.ledger.domain.Transfer;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
@@ -67,7 +68,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   }
 
   public static void main(String[] args) throws Exception {
-    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(".*/ledger/", "http://0.0.0.0/ledger/base/path");
+    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path"));
     final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
     server.initialise();
     server.start();
