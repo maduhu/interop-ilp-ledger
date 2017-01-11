@@ -68,7 +68,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   }
 
   public static void main(String[] args) throws Exception {
-    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path"));
+    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path", ".*/ledger/", "http://0.0.0.0/ledger/base/path"));
     final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
     server.initialise();
     server.start();
