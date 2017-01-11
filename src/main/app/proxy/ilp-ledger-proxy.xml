@@ -35,10 +35,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <spring:bean id="notificationRegistrationApp" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication">
             <spring:constructor-arg ref="ledgerUrlMapper"/>
         </spring:bean>
-        <spring:bean id="ledgerUrlMapper" class="com.l1p.interop.ilp.ledger.LedgerUrlMapper">
-            <spring:constructor-arg value=".*/ledger"/>
-            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
-        </spring:bean>
         <spring:bean id="notificationRegistrationServer" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationServer">
             <spring:constructor-arg value="/tmp"/>
             <spring:constructor-arg value="${ilp-ledger.notification.registration.port}"/>
@@ -101,9 +97,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
-        <custom-transformer mimeType="application/json" class="com.l1p.interop.LedgerUrlMapperTransformer" doc:name="Transform DFSP Ledger Urls">
-            <spring:property name="ledgerUrlMapper" ref="ledgerUrlMapper"/>
-        </custom-transformer>
+        <choice doc:name="Map Ledger URLs based on the response code">
+            <when expression="#[message.inboundProperties.'http.status' == 200]">
+                <transformer ref="ledgerAdapterToActualLedgerUrlTransformer" doc:name="Transform Ledger URL"/>
+            </when>
+            <otherwise>
+                <logger message="Failed to get account #[payload]"
+                        level="ERROR"
+                        category="com.l1p.interop.dfsp.api-main"
+                        doc:name="Logger"/>
+            </otherwise>
+        </choice>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
     
@@ -131,6 +135,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <http:success-status-code-validator values="200..500"/>
         </http:request>
         <object-to-string-transformer doc:name="Object to String"/>
+        <choice doc:name="Map Ledger URLs based on the response code">
+            <when expression="#[message.inboundProperties.'http.status' == 200]">
+                <transformer ref="ledgerAdapterToActualLedgerUrlTransformer" doc:name="Transform Ledger URL"/>
+            </when>
+            <otherwise>
+                <logger message="Failed to get Transfer #[payload]"
+                        level="ERROR"
+                        category="com.l1p.interop.dfsp.api-main"
+                        doc:name="Logger"/>
+            </otherwise>
+        </choice>
         <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
     </flow>
     
