@@ -99,7 +99,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <object-to-string-transformer doc:name="Object to String"/>
         <choice doc:name="Map Ledger URLs based on the response code">
             <when expression="#[message.inboundProperties.'http.status' == 200]">
-                <transformer ref="ledgerAdapterToActualLedgerUrlTransformer" doc:name="Transform Ledger URL"/>
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer" doc:name="Transform Ledger URL"/>
             </when>
             <otherwise>
                 <logger message="Failed to get account #[payload]"
@@ -137,7 +137,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <object-to-string-transformer doc:name="Object to String"/>
         <choice doc:name="Map Ledger URLs based on the response code">
             <when expression="#[message.inboundProperties.'http.status' == 200]">
-                <transformer ref="ledgerAdapterToActualLedgerUrlTransformer" doc:name="Transform Ledger URL"/>
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer" doc:name="Transform Ledger URL"/>
             </when>
             <otherwise>
                 <logger message="Failed to get Transfer #[payload]"

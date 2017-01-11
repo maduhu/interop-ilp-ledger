@@ -21,6 +21,42 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<spring:beans>
         <spring:import resource="classpath:services-common.xml" />
         <spring:import resource="classpath:metrics.xml" />
+      <spring:bean id="actualLedgerToLedgerAdapterUrlTransformer"
+                   class="com.l1p.interop.ActualLedgerToLedgerAdapterUrlTransformer">
+          <spring:property name="ledgerUrlMapper" ref="ledgerUrlMapper"/>
+          <spring:property name="urlFields">
+              <spring:list>
+                  <spring:value>id</spring:value>
+                  <spring:value>ledger</spring:value>
+                  <spring:value>debits.account</spring:value>
+                  <spring:value>credits.account</spring:value>
+                  <spring:value>sourceAccount</spring:value>
+                  <spring:value>account</spring:value>
+              </spring:list>
+          </spring:property>
+      </spring:bean>
+
+      <spring:bean id="ledgerAdapterToActualLedgerUrlTransformer"
+                   class="com.l1p.interop.LedgerAdatperToActualLedgerUrlTransformer">
+          <spring:property name="ledgerUrlMapper" ref="ledgerUrlMapper"/>
+          <spring:property name="urlFields">
+              <spring:list>
+                  <spring:value>id</spring:value>
+                  <spring:value>ledger</spring:value>
+                  <spring:value>debits.account</spring:value>
+                  <spring:value>credits.account</spring:value>
+                  <spring:value>sourceAccount</spring:value>
+                  <spring:value>account</spring:value>
+              </spring:list>
+          </spring:property>
+      </spring:bean>
+
+      <spring:bean id="ledgerUrlMapper" class="com.l1p.interop.ilp.ledger.LedgerUrlMapper">
+          <spring:constructor-arg value="${ilp-ledger.url.replacement.regex}"/>
+          <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
+          <spring:constructor-arg value="${ilp-ledger-adapter.url.replacement.regex}"/>
+          <spring:constructor-arg value="${ilp-ledger.ledgerAdapterURL}"/>
+      </spring:bean>
 	</spring:beans>
 
     <spring:beans>
