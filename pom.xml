@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -19,9 +20,9 @@
     <tag>HEAD</tag>
   </scm>
 
-	<properties>
-		<interop-common-version>1.0.7</interop-common-version>
-	</properties>
+  <properties>
+    <interop-common-version>1.0.14</interop-common-version>
+  </properties>
 
   <build>
     <plugins>
@@ -38,15 +39,15 @@
   </build>
 
   <dependencies>
-	<dependency>
-			<groupId>com.l1p.interop</groupId>
-			<artifactId>interop-common</artifactId>
-			<version>${interop-common-version}</version>
+    <dependency>
+      <groupId>com.l1p.interop</groupId>
+      <artifactId>interop-common</artifactId>
+      <version>${interop-common-version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>com.l1p.interop</groupId>
       <artifactId>interop-domain</artifactId>
-      <version>0.1.6</version>
+      <version>0.1.7-SNAPSHOT</version>
       <type>zip</type>
     </dependency>
     <dependency>
@@ -73,11 +74,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-            <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-ftp</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+      <groupId>org.mule.transports</groupId>
+      <artifactId>mule-transport-ftp</artifactId>
+      <version>${mule.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>
