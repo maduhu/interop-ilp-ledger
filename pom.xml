@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.l1p.interop</groupId>
       <artifactId>interop-domain</artifactId>
-      <version>0.1.7-SNAPSHOT</version>
+      <version>0.1.9</version>
       <type>zip</type>
     </dependency>
     <dependency>
