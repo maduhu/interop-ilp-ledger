@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.l1p.interop</groupId>
     <artifactId>interop-parent</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.8</version>
   </parent>
 
   <groupId>com.l1p.interop.ilp</groupId>
@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <interop-common-version>1.0.14</interop-common-version>
+    <interop-common-version>1.0.16</interop-common-version>
   </properties>
 
   <build>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.l1p.interop</groupId>
       <artifactId>interop-domain</artifactId>
-      <version>0.1.7-SNAPSHOT</version>
+      <version>0.1.12</version>
       <type>zip</type>
     </dependency>
     <dependency>
