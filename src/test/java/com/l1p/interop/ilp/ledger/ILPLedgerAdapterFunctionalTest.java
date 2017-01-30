@@ -67,7 +67,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		logger.info("Posting event to web services");
 
 		ClientResponse clientResponse = postRequest(invalidPath, notJSON);
-		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "Resource not found");
+		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "No listener for endpoint");
 	}
 
 	@Test
@@ -285,7 +285,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 			fail( testName + ": parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
 
-		assertTrue( testName + ": received unexpected response", responseContent.contains( expectedContent ) );
+		assertTrue( testName + ": received unexpected response -> " + responseContent, responseContent.contains( expectedContent ) );
 
 	}
 
