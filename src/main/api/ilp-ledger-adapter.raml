@@ -453,3 +453,22 @@ types:
           application/json:
             description: HTTP/1.1 422 Unprocessable Entity -  UnprocessableEntityError
             type: UnprocessableEntityError
+
+/auth_token:
+  displayName: Get a token that can be used to authenticate future requests
+  get:
+    description: get token
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            properties:
+              token: string
+      403:  #UnauthorizedError
+        description: HTTP/1.1 403 Forbidden - UnauthorizedError
+        body:
+          application/json:
+            type: UnauthorizedError
+
+  
