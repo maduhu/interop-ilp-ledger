@@ -194,4 +194,16 @@
             <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
+    <flow name="get:/auth_token:api-config">
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.auth_token.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Handling auth_token call.  interopID=#[sessionVars.interopID]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload doc:name="Set Payload" value="{&quot;token&quot;:&quot;placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES&quot;}"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.auth_token.stop" doc:name="SnapTime"/>
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.auth_token.start" endSnapKey="get.auth_token.stop" category="l1p.interop-ilp-ledger.api" metricKey="AuthTokenGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>AuthTokenGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
 </mule>
