@@ -50,6 +50,9 @@ public class LedgerMetadataTransformer extends AbstractMessageTransformer {
         urls.put( "transfer_rejection", ledgerAdapterURL + "/transfers/:id/rejection" );
 
         urls.put("account_transfers", ledgerAccountTransfersURL);
+        urls.put("auth_token", ledgerAdapterURL+"/auth_token");
+        urls.put("message", ledgerAdapterURL+"/messages");
+        urls.put("websocket", "ws://localhost:8089");
 
         return JsonTransformer.mapToString( jsonPayload );
     }

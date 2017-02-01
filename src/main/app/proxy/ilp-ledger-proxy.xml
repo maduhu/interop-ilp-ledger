@@ -21,7 +21,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <spring:beans>
         <spring:bean id="LedgerMetadataTransformer" name="LedgerMetadataTransformer" class="com.l1p.interop.ilp.ledger.LedgerMetadataTransformer">
-            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
+            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerAdapterURL}"/>
             <spring:constructor-arg value="${ilp-ledger.accountTransfersURL}"/>
         </spring:bean>
         <spring:bean id="RequestMapper" name="RequestMapper" class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
