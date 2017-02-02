@@ -49,10 +49,10 @@ public class LedgerMetadataTransformer extends AbstractMessageTransformer {
         updateProperty( "account", ledgerAdapterURL + "/accounts/:name", urls );
         urls.put( "transfer_rejection", ledgerAdapterURL + "/transfers/:id/rejection" );
 
-        urls.put("account_transfers", ledgerAccountTransfersURL);
+        //urls.put("account_transfers", ledgerAccountTransfersURL);
         urls.put("auth_token", ledgerAdapterURL+"/auth_token");
         urls.put("message", ledgerAdapterURL+"/messages");
-        urls.put("websocket", "ws://localhost:8089");
+        urls.put("websocket", "ws://localhost:8089/websocket");
 
         return JsonTransformer.mapToString( jsonPayload );
     }
