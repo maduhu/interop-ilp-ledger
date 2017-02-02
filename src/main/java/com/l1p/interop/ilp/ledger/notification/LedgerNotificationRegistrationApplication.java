@@ -17,6 +17,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class LedgerNotificationRegistrationApplication extends WebSocketApplication {
   private static final Logger log = LoggerFactory.getLogger(LedgerNotificationRegistrationApplication.class);
 
+  private static final String CONNECTION_HANDSHAKE_MESSAGE = "{ \"jsonrpc\": \"2.0\", \"method\": \"connect\", \"params\": {}, \"id\": null}";
+
   private ConcurrentHashMap<String, Set<WebSocket>> subscriptions;
   private final ObjectMapper mapper;
   private final Broadcaster broadcaster;
@@ -32,7 +34,14 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
   @Override
   public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket, WebSocketListener... listeners) {
+    // on validation failure throw Handshake exception
     return new LedgerNotificationWebSocket(handler, requestPacket, listeners);
+  }
+
+  @Override
+  public void onConnect(WebSocket socket) {
+    super.onConnect(socket);
+    socket.send(CONNECTION_HANDSHAKE_MESSAGE);
   }
 
   @Override
@@ -54,6 +63,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
         else return webSocketFromMap;
       });
     }
+    super.onClose(socket, frame);
   }
 
   private void broadcast(String account, String text) {
