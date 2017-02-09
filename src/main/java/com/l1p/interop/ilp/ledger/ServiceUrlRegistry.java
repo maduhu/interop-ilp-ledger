@@ -6,6 +6,7 @@ package com.l1p.interop.ilp.ledger;
 class ServiceUrlRegistry {
     private String health;
     private String transfer;
+    private String transferState;
     private String transferRejection;
     private String transferFulfillment;
     private String account;
@@ -29,6 +30,14 @@ class ServiceUrlRegistry {
 
     public void setTransfer(String transfer) {
         this.transfer = transfer;
+    }
+
+    public String getTransferState() {
+        return transferState;
+    }
+
+    public void setTransferState(String transferState) {
+        this.transferState = transferState;
     }
 
     public String getTransferRejection() {

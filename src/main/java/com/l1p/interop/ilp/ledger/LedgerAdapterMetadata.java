@@ -38,6 +38,14 @@ public class LedgerAdapterMetadata {
         this.connectors = connectors;
     }
 
+    public ServiceUrlRegistry getUrls() {
+        return urls;
+    }
+
+    public void setUrls(ServiceUrlRegistry urls) {
+        this.urls = urls;
+    }
+
     public int getPrecision() {
         return precision;
     }

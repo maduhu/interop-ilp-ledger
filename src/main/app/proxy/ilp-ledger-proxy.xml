@@ -24,6 +24,28 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <spring:constructor-arg value="${ilp-ledger-adapter.ledgerAdapterURL}"/>
             <spring:constructor-arg value="${ilp-ledger.accountTransfersURL}"/>
         </spring:bean>
+        <spring:bean id="ledgerAdapterMetadata" class="com.l1p.interop.ilp.ledger.LedgerAdapterMetadata">
+            <spring:property name="connectors">
+                <spring:list>
+                </spring:list>
+            </spring:property>
+            <spring:property name="urls">
+                <spring:bean class="com.l1p.interop.ilp.ledger.ServiceUrlRegistry">
+                    <spring:property name="health" value="${ilp-ledger-adapter.ledgerAdapterURL}/health"/>
+                    <spring:property name="transfer" value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id"/>
+                    <spring:property name="transferFulfillment" value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/fulfillment"/>
+                    <spring:property name="transferState" value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/state"/>
+                    <spring:property name="transferRejection" value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/rejection"/>
+                    <spring:property name="accounts" value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts"/>
+                    <spring:property name="account" value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts/:name"/>
+                    <spring:property name="authToken" value="${ilp-ledger-adapter.ledgerAdapterURL}/auth_token"/>
+                    <spring:property name="message" value="${ilp-ledger-adapter.ledgerAdapterURL}/messages"/>
+                    <spring:property name="websocket" value="${ilp-ledger-adapter.websocket.url}"/>
+                </spring:bean>
+            </spring:property>
+            <spring:property name="precision" value="10"/>
+            <spring:property name="scale" value="2"/>
+        </spring:bean>
         <spring:bean id="RequestMapper" name="RequestMapper" class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
             <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}"/>
             <spring:constructor-arg value="${ilp-ledger.ledgerURL}"/>
@@ -37,25 +59,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </spring:bean>
         <spring:bean id="notificationRegistrationServer" class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationServer">
             <spring:constructor-arg value="/tmp"/>
-            <spring:constructor-arg value="${ilp-ledger.notification.registration.port}"/>
-            <spring:constructor-arg value="${ilp-ledger.notification.registration.path}"/>
+            <spring:constructor-arg value="${ilp-ledger-adapter.notification.registration.port}"/>
+            <spring:constructor-arg value="${ilp-ledger-adapter.notification.registration.path}"/>
             <spring:constructor-arg ref="notificationRegistrationApp"/>
         </spring:bean>
     </spring:beans>
 
     <flow name="getLedgerMetadata">
-        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
-        <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/, method=get"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="${ilp-ledger-getMedataData-path}" method="GET" doc:name="HTTP">
-            <!--<http:success-status-code-validator values="200"/>-->
-            <http:success-status-code-validator values="200..500"/>
-        </http:request>
-        <object-to-string-transformer doc:name="Object to String"/>
-        <transformer ref="LedgerMetadataTransformer" doc:name="LedgerMetadataTransformer"/>
-        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
+        <set-payload value="#[app.registry.ledgerAdapterMetadata]"/>
     </flow>
 
     <flow name="getLedgerHealth">
