@@ -20,8 +20,8 @@
   </scm>
 
   <properties>
-    <interop-common-version>1.0.16</interop-common-version>
-  <mule.version>3.8.1</mule.version>
+    <interop-common-version>1.0.17</interop-common-version>
+  <mule.version>3.8.0</mule.version>
     </properties>
 
   <build>
