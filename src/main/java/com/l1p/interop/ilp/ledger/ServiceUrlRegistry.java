@@ -1,5 +1,7 @@
 package com.l1p.interop.ilp.ledger;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  *  Relevant urls for ledger adapter metadata
  */
@@ -7,6 +9,7 @@ class ServiceUrlRegistry {
     private String health;
     private String transfer;
     private String transferState;
+    
     private String transferRejection;
     private String transferFulfillment;
     private String account;
@@ -40,6 +43,7 @@ class ServiceUrlRegistry {
         this.transferState = transferState;
     }
 
+    @JsonProperty("transfer_rejection")
     public String getTransferRejection() {
         return transferRejection;
     }
@@ -48,6 +52,7 @@ class ServiceUrlRegistry {
         this.transferRejection = transferRejection;
     }
 
+    @JsonProperty("transfer_fulfillment")
     public String getTransferFulfillment() {
         return transferFulfillment;
     }
@@ -68,6 +73,7 @@ class ServiceUrlRegistry {
         return accountTransfers;
     }
 
+    @JsonProperty("account_transfers")
     public void setAccountTransfers(String accountTransfers) {
         this.accountTransfers = accountTransfers;
     }
@@ -80,6 +86,7 @@ class ServiceUrlRegistry {
         this.accounts = accounts;
     }
 
+    @JsonProperty("auth_token")
     public String getAuthToken() {
         return authToken;
     }

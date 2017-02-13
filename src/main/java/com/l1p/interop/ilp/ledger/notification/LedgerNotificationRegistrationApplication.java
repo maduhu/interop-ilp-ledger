@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class LedgerNotificationRegistrationApplication extends WebSocketApplication {
   private static final Logger log = LoggerFactory.getLogger(LedgerNotificationRegistrationApplication.class);
 
-  private static final String CONNECTION_HANDSHAKE_MESSAGE = "{ \"jsonrpc\": \"2.0\", \"method\": \"connect\", \"params\": {}, \"id\": null}";
+  private static final String CONNECTION_HANDSHAKE_MESSAGE = "{ \"jsonrpc\": \"2.0\", \"method\": \"connect\", \"id\": null}";
 
   private ConcurrentHashMap<String, Set<WebSocket>> subscriptions;
   private final ObjectMapper mapper;
@@ -41,12 +41,14 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
   @Override
   public void onConnect(WebSocket socket) {
     super.onConnect(socket);
+    log.info("got connect request from: "+socket.toString());
     socket.send(CONNECTION_HANDSHAKE_MESSAGE);
   }
 
   @Override
   public void onMessage(WebSocket socket, String text) {
     // expect to receive registration request only
+	  log.info("received message: "+text);
     handleNotificationSubscriptionRequest(socket, text);
   }
 

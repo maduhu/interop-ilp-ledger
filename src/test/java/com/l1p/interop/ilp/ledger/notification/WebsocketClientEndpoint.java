@@ -24,7 +24,7 @@ public class WebsocketClientEndpoint {
 
   @OnMessage
   public void processMessage(String message) {
-    System.out.println("Received message in client: " + message);
+    log.info("Received message in client: " + message);
   }
 
   @OnError
