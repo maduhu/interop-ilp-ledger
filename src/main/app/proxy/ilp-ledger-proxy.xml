@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
     
 	<!-- DFSP HTTP configuration for making REST call to the ilp service -->
-    <http:request-config   name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
+    <http:request-config   name="ILP_Ledger_Configuration" host="${ilp-ledger.host}" port="${ilp-ledger.port}" protocol="HTTP" basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
         <http:basic-authentication username="${ilp-ledger.userName}" password="${ilp-ledger.password}"/>
     </http:request-config>
 
@@ -73,7 +73,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/health, method=get"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/health, method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/health" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200"/>-->
@@ -87,7 +87,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts, method=get"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts, method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,403"/>-->
@@ -101,7 +101,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,400,404"/>-->
@@ -125,7 +125,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="putAccount">
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]" method="PUT" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,403"/>-->
@@ -139,7 +139,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,400,404"/>-->
@@ -163,7 +163,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="putTransfer">
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]" method="PUT" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,422"/>-->
@@ -177,7 +177,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="executeTransfer">
         <set-property propertyName="Content-Type" value="text/plain" doc:name="Property"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment" method="PUT" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,404,422"/>-->
@@ -198,7 +198,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="rejectTransfer">
         <set-property propertyName="Content-Type" value="text/plain" doc:name="Property"/>
         <logger level="INFO"
-                message="Mocking request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
+                message="Mocking request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <set-property propertyName="http.status" value="200,404" doc:name="Property"/>
     </flow>
@@ -207,7 +207,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/connectors, method=get"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/connectors, method=get"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/connectors" method="GET" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200"/>-->
@@ -221,7 +221,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Proxying request for interopID=#[sessionVars.interopID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/messages, method=post"
+                message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/messages, method=post"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <http:request config-ref="ILP_Ledger_Configuration" path="/messages" method="POST" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200"/>-->
