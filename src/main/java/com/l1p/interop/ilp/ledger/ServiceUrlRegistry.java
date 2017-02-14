@@ -35,6 +35,7 @@ class ServiceUrlRegistry {
         this.transfer = transfer;
     }
 
+    @JsonProperty("transfer_state")
     public String getTransferState() {
         return transferState;
     }

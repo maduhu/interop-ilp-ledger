@@ -202,6 +202,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		//Valid GET request for Metadata
 		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/", params );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		System.out.println("JSON Output: "+jsonReponse);
 		Map<String, Object> urls = (Map<String, Object>) jsonReponse.get( "urls");
 		
 		assertEquals( "MetadataGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
@@ -210,8 +211,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		assertTrue( "response field currency_code was not present in response", jsonReponse.get( "currency_code") == null );
 		assertTrue( "response field currency_symbol was not present in response", jsonReponse.get( "currency_symbol") == null );
-		assertTrue( "response field condition_sign_public_key was not present in response", jsonReponse.get( "condition_sign_public_key") != null );
-		assertTrue( "response field notification_sign_public_key was not present in response", jsonReponse.get( "notification_sign_public_key") != null );
+		//assertTrue( "response field condition_sign_public_key was not present in response", jsonReponse.get( "condition_sign_public_key") != null );
+		//assertTrue( "response field notification_sign_public_key was not present in response", jsonReponse.get( "notification_sign_public_key") != null );
 		assertTrue( "response field urls was not present in response", jsonReponse.get( "urls") != null );
 		
 		if ( jsonReponse.get( "urls") != null )	{
@@ -220,8 +221,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 			assertTrue( "response field transfer_state was not present in response", urls.get( "transfer_state") != null );
 			assertTrue( "response field accounts was not present in response", urls.get( "accounts") != null );
 			assertTrue( "response field account was not present in response", urls.get( "account") != null );
-			assertTrue( "response field account_transfers was not present in response", urls.get( "account_transfers") != null );
-			assertTrue( "response field subscription was not present in response", urls.get( "subscription") != null );
 			assertTrue( "response field transfer_rejection was not present in response", urls.get( "transfer_rejection") != null );
 		}
 		
