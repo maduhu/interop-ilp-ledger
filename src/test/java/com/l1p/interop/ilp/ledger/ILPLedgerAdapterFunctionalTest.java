@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.tck.junit4.FunctionalTestCase;
+import org.python.jline.internal.Log;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -67,7 +68,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		logger.info("Posting event to web services");
 
 		ClientResponse clientResponse = postRequest(invalidPath, notJSON);
-		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "No listener for endpoint");
+		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "Resource not found");
 	}
 
 	@Test
@@ -280,6 +281,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
+			Log.info("Response: "+responseContent);
 		} catch ( Exception e ) {
 			fail( testName + ": parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
