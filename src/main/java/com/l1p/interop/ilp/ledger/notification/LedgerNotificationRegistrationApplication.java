@@ -119,7 +119,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
     try {
       log.info("Prepared Transfer JSON: {}", transferJson);
       final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
-      ledgerUrlMapper.mapUrlToIlpAdapterLedger(transfer);
+      ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
       sendTransferPreparedNotification(transfer);
     } catch (IOException e) {
       throw new RuntimeException("Failed to convert to Transfer", e);
@@ -130,7 +130,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
     try {
       log.info("Executed Transfer JSON: {}", transferJson);
       final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
-      ledgerUrlMapper.mapUrlToIlpAdapterLedger(transfer);
+      ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
       sendTranferExecutedNotification(transfer);
     } catch (IOException e) {
       throw new RuntimeException("Failed to convert to Transfer", e);
