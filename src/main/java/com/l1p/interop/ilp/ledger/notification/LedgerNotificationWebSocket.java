@@ -10,7 +10,7 @@ import java.util.List;
 
 public class LedgerNotificationWebSocket extends DefaultWebSocket {
 
-  List<String> accounts;
+  private List<String> accounts = Collections.emptyList();
 
   public LedgerNotificationWebSocket(ProtocolHandler protocolHandler, HttpRequestPacket request, WebSocketListener... listeners) {
     super(protocolHandler, request, listeners);
