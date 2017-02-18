@@ -110,6 +110,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
       final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(), subscriptionRequest.getJsonrpc(), subscriptionRequest.getParams().getAccounts().size());
       log.info("send response to subscription request: "+mapper.writeValueAsString(subscriptionResponse));
       socket.send(mapper.writeValueAsString(subscriptionResponse));
+      //socket.send("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":1}");
 
     } catch (IOException e) {
       log.error(ExceptionUtils.getStackTrace(e));
