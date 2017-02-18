@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class LedgerNotificationRegistrationApplication extends WebSocketApplication {
   private static final Logger log = LoggerFactory.getLogger(LedgerNotificationRegistrationApplication.class);
@@ -43,6 +44,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
     super.onConnect(socket);
     log.info("got connect request from: "+socket.toString());
     socket.send(CONNECTION_HANDSHAKE_MESSAGE);
+    log.info("sent connect response: "+CONNECTION_HANDSHAKE_MESSAGE);
   }
 
   @Override
@@ -106,10 +108,11 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
       // successfully added subscription
       final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(), subscriptionRequest.getJsonrpc(), subscriptionRequest.getParams().getAccounts().size());
+      log.info("send response to subscription request: "+mapper.writeValueAsString(subscriptionResponse));
       socket.send(mapper.writeValueAsString(subscriptionResponse));
 
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error(ExceptionUtils.getStackTrace(e));
     }
 
   }
