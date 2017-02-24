@@ -167,8 +167,21 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
     }
   }
 
-  public void sendMessageNotification(String account, String msg) {
-    broadcast(account, msg);
+  public void sendMessageNotification(String msgJson) {
+    //broadcast(account, msg);
+	  try {
+	      log.info("Message JSON: {}", msgJson);
+	      final Message message = mapper.readValue(msgJson, Message.class);
+	      //ledgerUrlMapper.mapUrlToLedgerAdapter(message);
+	      final Notification notification = new Notification();
+	      MessageParams params = new MessageParams("message.send", message);
+	      notification.setParams(params);
+	      String notificationJson = mapper.writeValueAsString(notification);
+	      broadcast(message.getTo(), notificationJson);
+	      
+	    } catch (IOException e) {
+	      throw new RuntimeException("Failed to convert to Transfer", e);
+	    }
   }
 
 }

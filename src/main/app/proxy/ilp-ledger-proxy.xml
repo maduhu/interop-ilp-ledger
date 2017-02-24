@@ -218,17 +218,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
     
     <flow name="postMessages">
-        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/messages, method=post"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <http:request config-ref="ILP_Ledger_Configuration" path="/messages" method="POST" doc:name="HTTP">
-            <!--<http:success-status-code-validator values="200"/>-->
-            <http:success-status-code-validator values="200..500"/>
-        </http:request>
-        <object-to-string-transformer doc:name="Object to String"/>
-        <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status']" doc:name="Property"/>
+        <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendMessageNotification(payload)]]></expression-component>
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <set-property propertyName="http.status" value="#[201]" doc:name="201" />
     </flow>
     
 </mule>
