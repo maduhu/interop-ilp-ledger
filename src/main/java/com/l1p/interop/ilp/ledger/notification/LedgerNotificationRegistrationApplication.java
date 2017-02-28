@@ -38,6 +38,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket,
 			WebSocketListener... listeners) {
 		// on validation failure throw Handshake exception
+		log.info("Received connection request from {}", requestPacket.getRemoteAddress());
 		return new LedgerNotificationWebSocket(handler, requestPacket, listeners);
 	}
 
@@ -218,5 +219,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			throw new RuntimeException("Failed to convert to Transfer", e);
 		}
 	}
+
 
 }
