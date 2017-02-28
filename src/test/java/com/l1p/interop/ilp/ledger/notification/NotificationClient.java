@@ -24,7 +24,7 @@ public class NotificationClient {
       String uri = "ws://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8089/websocket?token=placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES";
       log.info("Connecting to {}", uri);
       container.connectToServer(WebsocketClientEndpoint.class, URI.create(uri));
-      messageLatch.await(5, TimeUnit.SECONDS);
+      messageLatch.await(19, TimeUnit.MINUTES);
       log.info("Closing connection to {}", uri);
     } catch (DeploymentException | InterruptedException | IOException ex) {
       log.error("Client experience exception", ex);

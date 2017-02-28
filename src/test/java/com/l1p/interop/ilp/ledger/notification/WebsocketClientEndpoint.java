@@ -14,7 +14,7 @@ public class WebsocketClientEndpoint {
   public void onOpen(Session session) {
     System.out.println("Connected to endpoint: " + session.getBasicRemote());
     try {
-      String subscriptionRequest = "{   \"jsonrpc\": \"2.0\",   \"method\": \"subscribe_account\",   \"params\": {  \"eventType\":\"*\",   \"accounts\": [       \"http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8088/ilp/ledger/v1/accounts/dfsp1-connector\"     ]   },   \"id\": 1 }";
+      String subscriptionRequest = "{   \"jsonrpc\": \"2.0\",   \"method\": \"subscribe_account\",   \"params\": {  \"eventType\":\"*\",   \"accounts\": [       \"http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8088/ilp/ledger/v1/accounts/dfsp1-connector-19mins\"     ]   },   \"id\": 1 }";
       log.info("Sending message to endpoint: {}", subscriptionRequest);
       session.getBasicRemote().sendText(subscriptionRequest);
     } catch (IOException ex) {
