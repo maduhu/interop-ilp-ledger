@@ -59,6 +59,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	@Override
 	public void onClose(WebSocket socket, DataFrame frame) {
+		socket.send("server is closing this connection");
 		// remove socket from the list
 		final LedgerNotificationWebSocket ledgerNotificationWebSocket = (LedgerNotificationWebSocket) socket;
 		for (String account : ledgerNotificationWebSocket.getAccounts()) {
