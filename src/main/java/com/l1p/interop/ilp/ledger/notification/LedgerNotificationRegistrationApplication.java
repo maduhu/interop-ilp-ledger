@@ -36,15 +36,15 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
   @Override
   public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket, WebSocketListener... listeners) {
     // on validation failure throw Handshake exception
+    log.info("Received connection request from {}", requestPacket.getRemoteAddress());
     return new LedgerNotificationWebSocket(handler, requestPacket, listeners);
   }
 
   @Override
   public void onConnect(WebSocket socket) {
     super.onConnect(socket);
-    log.info("got connect request from: "+socket.toString());
     socket.send(CONNECTION_HANDSHAKE_MESSAGE);
-    log.info("sent connect response: "+CONNECTION_HANDSHAKE_MESSAGE);
+    log.info("sent connect response: {}", CONNECTION_HANDSHAKE_MESSAGE);
   }
 
   @Override
