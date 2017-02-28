@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class LedgerNotificationRegistrationServer implements org.mule.api.lifecycle.Lifecycle {
   private static final Logger log = LoggerFactory.getLogger(LedgerNotificationRegistrationServer.class);
@@ -36,12 +37,13 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   public void initialise() throws InitialisationException {
     server = HttpServer.createSimpleServer(docRoot, port);
     final WebSocketAddOn addon = new WebSocketAddOn();
+    addon.setTimeoutInSeconds(TimeUnit.MINUTES.toSeconds(60));
     for (NetworkListener listener : server.getListeners()) {
     	listener.getKeepAlive().setIdleTimeoutInSeconds(-1);
       listener.registerAddOn(addon);
     }
 
-    server.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+//    server.getListener("grizzly").registerAddOn(addon);
     WebSocketEngine.getEngine().register("", path, ledgerNotificationRegistrationApplication);
     log.info("Initialized websocket server");
   }
