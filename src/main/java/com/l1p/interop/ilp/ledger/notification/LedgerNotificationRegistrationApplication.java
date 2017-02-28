@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class LedgerNotificationRegistrationApplication extends WebSocketApplication {
@@ -38,6 +40,8 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket,
 			WebSocketListener... listeners) {
 		// on validation failure throw Handshake exception
+		log.info("Current read timeout in seconds: {}", handler.getConnection().getReadTimeout(TimeUnit.SECONDS));
+		log.info("Current write timeout in seconds: {}", handler.getConnection().getWriteTimeout(TimeUnit.SECONDS));
 		log.info("Received connection request from {}", requestPacket.getRemoteAddress());
 		return new LedgerNotificationWebSocket(handler, requestPacket, listeners);
 	}
@@ -45,15 +49,14 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	@Override
 	public void onConnect(WebSocket socket) {
 		super.onConnect(socket);
-		log.info("got connect request from: " + socket.toString());
 		socket.send(CONNECTION_HANDSHAKE_MESSAGE);
-		log.info("sent connect response: " + CONNECTION_HANDSHAKE_MESSAGE);
+    log.info("sent connect response: {}", CONNECTION_HANDSHAKE_MESSAGE);
 	}
 
 	@Override
 	public void onMessage(WebSocket socket, String text) {
 		// expect to receive registration request only
-		log.info("received message: " + text);
+		log.info("received message: {}", text);
 		handleNotificationSubscriptionRequest(socket, text);
 	}
 
@@ -107,13 +110,9 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 					Set<WebSocket> newWebSockets = new CopyOnWriteArraySet<WebSocket>();
 					newWebSockets.add(socket);
 					existingWebSockets = subscriptions.putIfAbsent(account, newWebSockets);
-					if (existingWebSockets != null) { // check if the account
-														// has exisiting
-														// subscribing
-														// websockets
+					if (existingWebSockets != null) { // check if the account has exisiting subscribing websockets
 
-						// mergedWebSockets would be non-null if we merge
-						// sockets successfully
+            // mergedWebSockets would be non-null if we merge sockets successfully
 						mergedWebSockets = subscriptions.computeIfPresent(account, (s, webSocketFromMap) -> {
 							webSocketFromMap.add(socket);
 							return webSocketFromMap;
@@ -125,8 +124,9 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			// successfully added subscription
 			final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(),
 					subscriptionRequest.getJsonrpc(), subscriptionRequest.getParams().getAccounts().size());
-			log.info("send response to subscription request: " + mapper.writeValueAsString(subscriptionResponse));
-			socket.send(mapper.writeValueAsString(subscriptionResponse));
+      String subscriptionResponseJson = mapper.writeValueAsString(subscriptionResponse);
+      log.info("send response to subscription request: {} ", subscriptionResponseJson);
+      socket.send(subscriptionResponseJson);
 			// socket.send("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":1}");
 
 		} catch (IOException e) {
