@@ -37,6 +37,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
     server = HttpServer.createSimpleServer(docRoot, port);
     final WebSocketAddOn addon = new WebSocketAddOn();
     for (NetworkListener listener : server.getListeners()) {
+    	listener.getKeepAlive().setIdleTimeoutInSeconds(-1);
       listener.registerAddOn(addon);
     }
 
