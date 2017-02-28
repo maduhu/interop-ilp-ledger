@@ -21,7 +21,8 @@
 	</scm>
 
 	<properties>
-		<interop-domain.version>0.1.19</interop-domain.version>
+		<interop-domain.version>0.1.22</interop-domain.version>
+		<!-- <interop-common.version>1.0.25-SNAPSHOT</interop-common.version> -->
 	</properties>
 
 	<build>
@@ -39,13 +40,13 @@
 	</build>
 
 	<dependencies>
-		<!-- 
-		<dependency>
+		
+		<!-- <dependency>
 			<groupId>com.l1p.interop</groupId>
 			<artifactId>interop-common</artifactId>
 			<version>${interop-common.version}</version>
-		</dependency>
-		 -->
+		</dependency> -->
+		
 		<dependency>
 			<groupId>com.l1p.interop</groupId>
 			<artifactId>interop-domain</artifactId>
