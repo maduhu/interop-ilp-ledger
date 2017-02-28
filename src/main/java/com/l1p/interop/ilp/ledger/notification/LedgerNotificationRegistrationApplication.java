@@ -75,6 +75,12 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		super.onClose(socket, frame);
 	}
 
+	@Override
+	protected boolean onError(WebSocket webSocket, Throwable t) {
+		log.error("Error on websocket", t);
+		return true;
+	}
+
 	private void broadcast(String account, String text) {
 		subscriptions.forEach((k,v) -> log.info("Accounts subscribed for: "+k));
 		final Set<WebSocket> subscriptions = this.subscriptions.get(account);
