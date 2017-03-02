@@ -142,7 +142,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getTransfer" doc:name="call getTransfer"/>
         <logger level="INFO"
-                message="Received getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Sending getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         
@@ -160,7 +160,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="executeTransfer" doc:name="call executeTransfer"/>
         <logger level="INFO"
-                message="Received executeTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Sending executeTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.stop" doc:name="SnapTime"/>
         
@@ -174,7 +174,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling getTransferFullfillment(#[id]) for traceID=#[sessionVars.traceID]"
+                message="Calling getTransferFullfillment(#[id]) for traceID=#[sessionVars.traceID]: #[message]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getTransferFulfillment" doc:name="call getTransferFulfillment"/>
         <logger level="INFO"

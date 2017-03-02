@@ -287,20 +287,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.dfsp.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
 			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator values="200,400,404"/>
-			<!-- <http:success-status-code-validator
-				values="200..500" /> -->
+			<!-- <http:success-status-code-validator values="200,400,404"/> -->
+			<http:success-status-code-validator
+				values="200..500" />
 		</http:request>
-		<!-- <set-payload value="{&quot;id&quot;:&quot;NotFoundError&quot;,&quot;type&quot;:&quot;ledger.transfer.getFulfillment.notFound&quot;,&quot;message&quot;:&quot;Unknown transfer&quot;}"
-			doc:name="Set Payload" /> -->
-		<logger message="Before transformer [#[payload]]" level="ERROR"
-					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
-		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String"/>
-        
-		<logger message="After transformer [#[payload]] http status: #[message.inboundProperties.'http.status']" level="ERROR"
-					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
-		
-		<choice doc:name="Map Ledger URLs based on the response code">
+		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
+        <choice doc:name="Map Ledger URLs based on the response code">
 			<when expression="#[message.inboundProperties.'http.status' == 200]">
 				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
 					doc:name="Transform Ledger URL" />
@@ -312,8 +304,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-		<logger message="After setting property #[payload]" level="ERROR"
-					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
+		
 	</flow>
 	
 
