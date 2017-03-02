@@ -40,8 +40,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket,
 			WebSocketListener... listeners) {
 		// on validation failure throw Handshake exception
-		log.info("Current read timeout in seconds: {}", handler.getConnection().getReadTimeout(TimeUnit.SECONDS));
-		log.info("Current write timeout in seconds: {}", handler.getConnection().getWriteTimeout(TimeUnit.SECONDS));
 		log.info("Received connection request from {}", requestPacket.getRemoteAddress());
 		return new LedgerNotificationWebSocket(handler, requestPacket, listeners);
 	}
@@ -50,7 +48,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public void onConnect(WebSocket socket) {
 		super.onConnect(socket);
 		socket.send(CONNECTION_HANDSHAKE_MESSAGE);
-    log.info("sent connect response: {}", CONNECTION_HANDSHAKE_MESSAGE);
+		log.info("sent connect response: {}", CONNECTION_HANDSHAKE_MESSAGE);
 	}
 
 	@Override
@@ -62,8 +60,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	@Override
 	public void onClose(WebSocket socket, DataFrame frame) {
-		log.info("In onClose. Dataframe: {}", frame.toString());
-		socket.send("server is closing this connection");
 		// remove socket from the list
 		final LedgerNotificationWebSocket ledgerNotificationWebSocket = (LedgerNotificationWebSocket) socket;
 		for (String account : ledgerNotificationWebSocket.getAccounts()) {
@@ -141,7 +137,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		try {
 			log.info("Prepared Transfer JSON: {}", transferJson);
 			final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
-			ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
+			//ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
 			sendTransferPreparedNotification(transfer);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to convert to Transfer", e);

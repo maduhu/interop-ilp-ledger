@@ -412,6 +412,34 @@ types:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
+                
+      get:
+        description: Get details about a fulfilled transfer
+         
+        responses:
+          200:
+            body:
+              text/plain:
+                type:  string
+                #pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
+                example: "cf:0:_v8"
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              #application/json:
+              text/plain:
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+                type: InvalidUriParameterError | InvalidBodyError
+
+          404:  #NotfoundError
+            body:
+              #application/json:
+              text/plain:
+                description: HTTP/1.1 404 Not Found
+                properties:
+                  id: string
+                  type: string
+                  message: string
 
   /rejection:
       displayName:  /v1/transfers/:id/rejection

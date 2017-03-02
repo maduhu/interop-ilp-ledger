@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.tooling.server.3.8.1">
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.tooling.server.3.8.1" schemaVersion="5.3.0.0">
     <name>Mule ILP Ledger Adapter</name>
     <description>interop ilp ledger project</description>
+    <muleExtension name="Anypoint MQ" qualifier="org.mule.tooling.messaging.contribution"/>
 </mule-project>

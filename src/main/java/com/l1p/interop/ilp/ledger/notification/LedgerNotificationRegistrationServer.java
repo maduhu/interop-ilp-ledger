@@ -37,9 +37,10 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   public void initialise() throws InitialisationException {
     server = HttpServer.createSimpleServer(docRoot, port);
     final WebSocketAddOn addon = new WebSocketAddOn();
-    addon.setTimeoutInSeconds(TimeUnit.MINUTES.toSeconds(60));
+    //addon.setTimeoutInSeconds(TimeUnit.MINUTES.toSeconds(60));
+    addon.setTimeoutInSeconds(-1);
     for (NetworkListener listener : server.getListeners()) {
-    	listener.getKeepAlive().setIdleTimeoutInSeconds(-1);
+    	
       listener.registerAddOn(addon);
     }
 

@@ -47,11 +47,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 404 error - org.mule.module.apikit.exception.NotFoundException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            
             <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <logger level="INFO"
+                message="IN 404"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
             <set-session-variable variableName="errorMessageId" value="Resource not found" doc:name="set-errorMessageId"/>
+            <logger message="In 404" level="INFO" doc:name="Logger"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="405">
@@ -91,6 +93,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                     <!--message="Received 500 error - org.mule.api.transformer.TransformerMessagingException: #[exception.getCauseException().getMessage();]"-->
                     <!--category="some.category"/>-->
             <apikit:exception value="org.mule.api.transformer.TransformerMessagingException" />
+            <logger level="INFO"
+                message="IN 500"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
             <set-session-variable variableName="errorMessageId" value="Transformer Messaging Exception" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>

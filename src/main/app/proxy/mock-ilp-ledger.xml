@@ -126,22 +126,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
 
-    <flow name="get:/transfers/{id}:test-api-config">
-    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
-        <logger level="INFO"
-                message="Calling getTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
-        <logger level="INFO"
-                message="Received getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
-        
-        <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
-    </flow>
     
     <flow name="put:/transfers/{id}:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
@@ -160,6 +144,24 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
+    <flow name="get:/transfers/{id}:test-api-config">
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Calling getTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
+        <logger level="INFO"
+                message="Received getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
+        
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
+    
+    
     <flow name="put:/transfers/{id}/fulfillment:test-api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
         <logger level="INFO"
@@ -176,6 +178,24 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <metrics:metric-keys><metrics:metric-key>TransfersFulfillmentPutRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
+    
+    <flow name="get:/transfers/{id}/fulfillment:test-api-config">
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Calling getTransferFulfillment(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <set-payload doc:name="Set Payload" value="cf:0:"/>
+        <logger level="INFO"
+                message="Sending getTransferFulfillment(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
+        
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
+    
 
     <flow name="put:/transfers/{id}/rejection:test-api-config">
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
