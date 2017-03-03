@@ -5,8 +5,7 @@ baseUri: http://localhost:8081/ilp/ledger/{version}
 securedBy: [basic]
 securitySchemes:
   basic:
-    description: |
-      This API supports Basic Authentication.
+    description: This API supports Basic Authentication.
     type: Basic Authentication
 
 types:
@@ -80,7 +79,6 @@ types:
         #pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
       data:
         type: object
-        
       
 
 #Composite Objects
@@ -170,7 +168,6 @@ types:
     type: object
     properties:
       status: string
-
   
 
   #Error Definitions
@@ -201,7 +198,6 @@ types:
         type: object
         required: false
         properties:
-          #pattern: string
           key: string
 
   #400 Errors
@@ -278,7 +274,8 @@ types:
       200:
         body:
           application/json:
-            type: AccountResponse[] | AuthorizedAccountResponse[]
+            type: array
+            items: AccountResponse | AuthorizedAccountResponse
 
       403:  #UnauthorizedError
         description: HTTP/1.1 403 Forbidden - UnauthorizedError
