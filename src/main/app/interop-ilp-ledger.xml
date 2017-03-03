@@ -21,6 +21,8 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 					<ss:user name="admin" password="admin" authorities="ROLE_ADMIN" />
 					<ss:user name="bob" password="1234" authorities="ROLE_ADMIN" />
 					<ss:user name="alice" password="1234" authorities="ROLE_ADMIN" />
+					<ss:user name="dfsp1-testconnector" password="1234" authorities="ROLE_ADMIN" />
+					<ss:user name="dfsp2-testconnector" password="1234" authorities="ROLE_ADMIN" />
 				</ss:user-service>
 			</ss:authentication-provider>
 		</ss:authentication-manager>
