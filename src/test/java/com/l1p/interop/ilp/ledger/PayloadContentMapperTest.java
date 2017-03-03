@@ -106,7 +106,7 @@ public class PayloadContentMapperTest extends SimpleCallableJavaComponentTestCas
         Object response = transformer.transformMessage(muleMessage, "UTF-8");
         
         System.out.println("payload after the transformer: " + response);
-        assertTrue("test letter swap", response == "");
+        assertTrue("testMessageTransformerWithEmptyStringPayload", response.equals(""));
 		
 	}
 	
@@ -126,7 +126,27 @@ public class PayloadContentMapperTest extends SimpleCallableJavaComponentTestCas
         System.out.println("response = " + response.getClass());
         
         System.out.println("payload after the transformer: " + response);
-        assertTrue("test letter swap", response.getClass() == org.mule.transport.NullPayload.class);
+        assertTrue("testMessageTransformerWithNullPayload", response.getClass() == org.mule.transport.NullPayload.class);
+		
+	}
+	
+	
+	@Test
+	public void testMessageTransformerWithNullStringPayload() throws Exception {
+		
+		Object payload = new String();
+		
+		MuleEvent event = getTestEvent(payload, muleContext);
+		MuleMessage muleMessage = event.getMessage();
+        muleMessage.setProperty("id", "some name", PropertyScope.SESSION);
+        
+        PayloadContentMapper transformer = new PayloadContentMapper("P", "R" );
+        Object response = transformer.transformMessage(muleMessage, "UTF-8");
+        
+        System.out.println("response = " + response.getClass());
+        
+        System.out.println("payload after the transformer: " + response);
+        assertTrue("testMessageTransformerWithNullStringPayload", response.equals(""));
 		
 	}
 

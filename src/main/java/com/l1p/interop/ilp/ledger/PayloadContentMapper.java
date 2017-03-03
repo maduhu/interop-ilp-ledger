@@ -39,10 +39,11 @@ public class PayloadContentMapper extends AbstractMessageTransformer {
         
         if (oPayload instanceof String) {
         	String payload = (String) oPayload;
-        	return payload != null && payload.length()>0 ? payload.replaceAll( sourceValue, targetValue ) : payload;
+        	return payload != null && payload.length() > 0 ? payload.replaceAll( sourceValue, targetValue ) : muleMessage.getOriginalPayload();
         } else {
-        	return oPayload;
+        	return muleMessage.getOriginalPayload();
         }
 
     }
+
 }
