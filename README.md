@@ -1,9 +1,51 @@
 # interop-ilp ledger
 This project provides an interop API implementation of ILP Ledger Service.
 
-Below is the RAML for reference. However, the responses are generated based on specifications mentioned here: https://github.com/LevelOneProject/Docs/issues/205
+Contents:
+
+- [Deployment](#deployment)
+- [Configuration](#configuration)
+- [API](#api)
+- [Logging](#logging)
+- [Tests](#tests)
+
+## Deployment
+
+Project is built using Maven and uses Circle for Continous Integration.
+
+(How do you run this code?)
+
+(Example for NPM-published services--
+
+Installation:
 
 This is currently hosted as a service in the URL that looks like this:  http://\<awshost:port\>/ilp/backend/v1/console/ , the host details have been communicated via e-mails and slack
+
+1. Install [Node.js and npm](https://nodejs.org/en/)
+
+2. Configure your npm instance to use the LevelOneProject repository.
+
+    See [Docs/Artifactory/NPM Repos](https://github.com/LevelOneProject/Docs/blob/master/Artifactory/npm_repos.md) for detailed instructions.
+
+3. Install the `(package name)` package.
+
+        npm install (package name)
+
+Running the server locally:
+
+    npm start
+
+--end example)
+
+## Configuration
+
+pom.xml and circle.yml can be found at interop-ilp-ledger repo
+
+(Explanation of important config parameters)
+
+##API
+
+Below is the RAML for reference. However, the responses are generated based on specifications mentioned here: https://github.com/LevelOneProject/Docs/issues/205
 
 The following RAML file provides methods for the following:
 
@@ -396,3 +438,24 @@ types:
                 minItems: 1
 
 ```
+
+## Logging
+
+Sever path to logs is: /opt/mule/mule-dfsp1/logs/interop-ilp-ledger.log
+
+(Explain important things about what gets logged or how to interpret the logs. Use subheaders if necessary.)
+
+## Tests
+
+Java Unit Test exist for the project and include test for:
+
+-Invalid path should return 404
+-Put accounts
+-Get account
+-Get transfer
+-Get health
+-Reject transfer should get return valid response
+-Get metadata
+-Put transfer fulfillment
+-Get connectors
+-Post messages
