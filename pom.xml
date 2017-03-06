@@ -22,7 +22,8 @@
 	<properties>
 		<interop-domain.version>0.1.22</interop-domain.version>
 		<!-- <interop-common.version>1.0.25-SNAPSHOT</interop-common.version> -->
-	</properties>
+	<mule.version>3.8.1</mule.version>
+    </properties>
 
 	<build>
 		<plugins>
