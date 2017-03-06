@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class PayloadContentMapperTestTest {
+public class ConnectorTest {
 
 	private static Connector connector = null;
 	private static String CONNECTOR_NAME = "name of connector";
