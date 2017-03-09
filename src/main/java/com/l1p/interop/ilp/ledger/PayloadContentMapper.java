@@ -34,8 +34,16 @@ public class PayloadContentMapper extends AbstractMessageTransformer {
      * @throws TransformerException
      */
     public Object transformMessage(MuleMessage muleMessage, String s) throws TransformerException {
-        String payload = (String)muleMessage.getPayload();
+//        String payload = (String)muleMessage.getPayload();
+        Object oPayload = muleMessage.getPayload();
+        
+        if (oPayload instanceof String) {
+        	String payload = (String) oPayload;
+        	return payload != null && payload.length() > 0 ? payload.replaceAll( sourceValue, targetValue ) : muleMessage.getOriginalPayload();
+        } else {
+        	return muleMessage.getOriginalPayload();
+        }
 
-        return payload != null ? payload.replaceAll( sourceValue, targetValue ) : payload;
     }
+
 }

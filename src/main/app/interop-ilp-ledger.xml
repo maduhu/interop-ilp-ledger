@@ -38,7 +38,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <logger level="INFO"
                 message="Calling getLedgerMetadata for traceID=#[sessionVars.traceID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <flow-ref name="getLedgerMetadata" doc:name="call getLedgerMetadata"/>
+        <flow-ref name="getLedgerMetadata" doc:name="getLedgerMetadata"/>
         <logger level="INFO"
                 message="Sending getLedgerMetadata response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -178,7 +178,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <logger level="INFO"
                 message="Calling getTransferFullfillment(#[id]) for traceID=#[sessionVars.traceID]: #[message]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <flow-ref name="getTransferFulfillment" doc:name="call getTransferFulfillment"/>
+        <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
         <logger level="INFO"
                 message="Sending getTransferFulfillment(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
