@@ -50,7 +50,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	@BeforeClass
 	public static void initEnv() {
-		System.setProperty("MULE_ENV", "test");
+//		System.setProperty("MULE_ENV", "test");
+		System.setProperty("MULE_ENV", "qa");  // added qa 3/9/2017 by Brian Price
 		System.setProperty("spring.profiles.active", "test");
 	}
 

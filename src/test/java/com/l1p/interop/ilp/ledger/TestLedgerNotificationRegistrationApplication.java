@@ -1,4 +1,4 @@
-package com.l1p.interop.ilp.ledger.notification;
+package com.l1p.interop.ilp.ledger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 
 import com.l1p.interop.ilp.ledger.LedgerUrlMapper;
+import com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication;
 
 import junit.framework.TestCase;
 
