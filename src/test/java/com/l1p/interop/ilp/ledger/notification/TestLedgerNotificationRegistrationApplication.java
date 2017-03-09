@@ -18,7 +18,7 @@ public class TestLedgerNotificationRegistrationApplication extends TestCase{
 		// TODO Auto-generated method stub
 				LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper("test","test","test","test"));
 				String json = FileUtils.readFileToString(new File("/Users/murthy/Clients/Gates/workspace/interop-ilp-ledger/src/test/resources/testData/rejectTransfer.json"));
-				app.sendTranferExecutedNotification(json);
+				app.sendTranferExecutedNotification(json,"testFulfillment");
 				
 	}
 	

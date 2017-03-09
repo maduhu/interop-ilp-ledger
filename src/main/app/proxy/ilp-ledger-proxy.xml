@@ -254,17 +254,29 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 						values="200..500" />
 				</http:request>
 				<object-to-string-transformer doc:name="Object to String" />
+				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+							doc:name="Transform Ledger URL" />
+				<set-variable doc:name="Store Transfer Payload" value="#[payload]" variableName="transferPayload"/>
+				<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
+					method="GET" doc:name="HTTP">
+					<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
+					<http:success-status-code-validator
+						values="200..500" />
+				</http:request>
+				<object-to-string-transformer doc:name="Object to String" mimeType="text/plain"/>
+				<set-variable doc:name="Store Transfer Fulfillment Payload" value="#[payload]" variableName="transferFulfillmentPayload"/>
 				<choice doc:name="Map Ledger URLs based on the response code">
 					<when expression="#[message.inboundProperties.'http.status' == 200]">
-						<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-							doc:name="Transform Ledger URL" />
-						<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(payload)]]></expression-component>
+						<!-- <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+							doc:name="Transform Ledger URL" /> -->
+						<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(flowVars.transferPayload,flowVars.transferFulfillmentPayload)]]></expression-component>
 					</when>
 					<otherwise>
 						<logger message="Failed to execute transfer #[payload]"
 							level="ERROR" category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
 					</otherwise>
 				</choice>
+                
 			</when>
 			<otherwise>
 				<logger message="Failed to execute transfer #[payload]"
@@ -292,7 +304,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
-        <choice doc:name="Map Ledger URLs based on the response code">
+        <!-- <choice doc:name="Map Ledger URLs based on the response code">
 			<when expression="#[message.inboundProperties.'http.status' == 200]">
 				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
 					doc:name="Transform Ledger URL" />
@@ -301,7 +313,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				<logger message="Failed to get TransferFulfillment #[payload]" level="ERROR"
 					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
 			</otherwise>
-		</choice>
+		</choice> -->
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
 		

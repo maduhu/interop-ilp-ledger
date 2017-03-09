@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -144,12 +146,12 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		}
 	}
 
-	public void sendTranferExecutedNotification(String transferJson) {
+	public void sendTranferExecutedNotification(String transferJson,String fulfillmentCondition) {
 		try {
 			log.info("Executed Transfer JSON: {}", transferJson);
 			final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
 			ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
-			sendTranferExecutedNotification(transfer);
+			sendTranferExecutedNotification(transfer,fulfillmentCondition);
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to convert to Transfer", e);
 		}
@@ -167,31 +169,25 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	}
 
 	public void sendTransferPreparedNotification(Transfer transfer) {
-		sendTransferNotification(TransferParams.TRANSFER_CREATE, transfer);
+		sendTransferNotification(TransferParams.TRANSFER_CREATE, transfer,new HashMap<String, String>());
 	}
 
-	public void sendTranferExecutedNotification(Transfer transfer) {
-		sendTransferNotification(TransferParams.TRANSFER_UPDATE, transfer);
+	public void sendTranferExecutedNotification(Transfer transfer,String fulfillmentCondition) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("execution_condition_fulfillment", fulfillmentCondition);
+		sendTransferNotification(TransferParams.TRANSFER_UPDATE, transfer, map);
 	}
 	
 	public void sendTranferRejectedNotification(Transfer transfer) {
-		sendTransferNotification(TransferParams.TRANSFER_UPDATE, transfer);
+		sendTransferNotification(TransferParams.TRANSFER_UPDATE, transfer,new HashMap<String, String>());
 	}
 
-	private void sendTransferNotification(String transferType, Transfer transfer) {
+	private void sendTransferNotification(String transferType, Transfer transfer,HashMap<String,String> relatedResourceMap) {
 		try {
 			log.warn("Received notification for publishing");
 			final Notification notification = new Notification();
 			TransferParams params = new TransferParams(transferType, transfer);
-			if (transfer.getState().equalsIgnoreCase("executed")) {
-				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("execution_condition_fulfillment", "cf:0:");
-				params.setRelatedResources(map);
-			} else if (transfer.getState().equalsIgnoreCase("rejected")) {
-				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("execution_condition_fulfillment", "");
-				params.setRelatedResources(map);
-			}
+			params.setRelatedResources(relatedResourceMap);
 			notification.setParams(params);
 			mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 			String notificationJson = mapper.writeValueAsString(notification);
