@@ -244,8 +244,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	@Test
 	public void testPutTransferFulfillment() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
-		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
+		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+//		params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
 		final String putTransferJSON = "cf:0:_v8";
 
