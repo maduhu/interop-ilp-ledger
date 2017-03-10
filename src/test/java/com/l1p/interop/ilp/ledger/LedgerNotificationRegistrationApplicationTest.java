@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mule.tck.junit4.FunctionalTestCase;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,7 +21,7 @@ import com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApp
 
 import junit.framework.TestCase;
 
-public class TestLedgerNotificationRegistrationApplication extends TestCase{
+public class LedgerNotificationRegistrationApplicationTest extends TestCase{
 	
 	private LedgerNotificationRegistrationApplication app = null;
 	
@@ -52,6 +53,10 @@ public class TestLedgerNotificationRegistrationApplication extends TestCase{
 		ProtocolHandler handler = mock(ProtocolHandler.class);
 		HttpRequestPacket requestPacket = mock(HttpRequestPacket.class);
 		WebSocketListener listeners = mock(WebSocketListener.class);
+		
+		// example 
+		Mockito.verify(handler);
+
 		
 		// perform the test
 		WebSocket webSocket = app.createSocket(handler, requestPacket, listeners);
