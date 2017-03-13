@@ -65,7 +65,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		// remove socket from the list
 		final LedgerNotificationWebSocket ledgerNotificationWebSocket = (LedgerNotificationWebSocket) socket;
 		for (String account : ledgerNotificationWebSocket.getAccounts()) {
-			final Set<WebSocket> webSockets = subscriptions.get(account);
+			final Set<WebSocket> webSockets = subscriptions.get(account); 
 			final boolean remove = webSockets.remove(ledgerNotificationWebSocket);
 			log.info("websocket for account {} removed:{} onClose()", account, remove);
 			subscriptions.computeIfPresent(account, (key, webSocketFromMap) -> {
