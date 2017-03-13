@@ -110,9 +110,9 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 					Set<WebSocket> newWebSockets = new CopyOnWriteArraySet<WebSocket>();
 					newWebSockets.add(socket);
 					existingWebSockets = subscriptions.putIfAbsent(account, newWebSockets);
-					if (existingWebSockets != null) { // check if the account has exisiting subscribing websockets
+					if (existingWebSockets != null) { // check if the account has existing subscribing websockets
 
-            // mergedWebSockets would be non-null if we merge sockets successfully
+						// mergedWebSockets would be non-null if we merge sockets successfully
 						mergedWebSockets = subscriptions.computeIfPresent(account, (s, webSocketFromMap) -> {
 							webSocketFromMap.add(socket);
 							return webSocketFromMap;
@@ -124,9 +124,9 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			// successfully added subscription
 			final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(),
 					subscriptionRequest.getJsonrpc(), subscriptionRequest.getParams().getAccounts().size());
-      String subscriptionResponseJson = mapper.writeValueAsString(subscriptionResponse);
-      log.info("send response to subscription request: {} ", subscriptionResponseJson);
-      socket.send(subscriptionResponseJson);
+			String subscriptionResponseJson = mapper.writeValueAsString(subscriptionResponse);
+			log.info("send response to subscription request: {} ", subscriptionResponseJson);
+			socket.send(subscriptionResponseJson);
 			// socket.send("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":1}");
 
 		} catch (IOException e) {
@@ -218,6 +218,23 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to convert to Transfer", e);
 		}
+	}
+	
+	
+
+	/**
+	 * Used for unit testing only.
+	 */
+	public void setSubscriptions(ConcurrentHashMap<String, Set<WebSocket>> subscriptions) {
+		this.subscriptions = subscriptions;
+	}
+	
+	
+	/**
+	 * Used for unit testing only.
+	 */
+	public boolean onErrorForTesting(WebSocket webSocket, Throwable t) {
+		return this.onError(webSocket, t);
 	}
 
 
