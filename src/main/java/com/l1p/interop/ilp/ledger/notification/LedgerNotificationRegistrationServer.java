@@ -74,7 +74,7 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
 //  
 //  This code commented out as it appears not needed for running the code.
 //  
-//  The server code is started and mananged by mule and not the Main class.
+//  The server code is started and managed by mule and not the main method.
 //  
 //  public static void main(String[] args) throws Exception {
 //    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path", ".*/ledger/", "http://0.0.0.0/ledger/base/path"));
