@@ -71,39 +71,44 @@ public class LedgerNotificationRegistrationServer implements org.mule.api.lifecy
   public void dispose() {
   }
 
-  public static void main(String[] args) throws Exception {
-    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path", ".*/ledger/", "http://0.0.0.0/ledger/base/path"));
-    final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
-    server.initialise();
-    server.start();
-    Thread notificationSender = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          for (int i = 0; i < 100; i++) {
-            Thread.sleep(5000);
-            final Transfer transfer = new Transfer();
-            final Credit credit = new Credit("https://ledger.example/accounts/alice", "100", null);
-            transfer.setCredits(new ArrayList<Credit>(){{add(credit);}});
-            app.sendTransferPreparedNotification(transfer);
-            log.info("sent prepared transfer");
-          }
-        } catch (InterruptedException e) {
-          log.error("screwed up", e);
-        }
-      }
-    });
-    notificationSender.start();
-    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          server.stop();
-        } catch (MuleException e) {
-          e.printStackTrace();
-        }
-      }
-    }));
-    System.in.read();
-  }
+//  
+//  This code commented out as it appears not needed for running the code.
+//  
+//  The server code is started and mananged by mule and not the Main class.
+//  
+//  public static void main(String[] args) throws Exception {
+//    final LedgerNotificationRegistrationApplication app = new LedgerNotificationRegistrationApplication(new LedgerUrlMapper(".*/ledger/", "http://0.0.0.0/ledger/base/path", ".*/ledger/", "http://0.0.0.0/ledger/base/path"));
+//    final LedgerNotificationRegistrationServer server = new LedgerNotificationRegistrationServer("/tmp", 10001, "/websocket", app);
+//    server.initialise();
+//    server.start();
+//    Thread notificationSender = new Thread(new Runnable() {
+//      @Override
+//      public void run() {
+//        try {
+//          for (int i = 0; i < 100; i++) {
+//            Thread.sleep(5000);
+//            final Transfer transfer = new Transfer();
+//            final Credit credit = new Credit("https://ledger.example/accounts/alice", "100", null);
+//            transfer.setCredits(new ArrayList<Credit>(){{add(credit);}});
+//            app.sendTransferPreparedNotification(transfer);
+//            log.info("sent prepared transfer");
+//          }
+//        } catch (InterruptedException e) {
+//          log.error("screwed up", e);
+//        }
+//      }
+//    });
+//    notificationSender.start();
+//    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+//      @Override
+//      public void run() {
+//        try {
+//          server.stop();
+//        } catch (MuleException e) {
+//          e.printStackTrace();
+//        }
+//      }
+//    }));
+//    System.in.read();
+//  }
 }
