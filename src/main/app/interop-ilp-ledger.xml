@@ -5,19 +5,42 @@
       xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
+      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+      xmlns:ss="http://www.springframework.org/schema/security"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
+	<spring:beans>
+		<ss:authentication-manager alias="authenticationManager">
+			<ss:authentication-provider>
+				<ss:user-service id="userService">
+					<ss:user name="admin" password="admin" authorities="ROLE_ADMIN" />
+					<ss:user name="bob" password="1234" authorities="ROLE_ADMIN" />
+					<ss:user name="alice" password="1234" authorities="ROLE_ADMIN" />
+					<ss:user name="dfsp1-testconnector" password="1234" authorities="ROLE_ADMIN" />
+					<ss:user name="dfsp2-testconnector" password="1234" authorities="ROLE_ADMIN" />
+				</ss:user-service>
+			</ss:authentication-provider>
+		</ss:authentication-manager>
+	</spring:beans>
+
+	<mule-ss:security-manager>
+		<mule-ss:delegate-security-provider
+			name="memory-provider" delegate-ref="authenticationManager" />
+	</mule-ss:security-manager>
+	
     <flow name="get:/:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for traceID=#[sessionVars.traceID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <flow-ref name="getLedgerMetadata" doc:name="call getLedgerMetadata"/>
+        <flow-ref name="getLedgerMetadata" doc:name="getLedgerMetadata"/>
         <logger level="INFO"
-                message="Received getLedgerMetadata response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Sending getLedgerMetadata response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.stop" doc:name="SnapTime"/>
         
@@ -65,11 +88,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+                category="com.l1p.interop.dfsp.get-account-id" doc:name="logger"/>
         <flow-ref name="getAccount" doc:name="getAccount"/>
         <logger level="INFO"
-                message="Received getAccount(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+                message="Received getAccount(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.inboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.get-account-id" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.accounts-id.start" endSnapKey="get.accounts-id.stop" category="l1p.interop-ilp-ledger.accounts-id.api" metricKey="AccountsIdGetRequestTime" doc:name="Metrics Record"/>
@@ -94,15 +117,34 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <metrics:metric-keys><metrics:metric-key>AccountsIdPutRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
+    
+    <flow name="put:/transfers/{id}:api-config">
+    	<http:basic-security-filter realm="mule-realm" />
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Calling putTransfer(#[id]) for traceID=#[sessionVars.traceID]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="putTransfer" doc:name="call putTransfer"/>
+        <logger level="INFO"
+                message="Sending putTransfer(#[id])response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.stop" doc:name="SnapTime"/>
+        
+        <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers.start" endSnapKey="put.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersPutRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>TransfersPutRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
 
     <flow name="get:/transfers/{id}:api-config">
+    	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling getTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
+                message="Calling getTransfer(#[id]) for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getTransfer" doc:name="call getTransfer"/>
         <logger level="INFO"
-                message="Received getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Sending getTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         
@@ -112,31 +154,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </metrics:inc-count>
     </flow>
     
-    <flow name="put:/transfers/{id}:api-config">
-    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
-        <logger level="INFO"
-                message="Calling putTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <flow-ref name="putTransfer" doc:name="call putTransfer"/>
-        <logger level="INFO"
-                message="Received putTransfer(#[id])response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.stop" doc:name="SnapTime"/>
-        
-        <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers.start" endSnapKey="put.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersPutRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersPutRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
-    </flow>
-    
     <flow name="put:/transfers/{id}/fulfillment:api-config">
+    	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling executeTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
+                message="Calling executeTransfer(#[id]) for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="executeTransfer" doc:name="call executeTransfer"/>
         <logger level="INFO"
-                message="Received executeTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                message="Sending executeTransfer(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.stop" doc:name="SnapTime"/>
         
@@ -145,11 +171,29 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <metrics:metric-keys><metrics:metric-key>TransfersFulfillmentPutRequest</metrics:metric-key></metrics:metric-keys>
         </metrics:inc-count>
     </flow>
+    
+    <flow name="get:/transfers/{id}/fulfillment:api-config">
+    	<http:basic-security-filter realm="mule-realm" />
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
+        <logger level="INFO"
+                message="Calling getTransferFullfillment(#[id]) for traceID=#[sessionVars.traceID]: #[message]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
+        <logger level="INFO"
+                message="Sending getTransferFulfillment(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
+        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
+            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
+        </metrics:inc-count>
+    </flow>
 
     <flow name="put:/transfers/{id}/rejection:api-config">
+    	<http:basic-security-filter realm="mule-realm" />
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling rejectTransfer(#[id]) for traceID=#[sessionVars.traceID]: #[payload]"
+                message="Calling rejectTransfer(#[id]) for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="rejectTransfer" doc:name="call executeTransfer"/>
         <logger level="INFO"
@@ -165,7 +209,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="get:/connectors:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling getConnectors for traceID=#[sessionVars.traceID]: #[payload]"
+                message="Calling getConnectors for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getConnectors" doc:name="call getConnectors"/>
         <logger level="INFO"
@@ -181,7 +225,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<flow name="post:/messages:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling post messages for traceID=#[sessionVars.traceID]: #[payload]"
+                message="Calling post messages for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="postMessages" doc:name="call postMessages"/>
         <logger level="INFO"

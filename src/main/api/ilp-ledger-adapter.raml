@@ -2,6 +2,11 @@
 title: ilp-ledger
 version: v1
 baseUri: http://localhost:8081/ilp/ledger/{version}
+securedBy: [basic]
+securitySchemes:
+  basic:
+    description: This API supports Basic Authentication.
+    type: Basic Authentication
 
 types:
   TransferState:
@@ -35,17 +40,17 @@ types:
     properties:
       id: 
         type: string
-        pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        #pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
       ledger: 
         type: string
-        pattern: ^(((ht|f)tp(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+        #pattern: ^(((ht|f)tp(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
       rejection_reason: string
       execution_condition: 
         type: string
-        pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
+        #pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
       cancellation_condition: 
         type: string
-        pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
+        #pattern: "^cc:([1-9a-f][0-9a-f]{0,3}|0):[1-9a-f][0-9a-f]{0,15}:[a-zA-Z0-9_-]{0,86}:([1-9][0-9]{0,17}|0)$"
       expires_at: datetime
       state: string
       debits:
@@ -65,16 +70,15 @@ types:
     properties:
       ledger:
         type: string
-        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+        #pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
       from:
         type: string
-        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+        #pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
       to:
         type: string
-        pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
+        #pattern: ^((http(s?))\://)?((([a-zA-Z0-9_\-]{2,}\.)+[a-zA-Z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?(\.?\d)\.)){4}))(:[a-zA-Z0-9]+)?(/[a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~]*)?$
       data:
         type: object
-        
       
 
 #Composite Objects
@@ -164,7 +168,6 @@ types:
     type: object
     properties:
       status: string
-
   
 
   #Error Definitions
@@ -195,7 +198,6 @@ types:
         type: object
         required: false
         properties:
-          pattern: string
           key: string
 
   #400 Errors
@@ -243,6 +245,7 @@ types:
   displayName: GET /v1
   get:
     description: Receive metadata about the ilp ledger instance
+    securedBy: [null]
 
     responses:
       200:
@@ -254,6 +257,7 @@ types:
   displayName: GET /v1/health
   get:
     description: Returns ledger health status
+    securedBy: [null]
 
     responses:
       200:
@@ -270,7 +274,8 @@ types:
       200:
         body:
           application/json:
-            type: AccountResponse[] | AuthorizedAccountResponse[]
+            type: array
+            items: AccountResponse | AuthorizedAccountResponse
 
       403:  #UnauthorizedError
         description: HTTP/1.1 403 Forbidden - UnauthorizedError
@@ -331,10 +336,9 @@ types:
   uriParameters:
     id: 
       type: string
-      pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
+      #pattern: ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$
   get:
     description: Transfer - Get details about a specific transfer
-
     responses:
       200:
         body:
@@ -383,7 +387,7 @@ types:
         body:
           text/plain:
             type:  string
-            pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
+            #pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
             example: "cf:0:_v8"
          
         responses:
@@ -391,7 +395,7 @@ types:
             body:
               text/plain:
                 type:  string
-                pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
+                #pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
                 example: "cf:0:_v8"
 
           400:  #InvalidUriParameterError, InvalidBodyError
@@ -405,6 +409,34 @@ types:
               application/json:
                 description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
                 type: UnmetConditionError | UnprocessableEntityError
+                
+      get:
+        description: Get details about a fulfilled transfer
+         
+        responses:
+          200:
+            body:
+              text/plain:
+                type:  string
+                #pattern: "^cf:([1-9a-f][0-9a-f]{0,3}|0):[a-zA-Z0-9_-]*$"
+                example: "cf:0:_v8"
+
+          400:  #InvalidUriParameterError, InvalidBodyError
+            body:
+              #application/json:
+              text/plain:
+                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
+                type: InvalidUriParameterError | InvalidBodyError
+
+          404:  #NotfoundError
+            body:
+              #application/json:
+              text/plain:
+                description: HTTP/1.1 404 Not Found
+                properties:
+                  id: string
+                  type: string
+                  message: string
 
   /rejection:
       displayName:  /v1/transfers/:id/rejection

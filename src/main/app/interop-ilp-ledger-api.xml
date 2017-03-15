@@ -33,6 +33,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
         <object-to-string-transformer doc:name="Object to String"/>
         <set-session-variable variableName="traceID" value="#[(message.inboundProperties.'http.traceID' == empty) ? java.util.UUID.randomUUID() : message.inboundProperties.'http.query.traceID']" doc:name="set-traceID"/>
+        <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
                 message="Received request with traceID=#[sessionVars.traceId] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -46,9 +47,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 404 error - org.mule.module.apikit.exception.NotFoundException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            
             <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
             <set-session-variable variableName="errorMessageId" value="Resource not found" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>

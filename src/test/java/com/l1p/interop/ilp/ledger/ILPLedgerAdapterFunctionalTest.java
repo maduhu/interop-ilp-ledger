@@ -15,7 +15,9 @@ import java.util.Map;
 
 import com.google.common.net.MediaType;
 import com.l1p.interop.JsonTransformer;
+import com.l1p.interop.mule.connector.metrics.reporter.KafkaReporter;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,11 +54,12 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	public static void initEnv() {
 		System.setProperty("MULE_ENV", "test");
 		System.setProperty("spring.profiles.active", "test");
+		System.setProperty("metrics.reporter.kafka.broker", "ec2-35-164-199-6.us-west-2.compute.amazonaws.com:9092");
+		System.setProperty("metrics.reporter.kafka.topic", "bmgf.metric.pi2");
 	}
 
 	@Before
-	public void initSslClient() throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException,
-			KeyManagementException {
+	public void initSslClient() throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, KeyManagementException {
 		ClientConfig config = new DefaultClientConfig();
 		webService = Client.create(config).resource(serviceHost);
 	}
@@ -113,7 +116,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field id did not contain expected value", "USD", jsonReponse.get( "currency" ) );
 		
 		//Invalid PUT, no authorization
-		//TODO - Disabling this because, currently account is getting created without auth :-), should this be changed?
+		//Disabling this because, currently account is getting created without auth :-), should this be changed?
 		/*
 		params.clear();
 		clientResponse = putRequestWithQueryParams( accountsPath + testId, params, putAccountJSON );
@@ -128,6 +131,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		//ZGZzcDE6ZGZzcDE=
 		//This account should already be present (considering that account 'alice' exists)
 		String id = "bob";
 		String is_disabled = "1";
@@ -144,8 +148,13 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		//Valid GET for account alice, run this separately, if needed
 		ClientResponse clientResponse = getRequest( accountsPath + id, params );
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		
+		String response = clientResponse.getEntity(String.class);
+		System.out.println("getAccounts http response: " + response);
+		
 		assertEquals( "AccountsGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+
+		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "Response field name did not contain expected value", id, jsonReponse.get( "name" ) );
 		assertEquals( "Response field is_disabled did not contain expected value", is_disabled, jsonReponse.get( "is_disabled" ) );
 		assertTrue( "response field is_disabled was not present in response", jsonReponse.get( "id") != null );
@@ -157,23 +166,27 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	@Test
 	public void testGetTransfer() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
-		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+//		params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613123";
 		
 		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
 		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
-		//Invalid Get Transfer - Transfer not found
+		
+		//Valid Get Transfer
+		params.clear();
 		ClientResponse clientResponse = getRequest( transfersPath + id, params );
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		assertEquals( "Response field id did not contain expected value", "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204", jsonReponse.get( "id" ) );
+		
 		//assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
 		//assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
 	}
 
 	@Test
 	public void testGetHealth() throws Exception {
-		//TODO: Finish this when /health works as expected, currently getting a 404
+		//Finish this when /health works as expected, currently getting a 404
 		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/health", null );
 		String responseContent = null;
 		try {
@@ -232,7 +245,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	@Test
 	public void testPutTransferFulfillment() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
-		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+//		params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
 		final String putTransferJSON = "cf:0:_v8";
 
@@ -252,7 +266,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	
 	@Test
 	public void testGetConnectors() throws Exception {
-		//TODO: This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
+		//This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
 		
 		ClientResponse clientResponse = getRequest( connectorsPath, null );
 		String responseContent = null;
@@ -305,8 +319,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 				getResource = getResource.queryParam( nextKey, params.get( nextKey ) );
 			}
 		}
-
-		return getResource.path( path ).type( "application/json").get(ClientResponse.class);
+		
+		return getResource.path( path ).type( "application/json" ).header("authorization", "Basic ZGZzcDE6ZGZzcDE=" ).get(ClientResponse.class);
 	}
 	
 	/**
@@ -359,5 +373,20 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 		//return putResource.path( path ).type( "*/*" ).put(ClientResponse.class, requestData);
 		return putResource.path( path ).type( "text/plain" ).put(ClientResponse.class, requestData);
+	}
+	
+	
+	/**
+	 * Convenience method to create the basic auth request
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	private String createEncryptedAuth(String username, String password) {
+		String stringToBeEncryped = username + ":" + password;
+		String auth = new String("Basic " + Base64.encodeBase64(stringToBeEncryped.getBytes()));
+		System.out.println("auth: " + auth);
+		
+		return auth;
 	}
 }

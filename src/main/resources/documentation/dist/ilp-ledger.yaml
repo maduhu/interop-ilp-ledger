@@ -9,7 +9,13 @@ schemes:
   - http
   - https
 
-basePath: ilp/ledger/v1
+securityDefinitions:
+  UserSecurity:
+    type: basic
+  AdminSecurity:
+    type: basic
+
+basePath: /ilp/ledger/v1
 consumes:
   - application/json
 produces:
@@ -17,103 +23,307 @@ produces:
 
 definitions:
   TransferState:
+    title: TransferState
     type: string
     enum:
     - proposed
     - prepared
     - executed
     - cancelled
-
   Timeline:
+    title: Timeline
     type: object
     properties:
-      proposedAt:
+      prepared_at:
         type: string
-      executedAt:
+        format: date-time
+      executed_at:
         type: string
-      preparedAt:
+        format: date-time
+      rejected_at:
         type: string
-
-  Uri:
-    type: string
-
-  Debit:
+        format: date-time
+    required:
+    - prepared_at
+  AccountResponse:
+    title: AccountResponse
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      ledger:
+        type: string
+    required:
+    - id
+    - name
+    - ledger
+  Funds:
+    title: Funds
     type: object
     properties:
       account:
         type: string
       amount:
         type: string
-      invoice:
-        type: string
+      authorized:
+        type: boolean
       memo:
         type: string
-
-  Credit:
-    allOf:
-      - $ref: "#/definitions/Debit"
-      - type: object
-
-  Transfer:
-    type: object
     required:
-      - debits
-      - credits
+    - account
+    - amount
+  Transfer:
+    title: Transfer
+    type: object
     properties:
-      additionalInfo:
-        type: object
-      cancellationCondition:
-        type: string
-      debits:
-        type: array
-        items:
-          $ref: "#/definitions/Debit"
-      credits:
-        type: array
-        items:
-          $ref: "#/definitions/Credit"
-      executionCondition:
-        type: string
-      expiresAt:
-        type: string
       id:
         type: string
       ledger:
         type: string
-      rejectionReason:
+      rejection_reason:
         type: string
-        enum:
-        - cancelled
-        - expired
+      execution_condition:
+        type: string
+      cancellation_condition:
+        type: string
+      expires_at:
+        type: string
+        format: date-time
       state:
-        $ref: "#/definitions/TransferState"
+        type: string
+      debits:
+        type: array
+        items:
+          $ref: '#/definitions/Funds'
+      credits:
+        type: array
+        items:
+          $ref: '#/definitions/Funds'
       timeline:
-        $ref: "#/definitions/Timeline"
-
-  Notification:
+        $ref: '#/definitions/Timeline'
+      additional_info:
+        type: object
+    required:
+    - id
+    - ledger
+    - rejection_reason
+    - execution_condition
+    - cancellation_condition
+    - expires_at
+    - state
+    - debits
+    - credits
+  
+  Memo:
+    title: Memo
+    type: object
+  
+  Message:
+    title: Message
+    type: object
+    properties:
+      ledger:
+        type: string
+      from:
+        type: string
+      to:
+        type: string
+      data:
+        type: string
+    required:
+    - ledger
+    - from
+    - to
+    - data
+  
+  PutAccountRequest:
+    title: PutAccountRequest
+    type: object
+    properties:
+      name:
+        type: string
+      balance:
+        type: string
+    required:
+    - name
+    - balance
+  
+  AuthorizedAccountResponse:
+    title: AuthorizedAccountResponse
+    type: object
+    properties:
+      balance:
+        type: string
+      minimum_allowed_balance:
+        type: string
+      is_disabled:
+        type: boolean
+    required:
+    - balance
+    - minimum_allowed_balance
+    - is_disabled
+    allOf:
+    - $ref: '#/definitions/AccountResponse'
+  
+  ProposeTransferRequest:
+    title: ProposeTransferRequest
+    type: object
+    allOf:
+    - $ref: '#/definitions/Transfer'
+  
+  ProposedTransferResponse:
+    title: ProposedTransferResponse
+    type: object
+    properties:
+      state:
+        type: string
+    required:
+    - state
+    allOf:
+    - $ref: '#/definitions/Transfer'
+  
+  PreparedTransferRequest:
+    title: PrepareTransferRequest
+    type: object
+    allOf:
+    - $ref: '#/definitions/Transfer'
+    
+  PreparedTransferResponse:
+    title: PreparedTransferResponse
+    type: object
+    properties:
+      state:
+        type: string
+    required:
+    - state
+    allOf:
+    - $ref: '#/definitions/Transfer'
+  
+  TransferResponse:
+    title: TransferResponse
+    type: object
+    properties:
+      timeline:
+        $ref: '#/definitions/Timeline'
+    allOf:
+    - $ref: '#/definitions/Transfer'
+  TransferStateResponse:
+    title: TransferStateResponse
+    type: object
+    properties:
+      message:
+        $ref: '#/definitions/Message43'
+      type:
+        type: string
+      signer:
+        type: string
+      public_key:
+        type: string
+      signature:
+        type: string
+    required:
+    - message
+    - type
+    - signer
+    - public_key
+    - signature
+  Message43:
+    title: message43
     type: object
     properties:
       id:
         type: string
-      relatedResources:
+      state:
+        type: string
+    required:
+    - id
+    - state
+  
+  ServerMetadataResponse:
+    title: ServerMetadataResponse
+    description: Metadata about the ilp ledger instance
+    type: object
+    properties:
+      currency_code:
+        type: string
+      currency_symbol:
+        type: string
+      connectors:
+        type: array
+        items:
+          $ref: '#/definitions/ConnectorDescriptor'
+      precision:
+        type: integer
+        format: int32
+      scale:
+        type: integer
+        format: int32
+      urls:
+        description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
         type: object
-        properties:
-          cancellationConditionFulfillment:
-            type: string
-          executionConditionFulfillment:
-            type: string
-
+    required:
+    - currency_code
+    - currency_symbol
+    - connectors
+    - precision
+    - scale
+  
+  ConnectorDescriptor:
+    title: ConnectorDescriptor
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      connector:
+        type: string
+    required:
+    - id
+    - name
+  LedgerStatus:
+    title: LedgerStatus
+    type: object
+    properties:
+      status:
+        type: string
+    required:
+    - status
+  
+  Error:
+    title: Error
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+    required:
+    - id
+    - message
   ValidationError:
+    title: ValidationError
+    type: object
+    properties:
+      validationErrors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationItem'
+    required:
+    - validationErrors
+    allOf:
+    - $ref: '#/definitions/Error'
+  ValidationItem:
+    title: ValidationItem
     type: object
     properties:
       message:
         type: string
-      params:
-        type: object
-        additionalProperties:
-          type: string
       code:
-        type: string
+        type: integer
+        format: int32
       dataPath:
         type: string
       schemaPath:
@@ -122,103 +332,217 @@ definitions:
         type: string
       stack:
         type: string
-
-  Error:
-    type: object
-    #discriminator: id
+      params:
+        $ref: '#/definitions/Params'
     required:
-      - id
-      - message
+    - message
+    - code
+    - dataPath
+    - schemaPath
+    - subErrors
+    - stack
+  Params:
+    title: params
+    type: object
+    properties:
+      key:
+        type: string
+    required:
+    - key
+
+#400 Errors
+  InvalidBodyError:
+    description: The submitted JSON entity does not match the required schema.
+    type: object
+    allOf:
+    - $ref: '#/definitions/ValidationError'
+
+  InvalidUriParameterError:
+    description: At least one provided URI or UUID parameter was invalid.
+    type: object
+    allOf:
+    - $ref: '#/definitions/ValidationError'
+
+  #403 Forbidden Errors
+  UnauthorizedError:
+    description: You do not have permissions to access or modify this resource in the requested way.
+    type: object
+    allOf:
+    - $ref: '#/definitions/Error'
+
+  #404 Not Found Errors
+  NotFoundError:
+    description: The requested resource could not be found.
+    type: object
+    allOf:
+    - $ref: '#/definitions/Error'
+
+  #422 Unprocessable Entity Errors
+  AlreadyExistsError:
+    description: The specified entity already exists and may not be modified.
+    type: object
+    allOf:
+    - $ref: '#/definitions/Error'
+
+  UnprocessableEntityError:
+    description: The provided entity is syntactically correct, but there is a generic semantic problem with it.
+    type: object
+    allOf:
+    - $ref: '#/definitions/Error'
+  
+  InsufficientFundsError:
+    title: InsufficientFundsError
+    description: The source account does not have sufficient funds to satisfy the request.
+    type: object
+    properties:
+      owner:
+        type: string
+    required:
+    - owner
+    allOf:
+    - $ref: '#/definitions/Error'
+  
+  UnmetConditionError:
+    title: UnmetConditionError
+    description: The submitted fulfillment does not meet the specified condition.
+    type: object
+    properties:
+      condition:
+        type: string
+      fulfillment:
+        type: string
+    allOf:
+    - $ref: '#/definitions/Error'
+  
+  AuthTokenResponse:
+    title: Auth Token response
+    type: object
+    properties:
+      token:
+        type: string
+    required:
+    - token
+  
+  TransfersGet404ErrorType:
+    title: TransfersGet404ErrorType
+    type: object
     properties:
       id:
         type: string
+      type:
+        type: string
       message:
         type: string
-
-  NotFoundError:
-    allOf:
-      - $ref: "#/definitions/Error"
-      - type: object
-
-  InvalidUriParameterError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-      properties:
-        validationErrors:
-          type: array
-          items:
-            $ref: "#/definitions/ValidationError"
-
-  InvalidBodyError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-      properties:
-        validationErrors:
-          type: array
-          items:
-            $ref: "#/definitions/ValidationError"
-
-  UnprocessableEntityError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-
-  InsufficientFundsError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-
-  AlreadyExistsError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-
-  UnauthorizedError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-
-  UnmetConditionError:
-    allOf:
-    - $ref: "#/definitions/Error"
-    - type: object
-      properties:
-        condition:
-          type: string
-        fulfillment:
-          type: string
-
-  ServerMetadata:
-    type: object
-    properties:
-      currencyCode:
-        type: string
-      currencySymbol:
-        type: string
-      precision:
-        type: integer
-      scale:
-        type: integer
-      urls:
-        type: object
-        additionalProperties:
-          type: string
-    additionalProperties:
-      type: string
+    required:
+    - id
+    - type
+    - message
 
 paths:
   /:
     get:
       description: "Receive information about the ILP Ledger Adapter"
+      parameters: []
       responses:
         200:
           description: "Server Metadata"
           schema:
-            $ref: "#/definitions/ServerMetadata"
+            $ref: '#/definitions/ServerMetadataResponse'
+      security:
+      - UserSecurity: []
 
+  /health:
+    get:
+      description: Returns ledger health status
+      tags:
+      - health
+      operationId: Health
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/LedgerStatus'
+      security:
+      - UserSecurity: []
 
+  /accounts/{id}:
+    get:
+      description: lookup an account
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: 'AccountResponse or AuthorizedAccountResponse'
+          schema:
+            $ref: '#/definitions/AccountResponse'
+        400:
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError'
+          schema:
+            $ref: '#/definitions/InvalidUriParameterError'
+        404:
+          description: 'HTTP/1.1 404 Not Found - NotFoundError'
+          schema:
+            $ref: '#/definitions/NotFoundError'
+      security:
+      - UserSecurity: []
+
+    put:
+      description: Create an account
+      tags:
+      - accounts
+      operationId: AccountsById1
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/PutAccountRequest'
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/AuthorizedAccountResponse'
+        400:
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
+          schema:
+            $ref: '#/definitions/InvalidUriParameterError'
+        403:
+          description: HTTP/1.1 403 Forbidden - UnauthorizedError
+          schema:
+            $ref: '#/definitions/UnauthorizedError'
+      security:
+      - UserSecurity: []
+
+  /accounts:
+    get:
+      description: Retrieve all accounts
+      parameters: []
+      responses:
+        200:
+          description: 'AccountResponse or AuthorizedAccountResponse'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccountResponse'
+        403:
+          description: HTTP/1.1 403 Forbidden - UnauthorizedError
+          schema:
+            $ref: '#/definitions/UnauthorizedError'
+      security:
+      - UserSecurity: []
+  
   /transfers/{id}:
     parameters:
       - name: id
@@ -231,35 +555,35 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/Transfer"
+            $ref: '#/definitions/PreparedTransferRequest'
       responses:
         201:
-          description: ""
+          description: 'prepared success'
           schema:
-            $ref: "#/definitions/Transfer"
+            $ref: '#/definitions/PreparedTransferResponse'
         400:
-          description: ""
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/InvalidUriParameterError'
         422:
-          description: ""
+          description: 'HTTP/1.1 422 Unprocessable Entity - InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError'
           schema:
-            $ref: "/definitions/Error"
+            $ref: '#/definitions/InsufficientFundsError'
     get:
-      description: Check the details or status of a local transfer
+      description: Transfer - Get details about a specific transfer
       responses:
         200:
-          description: "success"
+          description: 'success'
           schema:
-            $ref: "#/definitions/Transfer"
+            $ref: '#/definitions/TransferResponse'
         400:
-          description: "NotFoundError"
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError'
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/InvalidUriParameterError'
         404:
-          description: "InvalidUriParameterError"
+          description: 'HTTP/1.1 404 Not Found'
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/NotFoundError'
 
   /transfers/{id}/fulfillment:
     parameters:
@@ -268,6 +592,7 @@ paths:
         in: path
         required: true
     put:
+      description: Transfer - Execute a prepared transfer
       consumes:
         - text/plain
       produces:
@@ -280,23 +605,115 @@ paths:
           required: true
       responses:
         200:
-          description: "success"
+          description: 'success'
           schema:
             type: string
+            x-examples: 'cf:0:_v8'
         400:
-          description: "InvalidUriParameterError/InvalidBodyError"
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/InvalidUriParameterError'
         422:
-          description: "UnmetConditionError/UnprocessableEntityError"
+          description: 'HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError'
           schema:
-            $ref: "/definitions/Error"
+            $ref: '#/definitions/UnmetConditionError'
     get:
       produces:
         - text/plain
       responses:
         200:
-          description: "ok"
+          description: 'ok'
           schema:
             type: string
+        400:
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
+          schema:
+            $ref: '#/definitions/InvalidUriParameterError'
+        404:
+          description: 'HTTP/1.1 404 Not Found'
+          schema:
+            $ref: '#/definitions/TransfersGet404ErrorType'
+      security:
+      - UserSecurity: []
+  
+  /transfers/{id}/rejection:
+    parameters:
+      - name: id
+        type: string
+        in: path
+        required: true
+    put:
+      description: 'Transfer - Reject a transfer'
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: string
+          x-examples: 'BlacklistedSender'
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/TransferResponse'
+        400:
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
+          schema:
+            $ref: '#/definitions/InvalidUriParameterError'
+        422:
+          description: 'HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError'
+          schema:
+            $ref: '#/definitions/UnmetConditionError'
+      security:
+      - UserSecurity: []
 
+  /messages:
+    post:
+      description: method to create
+      tags:
+      - messages
+      operationId: Messages
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/Message'
+      responses:
+        201:
+          description: ''
+        400:
+          description: 'HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError'
+          schema:
+            $ref: '#/definitions/InvalidUriParameterError'
+        422:
+          description: 'HTTP/1.1 422 Unprocessable Entity -  UnprocessableEntityError'
+          schema:
+            $ref: "#/definitions/UnprocessableEntityError"
+      security:
+      - UserSecurity: []
+
+  /auth_token:
+    get:
+      description: get token
+      tags:
+      - auth
+      operationId: AuthToken
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/AuthTokenResponse'
+        403:
+          description: HTTP/1.1 403 Forbidden - UnauthorizedError
+          schema:
+            $ref: '#/definitions/UnauthorizedError'
+      security:
+      - UserSecurity: []

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -21,8 +20,10 @@
 	</scm>
 
 	<properties>
-		<interop-domain.version>0.1.19</interop-domain.version>
-	</properties>
+		<interop-domain.version>0.1.22</interop-domain.version>
+		<!-- <interop-common.version>1.0.25-SNAPSHOT</interop-common.version> -->
+	<mule.version>3.8.0</mule.version>
+    </properties>
 
 	<build>
 		<plugins>
@@ -39,13 +40,13 @@
 	</build>
 
 	<dependencies>
-		<!-- 
-		<dependency>
+		
+		<!-- <dependency>
 			<groupId>com.l1p.interop</groupId>
 			<artifactId>interop-common</artifactId>
 			<version>${interop-common.version}</version>
-		</dependency>
-		 -->
+		</dependency> -->
+		
 		<dependency>
 			<groupId>com.l1p.interop</groupId>
 			<artifactId>interop-domain</artifactId>
@@ -63,6 +64,14 @@
 			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-all</artifactId>
+		    <version>1.10.19</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.glassfish.tyrus</groupId>
 			<artifactId>tyrus-client</artifactId>
@@ -81,6 +90,7 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+	
+    </dependencies>
 
 </project>

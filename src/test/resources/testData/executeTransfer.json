@@ -1,0 +1,27 @@
+{
+	"id": "http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8014/ledger/transfers/94d61d48-72d2-44b5-afa4-f6edb1fcdf03",
+	"ledger": "http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8014/ledger",
+	"debits": [
+		{
+			"account": "http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8014/ledger/accounts/bob",
+			"amount": "1.00",
+			"memo": {}
+		}
+	],
+	"credits": [
+		{
+			"account": "http://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8014/ledger/accounts/alice",
+			"amount": "1.00",
+			"memo": {}
+		}
+	],
+	"execution_condition": "cc:0:3:47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU:0",
+	"cancellation_condition": null,
+	"expires_at": "2017-02-25T00:09:27.592Z",
+	"state": "executed",
+	"timeline": {
+		"proposed_at": "2017-02-25T00:08:57.736Z",
+		"prepared_at": "2017-02-25T00:08:57.736Z",
+		"executed_at": "2017-02-25T00:08:57.982Z"
+	}
+}
