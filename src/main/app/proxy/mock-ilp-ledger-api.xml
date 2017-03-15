@@ -18,6 +18,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<spring:beans>
 		<spring:import resource="classpath:services-common.xml" />
 		<spring:import resource="classpath:metrics.xml" />
+		
 		<spring:bean id="actualLedgerToLedgerAdapterUrlTransformer"
 			class="com.l1p.interop.ActualLedgerToLedgerAdapterUrlTransformer">
 			<spring:property name="ledgerUrlMapper" ref="ledgerUrlMapper" />
@@ -76,7 +77,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			doc:name="set-traceID" />
 		<logger level="INFO"
 			message="Received request for traceID=#[sessionVars.traceID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
-			category="com.l1p.interop.dfsp.api-main" doc:name="logger" />
+			category="com.l1p.interop.dfsp.mock-api-main" doc:name="logger" />
 		<apikit:router config-ref="test-api-config" doc:name="APIkit Router" />
 		<exception-strategy ref="test-api-apiKitGlobalExceptionMapping"
 			doc:name="Reference Exception Strategy" />

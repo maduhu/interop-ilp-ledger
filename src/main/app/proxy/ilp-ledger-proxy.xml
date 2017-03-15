@@ -132,7 +132,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			doc:name="Set Payload" />
 		<logger level="INFO"
 			message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
-			category="com.l1p.interop.dfsp.api-main" doc:name="logger" />
+			category="com.l1p.interop.dfsp.flow-getAccount" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
 			method="GET" doc:name="HTTP">
 			<!--<http:success-status-code-validator values="200,400,404"/> -->
@@ -147,7 +147,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			</when>
 			<otherwise>
 				<logger message="Failed to get account #[payload]" level="ERROR"
-					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
+					category="com.l1p.interop.dfsp.flow-getAccount" doc:name="Logger" />
 			</otherwise>
 		</choice>
 		<set-property propertyName="http.status"
