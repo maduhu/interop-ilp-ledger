@@ -17,9 +17,9 @@ Project is built using Maven and uses Circle for Continous Integration.
 
 #### Anypoint Studio
 * [https://www.mulesoft.com/platform/studio](https://www.mulesoft.com/platform/studio)
-* Clone https://github.com/LevelOneProject/interop-spsp-backend-services.git to local Git repository
+* Clone https://github.com/LevelOneProject/interop-ilp-ledger.git to local Git repository
 * Import into Studio as a Maven-based Mule Project with pom.xml
-* Go to Run -> Run As Configurations.  Make sure interop-spsp-backend-services project is highlighted.
+* Go to Run -> Run As Configurations.  Make sure interop-spsp-ilp-ledger project is highlighted.
 
 #### Standalone Mule ESB
 * [https://developer.mulesoft.com/download-mule-esb-runtime](https://developer.mulesoft.com/download-mule-esb-runtime)
