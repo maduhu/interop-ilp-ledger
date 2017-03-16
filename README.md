@@ -19,7 +19,7 @@ Project is built using Maven and uses Circle for Continous Integration.
 * [https://www.mulesoft.com/platform/studio](https://www.mulesoft.com/platform/studio)
 * Clone https://github.com/LevelOneProject/interop-ilp-ledger.git to local Git repository
 * Import into Studio as a Maven-based Mule Project with pom.xml
-* Go to Run -> Run As Configurations.  Make sure interop-spsp-ilp-ledger project is highlighted.
+* Go to Run -> Run As Configurations.  Make sure interop-ilp-ledger project is highlighted.
 
 #### Standalone Mule ESB
 * [https://developer.mulesoft.com/download-mule-esb-runtime](https://developer.mulesoft.com/download-mule-esb-runtime)
