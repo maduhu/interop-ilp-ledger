@@ -34,7 +34,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 	</mule-ss:security-manager>
 	
     <flow name="get:/:api-config">
-    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.start" doc:name="SnapTime"/>
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="metadata.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for traceID=#[sessionVars.traceID]: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -42,12 +42,12 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <logger level="INFO"
                 message="Sending getLedgerMetadata response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.stop" doc:name="SnapTime"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="metadata.stop" doc:name="SnapTime"/>
         
-        <metrics:time config-ref="metricsConfig" beginSnapKey="get:/:.start" endSnapKey="get:/:.stop" category="l1p.interop-ilp-ledger.empty-get.api" metricKey="Emtpy:/:RequestGetTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.empty-get.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>Emtpy:/:GetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <metrics:time config-ref="metricsConfig" beginSnapKey="metadata.start" endSnapKey="metadata.stop" category="l1p.interop-ilp-ledger.metadata.api" metricKey="MetadataGetTime" doc:name="Metrics Record"/>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.empty-get.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>Emtpy:/:GetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="get:/health:api-config">
@@ -62,9 +62,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.health.start" endSnapKey="get.health.stop" category="l1p.interop-ilp-ledger.health.api" metricKey="HealthGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.health.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>HealthGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.health.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>HealthGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
 
     <flow name="get:/accounts:api-config">
@@ -79,9 +79,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.accounts.start" endSnapKey="get.accounts.stop" category="l1p.interop-ilp-ledger.accounts.api" metricKey="AccountsGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>AccountsGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>AccountsGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="get:/accounts/{id}:api-config">
@@ -96,9 +96,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.accounts-id.start" endSnapKey="get.accounts-id.stop" category="l1p.interop-ilp-ledger.accounts-id.api" metricKey="AccountsIdGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts-id.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>AccountsIdGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts-id.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>AccountsIdGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="put:/accounts/{id}:api-config">
@@ -113,9 +113,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.accounts-id.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.accounts-id.start" endSnapKey="put.accounts-id.stop" category="l1p.interop-ilp-ledger.accounts-id.api" metricKey="AccountsIdPutRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts-id.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>AccountsIdPutRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.accounts-id.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>AccountsIdPutRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="put:/transfers/{id}:api-config">
@@ -131,9 +131,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers.start" endSnapKey="put.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersPutRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersPutRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>TransfersPutRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
 
     <flow name="get:/transfers/{id}:api-config">
@@ -149,9 +149,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="put:/transfers/{id}/fulfillment:api-config">
@@ -167,9 +167,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-fulfillment.start" endSnapKey="put.transfers-fulfillment.stop" category="l1p.interop-ilp-ledger.transfers-fulfillment.api" metricKey="TransfersFulfillmentPutRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers-fulfillment.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersFulfillmentPutRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers-fulfillment.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>TransfersFulfillmentPutRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     
     <flow name="get:/transfers/{id}/fulfillment:api-config">
@@ -184,9 +184,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
 
     <flow name="put:/transfers/{id}/rejection:api-config">
@@ -202,9 +202,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-rejection.start" endSnapKey="put.transfers-rejection.stop" category="l1p.interop-ilp-ledger.transfers-rejection.api" metricKey="TransfersRejectionPutRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers-rejection.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersRejectionPutRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers-rejection.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>TransfersRejectionPutRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     <flow name="get:/connectors:api-config">
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
@@ -218,12 +218,12 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
 	<flow name="post:/messages:api-config">
-    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
+    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="post.message.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling post messages for traceID=#[sessionVars.traceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
@@ -231,12 +231,12 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <logger level="INFO"
                 message="Received postMessages response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
+        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="post.message.stop" doc:name="SnapTime"/>
         
-        <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <metrics:time config-ref="metricsConfig" beginSnapKey="post.message.start" endSnapKey="post.message.stop" category="l1p.interop-ilp-ledger.message.api" metricKey="ConnectorsPostMessageTime" doc:name="Metrics Record"/>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.connectors.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>ConnectorsGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
     <flow name="get:/auth_token:api-config">
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.auth_token.start" doc:name="SnapTime"/>
@@ -245,9 +245,9 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <set-payload doc:name="Set Payload" value="{&quot;token&quot;:&quot;placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES&quot;}"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.auth_token.stop" doc:name="SnapTime"/>
-        <metrics:time config-ref="metricsConfig" beginSnapKey="get.auth_token.start" endSnapKey="get.auth_token.stop" category="l1p.interop-ilp-ledger.api" metricKey="AuthTokenGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>AuthTokenGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
+        <metrics:time config-ref="metricsConfig" beginSnapKey="get.auth_token.start" endSnapKey="get.auth_token.stop" category="l1p.interop-ilp-ledger.auth-token.api" metricKey="AuthTokenGetRequestTime" doc:name="Metrics Record"/>
+        <!--<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.api" doc:name="metrics-count">-->
+            <!--<metrics:metric-keys><metrics:metric-key>AuthTokenGetRequest</metrics:metric-key></metrics:metric-keys>-->
+        <!--</metrics:inc-count>-->
     </flow>
 </mule>
