@@ -35,7 +35,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-session-variable variableName="TraceID" value="#[(message.inboundProperties.'http.TraceID' == empty) ? java.util.UUID.randomUUID() : message.inboundProperties.'http.query.TraceID']" doc:name="set-TraceID"/>
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
-                message="Received request with TraceID=#[sessionVars.TraceId] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
+                message="Received request with TraceID=#[sessionVars.TraceID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
