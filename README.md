@@ -58,7 +58,7 @@ Below are the APIs for reference
 
 Server path to logs is: <mule_home>/logs/interop-ilp-ledger.log for example: /opt/mule/mule-dfsp1/logs/interop-ilp-ledger.log
 
-Currently the logs are operational and include information such as TraceID and other details related to the calls or transactions such as path, method used, header information and sender/receiver details.
+Currently the logs are operational and include information such as TraceID and other details related to the calls or transactions such as path, method used, header information and payer/payee details.
 
 ## Tests
 
