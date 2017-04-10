@@ -3,10 +3,12 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
@@ -187,11 +189,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" />
 		<choice doc:name="Map Ledger URLs based on the response code">
 			<when expression="#[message.inboundProperties.'http.status' == 201]">
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferPutSuccess</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
 					doc:name="Transform Ledger URL" />
 				<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferPreparedNotification(payload)]]></expression-component>
 			</when>
 			<otherwise>
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferPutFailure</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<logger message="Failed to put transfer #[payload]" level="ERROR"
 					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
 			</otherwise>
@@ -247,6 +255,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			doc:name="Variable" />
 		<choice doc:name="Choice">
 			<when expression="#[message.inboundProperties.'http.status' == 200]">
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferExecuteSuccess</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<http:request config-ref="ILP_Ledger_Configuration"
 					path="/transfers/#[id]" method="GET" doc:name="HTTP">
 					<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
@@ -279,6 +290,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 
 			</when>
 			<otherwise>
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferExecuteFailure</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<logger message="Failed to execute transfer #[payload]"
 					level="ERROR" category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
 			</otherwise>
@@ -336,17 +350,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" />
 		<choice doc:name="Map Ledger URLs based on the response code">
 			<when expression="#[message.inboundProperties.'http.status' == 200]">
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferRejectSuccess</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
 					doc:name="Transform Ledger URL" />
 				<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferRejectedNotification(payload)]]></expression-component>
 			</when>
 			<otherwise>
+				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+					<metrics:metric-keys><metrics:metric-key>TransferRejectFailure</metrics:metric-key></metrics:metric-keys>
+				</metrics:inc-count>
 				<logger message="Failed to reject transfer #[payload]" level="ERROR"
 					category="com.l1p.interop.dfsp.api-main" doc:name="Logger" />
 			</otherwise>
 		</choice>
-		<set-property propertyName="http.status" value="200,404"
-			doc:name="Property" />
+		<set-property propertyName="http.status"
+					  value="#[message.inboundProperties.'http.status']" doc:name="Property" />
 	</flow>
 
 	<flow name="getConnectors">

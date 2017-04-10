@@ -13,42 +13,35 @@ Contents:
 
 Project is built using Maven and uses Circle for Continous Integration.
 
-(How do you run this code?)
+### Installation and Setup
 
-(Example for NPM-published services--
+#### Anypoint Studio
+* [https://www.mulesoft.com/platform/studio](https://www.mulesoft.com/platform/studio)
+* Clone https://github.com/LevelOneProject/interop-ilp-ledger.git to local Git repository
+* Import into Studio as a Maven-based Mule Project with pom.xml
+* Go to Run -> Run As Configurations.  Make sure interop-ilp-ledger project is highlighted.
 
-Installation:
+#### Standalone Mule ESB
+* [https://developer.mulesoft.com/download-mule-esb-runtime](https://developer.mulesoft.com/download-mule-esb-runtime)
+* Add the environment variable you are testing in (dev, prod, qa, etc).  Open <Mule Installation Directory>/conf/wrapper.conf and find the GC Settings section.  Here there will be a series of wrapper.java.additional.(n) properties.  create a new one after the last one where n=x (typically 14) and assign it the next number (i.e., wrapper.java.additional.15) and assign -DMULE_ENV=dev as its value (wrapper.java.additional.15=-DMULE_ENV=dev)
+* Download the zipped project from Git
+* Copy zipped file (Mule Archived Project) to <Mule Installation Directory>/apps
 
-This is currently hosted as a service in the URL that looks like this:  http://\<awshost:port\>/ilp/backend/v1/console/ , the host details have been communicated via e-mails and slack
+### Run Application
 
-1. Install [Node.js and npm](https://nodejs.org/en/)
+#### Anypoint Studio
+* Run As Mule Application with Maven
 
-2. Configure your npm instance to use the LevelOneProject repository.
-
-    See [Docs/Artifactory/NPM Repos](https://github.com/LevelOneProject/Docs/blob/master/Artifactory/npm_repos.md) for detailed instructions.
-
-3. Install the `(package name)` package.
-
-        npm install (package name)
-
-Running the server locally:
-
-    npm start
-
---end example)
+#### Standalone Mule ESB
+* CD to <Mule Installation Directory>/bin -> in terminal type ./mule
 
 ## Configuration
 
-pom.xml and circle.yml can be found at interop-ilp-ledger repo
+[pom.xml](./pom.xml) and [circle.yml](./circle.yml) can be found in the repo, also linked here
 
-(Explanation of important config parameters)
+## API
 
-##API
-
-Below is the RAML for reference. However, the responses are generated based on specifications mentioned here: https://github.com/LevelOneProject/Docs/issues/205
-
-The following RAML file provides methods for the following:
-
+The API provides methods for the following:
 * Find an account by ID 
 * Add an account by ID
 * List all accounts
@@ -57,405 +50,34 @@ The following RAML file provides methods for the following:
 * Excute a transfer
 * Retrieve all accounts of all connectors on a ledger
 
-https://github.com/LevelOneProject/interop-ilp-ledger/blob/master/src/main/api/ilp-ledger-adapter.raml
-
-```
-#%RAML 1.0
-title: ILP Ledger Adapter
-version: v1
-baseUri: http://localhost:8081/ilp/ledger/{version}
-
-types:
-  TransferState:
-    enum: [ proposed, prepared, executed, cancelled ]
-
-  Timeline:
-    type: object
-    properties:
-      proposed_at?: string
-      prepared_at?: string
-      executed_at?: string
-
-  PutAccountRequest:
-    type: object
-    properties:
-      name: string
-      balance: string
-
-  PutAccountResponse:
-    type: object
-    properties:
-      name: string
-      balance: string
-      id: string
-      minimum_allowed_balance: string
-
-  GetAccountsResponse:
-    type: array
-    items: object
-
-  Funds:
-    type: object
-    properties:
-      account: string
-      amount: string
-      authorized?: boolean
-
-  TransferRequest:
-    type: object
-    properties:
-      id: string
-      ledger: string
-      execution_condition: string
-      expires_at: string
-      debits:
-        type: Funds[]
-        minItems: 1
-      credits:
-        type: Funds[]
-        minItems: 1
-
-  ProposeTransferRequest:
-    type: TransferRequest
-
-  ProposedTransferResponse:
-    type: ProposeTransferRequest
-    properties:
-      state:
-        enum: [ proposed ]
-
-  PrepareTransferRequest:
-    type: TransferRequest
-
-  PreparedTransferResponse:
-    type: PrepareTransferRequest
-    properties:
-      state:
-        enum: [ prepared ]
-
-  ServerMetadataResponse:
-    description: Information about the ILP Ledger Adapter
-    type: object
-    properties:
-      currency_code: string
-      currency_symbol: string
-      precision: integer
-      scale: integer
-      urls:
-        description: (Optional) Paths to other methods exposed by this ledger. Each field name is short name for a method and the value is the path to that method.
-        type: object
-        required: false
-
-  TransferResponse:
-    type: TransferRequest
-    properties:
-      timeline:
-        type: Timeline
-        required: false
-
-  TransferResponses:
-    type: array
-    items: TransferResponse
-    minItems: 1
-
-  ConnectorDescriptor:
-    type: object
-    properties:
-      id: string
-      name: string
-      connector: string
-
-  TransferStateResponse:
-    type: object
-    properties:
-      message:
-        type: object
-        properties:
-          id: string
-          state: string
-      type: string
-      signer: string
-      public_key: string
-      signature: string
-
-  #Error Definitions
-  Error:
-    type: object
-    properties:
-      id: string
-      message: string
-
-  ValidationError:
-    type: Error
-    properties:
-      validationErrors:
-        type: array
-        items: ValidationItem
-        minItems: 0
-
-  ValidationItem: #Each item in the array of validation Errors
-    type: object
-    properties:
-      message: string
-      code: integer
-      dataPath: string
-      schemaPath: string
-      subErrors: string
-      stack: string
-      params:
-        type: object
-        required: false
-        properties:
-          pattern: string
-          key: string
-
-  #400 Errors
-  InvalidBodyError:
-    description: The submitted JSON entity does not match the required schema.
-    type: ValidationError
-
-  InvalidUriParameterError:
-    description: At least one provided URI or UUID parameter was invalid.
-    type: ValidationError
-
-  #403 Forbidden Errors
-  UnauthorizedError:
-    description: You do not have permissions to access or modify this resource in the requested way.
-    type: Error
-
-  #404 Not Found Errors
-  NotFoundError:
-    description: The requested resource could not be found.
-    type: Error
-
-  #422 Unprocessable Entity Errors
-  AlreadyExistsError:
-    description: The specified entity already exists and may not be modified.
-    type: Error
-
-  InsufficientFundsError:
-    description: The source account does not have sufficient funds to satisfy the request.
-    type: Error
-    properties:
-      owner: string
-
-  UnmetConditionError:
-    description: The submitted fulfillment does not meet the specified condition.
-    type: Error
-    properties:
-      condition?: string
-      fulfillment?: string
-
-  UnprocessableEntityError:
-    description: The provided entity is syntactically correct, but there is a generic semantic problem with it.
-    type: Error
-
-/:
-  displayName: GET /v1
-  get:
-    description: Receive information about the ILP Ledger Adapter
-
-    responses:
-      200:
-        body:
-          application/json:
-            type: ServerMetadataResponse
-
-/accounts:
-  displayName: GET /v1/accounts
-  get:
-    description: Retrieve all accounts
-
-    responses:
-      200:
-        body:
-          application/json:
-            type: GetAccountsResponse
-
-      403:  #UnauthorizedError
-        description: HTTP/1.1 403 Forbidden - UnauthorizedError
-        body:
-          application/json:
-            type: UnauthorizedError
-
-  /{id}:
-    displayName: POST /v1/accounts/:id
-    uriParameters:
-      id: string
-    get:
-      description: lookup an account
-
-      responses:
-          200:
-            body:
-              application/json:
-                type: object
-                properties:
-                  id: string
-                  name: string
-                  #UnauthenticatedResponse
-                  ledger:
-                    type: string
-                    required: false
-                  #AuthenticatedResponse
-                  balance:
-                    type: string
-                    required: false
-                  is_disabled:
-                    type: boolean
-                    required: false
-
-          400:  #InvalidUriParameterError
-            body:
-              application/json:
-                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError
-                type: InvalidUriParameterError
-
-          404:  #NotFoundError
-            body:
-              application/json:
-                description: HTTP/1.1 404 Not Found - NotFoundError
-                type: NotFoundError
-    put:
-      description: Create an account
-      body:
-        application/json:
-          type:  PutAccountRequest
-
-      responses:
-        200:
-          body:
-            application/json:
-              type: PutAccountResponse
-
-        400:  #InvalidUriParameterError, InvalidBodyError
-          body:
-            application/json:
-              description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-              type: InvalidUriParameterError | InvalidBodyError
-
-        403:  #UnauthorizedError
-          description: HTTP/1.1 403 Forbidden - UnauthorizedError
-          body:
-            application/json:
-              type: UnauthorizedError
-
-/transfers/{id}:
-  displayName: POST /v1/transfers/:id
-  uriParameters:
-    id: string
-  get:
-    description: Transfer - Get local transfer object
-
-    responses:
-      200:
-        body:
-          application/json:
-            type: TransferResponse
-
-      400:  #InvalidUriParameterError
-        body:
-          application/json:
-            description: HTTP/1.1 400 Bad Request - InvalidUriParameterError
-            type: InvalidUriParameterError
-
-      404:  #NotFoundError
-        body:
-          application/json:
-            description: HTTP/1.1 404 Not Found
-            type: NotFoundError
-
-  put:
-    description:
-    body:
-      application/json:
-        type: ProposeTransferRequest | PrepareTransferRequest
-    responses:
-      200:  #prepared success
-        body:
-          application/json:
-            type: PreparedTransferResponse
-
-      201:  #proposed success
-        body:
-          application/json:
-            type: ProposedTransferResponse
-
-      400:  #InvalidUriParameterError, InvalidBodyError
-        body:
-          application/json:
-            description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-            type: InvalidUriParameterError | InvalidBodyError
-
-      422:  #InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
-        body:
-          application/json:
-            description: HTTP/1.1 422 Unprocessable Entity - InsufficientFundsError, UnprocessableEntityError, AlreadyExistsError
-            type: InsufficientFundsError | UnprocessableEntityError | AlreadyExistsError
-
-  /fulfillment:
-      displayName: GET /v1/transfers/:id/fulfillment
-      put:
-        description: Transfer - Execute a prepared transfer
-        body:
-          text/plain:
-            type:  string
-            example: "cf:0:_v8"
-          application/json:
-            type:  string
-            example: "cf:0:_v8"
-
-        responses:
-          200:
-            body:
-              text/plain:
-                type:  string
-                example: "cf:0:_v8"
-
-          400:  #InvalidUriParameterError, InvalidBodyError
-            body:
-              application/json:
-                description: HTTP/1.1 400 Bad Request - InvalidUriParameterError, InvalidBodyError
-                type: InvalidUriParameterError | InvalidBodyError
-
-          422:  #UnmetConditionError, UnprocessableEntityError
-            body:
-              application/json:
-                description: HTTP/1.1 422 Unprocessable Entity - UnmetConditionError, UnprocessableEntityError
-                type: UnmetConditionError | UnprocessableEntityError
-
-/connectors:
-      displayName: GET /v1/connectors
-      get:
-        description: Get all accounts of all connectors on this ledger.
-
-        responses:
-          200:
-            body:
-              application/json:
-                type: array
-                items: ConnectorDescriptor
-                minItems: 1
-
-```
+Below are the APIs for reference
+* RAML [here](./src/main/api/ilp-ledger-adapter.raml)
+* OpenAPI [here](./src/main/resources/documentation/dist/ilp-ledger.yaml)
 
 ## Logging
 
-Sever path to logs is: /opt/mule/mule-dfsp1/logs/interop-ilp-ledger.log
+Server path to logs is: <mule_home>/logs/interop-ilp-ledger.log for example: /opt/mule/mule-dfsp1/logs/interop-ilp-ledger.log
 
-(Explain important things about what gets logged or how to interpret the logs. Use subheaders if necessary.)
+Currently the logs are operational and include information such as TraceID and other details related to the calls or transactions such as path, method used, header information and sender/receiver details.
 
 ## Tests
 
 Java Unit Test exist for the project and include test for:
 
--Invalid path should return 404
--Put accounts
--Get account
--Get transfer
--Get health
--Reject transfer should get return valid response
--Get metadata
--Put transfer fulfillment
--Get connectors
--Post messages
+* Invalid path should return 404
+* Put accounts
+* Get account
+* Get transfer
+* Get health
+* Reject transfer should get return valid response
+* Get metadata
+* Put transfer fulfillment
+* Get connectors
+* Post messages
+
+#### Anypoint Studio
+* Run Unit Tests
+* Test API with Anypoint Studio in APIKit Console
+* Verify Responses in Studio Console output
+
+Tests are run as part of executing the Maven pom.xml as mvn clean package. Also, test can be run by running com.l1p.interop.spsp.ILPLedgerAdapterFunctionalTest java class as a Test.
