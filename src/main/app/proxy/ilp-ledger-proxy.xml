@@ -242,7 +242,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
-			message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put with payload: #[payload]"
+			message="Proxying request for traceID=#[sessionVars.traceID] to http://${ilp-ledger.host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
 			category="com.l1p.interop.dfsp.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
 			method="PUT" doc:name="HTTP">
