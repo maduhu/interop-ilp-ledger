@@ -176,7 +176,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling getTransferFullfillment(#[id]) for TraceID=#[sessionVars.TraceID]: #[message]"
+                message="Calling getTransferFullfillment(#[id]) for TraceID=#[sessionVars.TraceID]"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
         <logger level="INFO"
