@@ -37,6 +37,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Received request with TraceID=#[sessionVars.TraceID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
                 category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
+        <logger level="DEBUG"
+                message="Received request with TraceID=#[sessionVars.TraceID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']: #[payload]"
+                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
