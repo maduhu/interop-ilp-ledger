@@ -7,7 +7,7 @@
     <Appenders>
         <RollingFile name="diagnostic" fileName="${logDir}/${appName}.log"
                      filePattern="${logDir}/${appName}-%i.log.gz">
-            <PatternLayout pattern="[%d{MM-dd HH:mm:ss,SSS}] %-5p [%t] %c{1}: %m%n" />
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss,SSS z}] %-5p [%t] %c{1}: %m%n" />
             <Policies>
                 <SizeBasedTriggeringPolicy size="200MB" />
             </Policies>
