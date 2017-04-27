@@ -1,11 +1,9 @@
 package com.l1p.interop.ilp.ledger;
 
 import com.l1p.interop.JsonTransformer;
-import com.l1p.interop.L1PErrorResponse;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
-import org.mule.api.transport.PropertyScope;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.transformer.types.DataTypeFactory;
 

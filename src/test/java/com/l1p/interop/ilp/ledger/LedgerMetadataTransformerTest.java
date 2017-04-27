@@ -1,17 +1,17 @@
 package com.l1p.interop.ilp.ledger;
 
-import static org.junit.Assert.*;
+//import static org.junit.Assert.*;
 
 //import org.codehaus.jettison.json.JSONException;
 //import org.codehaus.jettison.json.JSONObject;
-import org.junit.After;
+/*import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
-import org.mule.api.transport.PropertyScope;
+import org.mule.api.transport.PropertyScope;*/
 import org.mule.component.SimpleCallableJavaComponentTestCase;
 
 

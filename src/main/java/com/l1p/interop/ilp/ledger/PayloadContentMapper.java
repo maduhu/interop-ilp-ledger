@@ -5,8 +5,6 @@ import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractMessageTransformer;
 import org.mule.transformer.types.DataTypeFactory;
 
-import java.util.Map;
-
 /**
  * Created by Bryan on 9/28/2016.
  */
