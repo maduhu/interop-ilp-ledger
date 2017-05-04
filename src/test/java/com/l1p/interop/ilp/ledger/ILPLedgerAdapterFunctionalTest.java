@@ -13,9 +13,7 @@ import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.net.MediaType;
 import com.l1p.interop.JsonTransformer;
-import com.l1p.interop.mule.connector.metrics.reporter.KafkaReporter;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;

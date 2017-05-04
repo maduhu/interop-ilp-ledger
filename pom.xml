@@ -21,8 +21,7 @@
 
 	<properties>
 		<interop-domain.version>0.1.22</interop-domain.version>
-		<!-- <interop-common.version>1.0.25-SNAPSHOT</interop-common.version> -->
-	    </properties>
+    </properties>
 
 	<build>
 		<plugins>
