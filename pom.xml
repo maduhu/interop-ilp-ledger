@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -21,7 +22,7 @@
 
 	<properties>
 		<interop-domain.version>0.1.25</interop-domain.version>
-    </properties>
+	</properties>
 
 	<build>
 		<plugins>
@@ -38,13 +39,7 @@
 	</build>
 
 	<dependencies>
-		
-		<!-- <dependency>
-			<groupId>com.l1p.interop</groupId>
-			<artifactId>interop-common</artifactId>
-			<version>${interop-common.version}</version>
-		</dependency> -->
-		
+
 		<dependency>
 			<groupId>com.l1p.interop</groupId>
 			<artifactId>interop-domain</artifactId>
@@ -62,12 +57,12 @@
 			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
 		<dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-all</artifactId>
-		    <version>1.10.19</version>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.19</version>
 		</dependency>
 
 		<dependency>
@@ -88,13 +83,20 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
-             <groupId>org.codehaus.jettison</groupId>
-              <artifactId>jettison</artifactId>
-              <version>1.3.7</version>
-        </dependency>
-	
-    </dependencies>
+			<groupId>org.codehaus.jettison</groupId>
+			<artifactId>jettison</artifactId>
+			<version>1.3.7</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>4.2.2.RELEASE</version>
+		</dependency>
+
+	</dependencies>
 
 </project>
