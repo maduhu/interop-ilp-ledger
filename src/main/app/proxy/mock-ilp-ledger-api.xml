@@ -77,7 +77,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			doc:name="set-L1p-Trace-Id" />
 		<logger level="INFO"
 			message="Received request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
-			category="com.l1p.interop.dfsp.mock-api-main" doc:name="logger" />
+			category="com.l1p.interop.ilp.ledger.mock-api-main" doc:name="logger" />
 		<apikit:router config-ref="test-api-config" doc:name="APIkit Router" />
 		<exception-strategy ref="test-api-apiKitGlobalExceptionMapping"
 			doc:name="Reference Exception Strategy" />

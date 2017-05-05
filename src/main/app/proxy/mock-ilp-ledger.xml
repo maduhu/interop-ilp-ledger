@@ -14,7 +14,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerMetadata for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-/" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-/" doc:name="logger"/>
         <set-payload value="{
   &quot;currency_code&quot;: null,
   &quot;currency_symbol&quot;: null,
@@ -35,7 +35,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 }" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received getLedgerMetadata response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-/" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-/" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get:/:.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get:/:.start" endSnapKey="get:/:.stop" category="l1p.interop-ilp-ledger.empty-get.api" metricKey="Emtpy:/:RequestGetTime" doc:name="Metrics Record"/>
@@ -48,11 +48,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getLedgerHealth for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-health" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-health" doc:name="logger"/>
         <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Received getLedgerHealth response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-health" doc:name="logger"/>
+                message="Received getLedgerHealth response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-get-health" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.health.start" endSnapKey="get.health.stop" category="l1p.interop-ilp-ledger.health.api" metricKey="HealthGetRequestTime" doc:name="Metrics Record"/>
@@ -65,11 +65,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccounts for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-accounts" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-accounts" doc:name="logger"/>
         <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Received getAccounts response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-accounts" doc:name="logger"/>
+                message="Received getAccounts response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-get-accounts" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.accounts.start" endSnapKey="get.accounts.stop" category="l1p.interop-ilp-ledger.accounts.api" metricKey="AccountsGetRequestTime" doc:name="Metrics Record"/>
@@ -82,7 +82,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-accounts-id" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-accounts-id" doc:name="logger"/>
         <set-payload value="{   &quot;id&quot;: &quot;http://ec2-35-163-249-3.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob&quot;,   &quot;name&quot;: &quot;bob&quot;,   &quot;balance&quot;: &quot;1056.00&quot;,   &quot;currencyCode&quot;: &quot;EUR&quot;,   &quot;currencySymbol&quot;: &quot;E&quot;,   &quot;is_disabled&quot;: &quot;1&quot;,   &quot;ledger&quot;: &quot;http://ec2-35-163-249-3.us-west-2.compute.amazonaws.com:8088/ledger&quot; }" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received getAccount(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
@@ -99,7 +99,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling putAccount(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-put-accounts-id" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-put-accounts-id" doc:name="logger"/>
         <set-payload value="{
   &quot;id&quot;: &quot;http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8014/ledger/accounts/john&quot;,
   &quot;name&quot;: &quot;john&quot;,
@@ -109,7 +109,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 }" doc:name="Set Payload"/>
         <logger level="INFO"
                 message="Received putAccount(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-put-accounts-id" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-put-accounts-id" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.accounts-id.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.accounts-id.start" endSnapKey="put.accounts-id.stop" category="l1p.interop-ilp-ledger.accounts-id.api" metricKey="AccountsIdPutRequestTime" doc:name="Metrics Record"/>
@@ -123,11 +123,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling putTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id" doc:name="logger"/>
         <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;prepared&quot;}"></set-payload>
         <logger level="INFO"
-                message="Received putTransfer(#[id])response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id" doc:name="logger"/>
+                message="Received putTransfer(#[id])response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers.start" endSnapKey="put.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersPutRequestTime" doc:name="Metrics Record"/>
@@ -140,11 +140,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-transfers-id" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-transfers-id" doc:name="logger"/>
         <set-payload doc:name="Set Payload" value="{&quot;id&quot;:&quot;http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204&quot;,&quot;ledger&quot;:&quot;http://usd-ledger.example&quot;,&quot;debits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/alice&quot;,&quot;amount&quot;:&quot;50&quot;,&quot;authorized&quot;:true}],&quot;credits&quot;:[{&quot;account&quot;:&quot;http://usd-ledger.example/accounts/bob&quot;,&quot;amount&quot;:&quot;50&quot;}],&quot;execution_condition&quot;:&quot;cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2&quot;,&quot;expires_at&quot;:&quot;2015-06-16T00:00:01.000Z&quot;,&quot;state&quot;:&quot;executed&quot;,&quot;timeline&quot;:{&quot;prepared_at&quot;:&quot;2015-06-16T00:00:00.500Z&quot;,&quot;executed_at&quot;:&quot;2015-06-16T00:00:00.999Z&quot;}}"/>
         <logger level="INFO"
-                message="Received getTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-transfers-id" doc:name="logger"/>
+                message="Received getTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-get-transfers-id" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
@@ -158,11 +158,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling executeTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id-fulfillment" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id-fulfillment" doc:name="logger"/>
         <set-payload value="cf:0:_v8" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Received executeTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']: #[payload]"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id-fulfillment" doc:name="logger"/>
+                message="Received executeTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']: #[payload]"
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id-fulfillment" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-fulfillment.start" endSnapKey="put.transfers-fulfillment.stop" category="l1p.interop-ilp-ledger.transfers-fulfillment.api" metricKey="TransfersFulfillmentPutRequestTime" doc:name="Metrics Record"/>
@@ -175,11 +175,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getTransferFulfillment(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-transfers-id-fulfillment" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-transfers-id-fulfillment" doc:name="logger"/>
         <set-payload doc:name="Set Payload" value="cf:0:"/>
         <logger level="INFO"
-                message="Sending getTransferFulfillment(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-transfers-id-fulfillment" doc:name="logger"/>
+                message="Sending getTransferFulfillment(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-get-transfers-id-fulfillment" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
@@ -193,11 +193,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling rejectTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id-rejection" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id-rejection" doc:name="logger"/>
         <set-payload value="cf:0:_v8" mimeType="text/plain" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Received rejectTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-put-transfers-id-rejection" doc:name="logger"/>
+                message="Received rejectTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-put-transfers-id-rejection" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-rejection.start" endSnapKey="put.transfers-rejection.stop" category="l1p.interop-ilp-ledger.transfers-rejection.api" metricKey="TransfersRejectionPutRequestTime" doc:name="Metrics Record"/>
@@ -210,11 +210,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getConnectors for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-get-connectors" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-get-connectors" doc:name="logger"/>
         <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Received getConnectors response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-get-connectors" doc:name="logger"/>
+                message="Received getConnectors response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-get-connectors" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
@@ -227,11 +227,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Received postMessages request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-                category="com.l1p.interop.dfsp.mock-post-messages" doc:name="logger"/>
+                category="com.l1p.interop.ilp.ledger.mock-post-messages" doc:name="logger"/>
         <set-payload value="{}" doc:name="Set Payload"/>
         <logger level="INFO"
-                message="Sending postMessages response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.dfsp.mock-post-messages" doc:name="logger"/>
+                message="Sending postMessages response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.inboundProperties.'http.status']"
+                category="com.l1p.interop.ilp.ledger.mock-post-messages" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.connectors.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.connectors.start" endSnapKey="get.connectors.stop" category="l1p.interop-ilp-ledger.connectors.api" metricKey="ConnectorsGetRequestTime" doc:name="Metrics Record"/>
