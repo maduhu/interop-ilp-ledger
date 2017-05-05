@@ -28,7 +28,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 		</ss:authentication-manager>
 	</spring:beans>
 
-	<mule-ss:security-manager>
+	<mule-ss:security-manager name="muleSecurityManager">
 		<mule-ss:delegate-security-provider
 			name="memory-provider" delegate-ref="authenticationManager" />
 	</mule-ss:security-manager>
