@@ -20,7 +20,7 @@
 	</scm>
 
 	<properties>
-		<interop-domain.version>0.1.22</interop-domain.version>
+		<interop-domain.version>0.1.25</interop-domain.version>
     </properties>
 
 	<build>

@@ -383,11 +383,14 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	 * @param password
 	 * @return
 	 */
-	private String createEncryptedAuth(String username, String password) {
+	/*
+	 private String createEncryptedAuth(String username, String password) {
+	 
 		String stringToBeEncryped = username + ":" + password;
 		String auth = new String("Basic " + Base64.encodeBase64(stringToBeEncryped.getBytes()));
 		System.out.println("auth: " + auth);
 		
 		return auth;
 	}
+	*/
 }
