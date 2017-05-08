@@ -251,23 +251,6 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
             <!--<metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>-->
         <!--</metrics:inc-count>-->
     </flow>
-    
-    <flow name="get:/transfers/{id}/fulfillment:api-config">
-    	<http:basic-security-filter realm="mule-realm" />
-    	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
-        <logger level="INFO"
-                message="Calling getTransferFullfillment(#[id]) for traceID=#[sessionVars.traceID]: #[message]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
-        <logger level="INFO"
-                message="Sending getTransferFulfillment(#[id]) response for traceID=#[sessionVars.traceID], http.status=#[message.outboundProperties.'http.status']: #[payload]"
-                category="com.l1p.interop.dfsp.api-main" doc:name="logger"/>
-        <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
-        <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
-        <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfers.api" doc:name="metrics-count">
-            <metrics:metric-keys><metrics:metric-key>TransfersGetRequest</metrics:metric-key></metrics:metric-keys>
-        </metrics:inc-count>
-    </flow>
 
     <flow name="put:/transfers/{id}/rejection:api-config">
     	<http:basic-security-filter realm="mule-realm" />
