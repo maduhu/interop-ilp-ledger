@@ -10,13 +10,13 @@
 
 	<groupId>com.l1p.interop.ilp</groupId>
 	<artifactId>interop-ilp-ledger</artifactId>
-	<version>0.1.4</version>
+	<version>0.1.5-SNAPSHOT</version>
 	<packaging>mule</packaging>
 	<name>Mule ILP Ledger Adapter</name>
 
 	<scm>
 		<connection>scm:git:https://github.com/LevelOneProject/interop-ilp-ledger</connection>
-		<tag>interop-ilp-ledger-0.1.4</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<properties>
