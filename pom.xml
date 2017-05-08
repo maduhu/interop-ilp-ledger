@@ -77,18 +77,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mule.transports</groupId>
-			<artifactId>mule-transport-ftp</artifactId>
-			<version>${mule.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
 			<version>1.3.7</version>
 		</dependency>
-		
 		
 		<dependency>
 	        <groupId>org.springframework.security</groupId>
