@@ -11,7 +11,6 @@ import org.glassfish.grizzly.websockets.ProtocolHandler;
 import org.glassfish.grizzly.websockets.WebSocketListener;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.l1p.interop.ilp.ledger.notification.LedgerNotificationWebSocket;
 

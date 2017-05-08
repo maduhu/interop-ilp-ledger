@@ -1,12 +1,12 @@
 package com.l1p.interop.ilp.ledger;
 
 import static org.mockito.Mockito.mock;
-import static org.junit.Assert.*;
+//import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+//import java.lang.reflect.InvocationTargetException;
+//import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +34,7 @@ import com.l1p.interop.ilp.ledger.domain.Transfer;
 import com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication;
 import com.l1p.interop.ilp.ledger.notification.LedgerNotificationWebSocket;
 
-import junit.framework.Assert;
+//import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class LedgerNotificationRegistrationApplicationTest extends TestCase{
@@ -315,19 +315,19 @@ public class LedgerNotificationRegistrationApplicationTest extends TestCase{
 //			
 //			org.junit.Assert.assertEquals("response from onMessage", true, response);
 //		} catch (NoSuchMethodException e) {
-//			// TODO Auto-generated catch block
+//			//  Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
+//			//  Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
+//			//  Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
+//			//  Auto-generated catch block
 //			e.printStackTrace();
 //		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
+//			//  Auto-generated catch block
 //			e.printStackTrace();
 //		}
 

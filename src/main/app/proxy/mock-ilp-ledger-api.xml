@@ -72,12 +72,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger.basePath}/*"
 			doc:name="HTTP" />
 		<object-to-string-transformer doc:name="Object to String" />
-		<set-session-variable variableName="traceID"
-			value="#[(message.inboundProperties.'http.traceID' == empty) ? java.util.UUID.randomUUID() : message.inboundProperties.'http.query.traceID']"
-			doc:name="set-traceID" />
+		<set-session-variable variableName="L1p-Trace-Id"
+			value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']"
+			doc:name="set-L1p-Trace-Id" />
 		<logger level="INFO"
-			message="Received request for traceID=#[sessionVars.traceID] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type'], Authorization=#[message.inboundProperties.'Authorization']: #[payload]"
-			category="com.l1p.interop.dfsp.mock-api-main" doc:name="logger" />
+			message="Received request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
+			category="com.l1p.interop.ilp.ledger.mock-api-main" doc:name="logger" />
 		<apikit:router config-ref="test-api-config" doc:name="APIkit Router" />
 		<exception-strategy ref="test-api-apiKitGlobalExceptionMapping"
 			doc:name="Reference Exception Strategy" />

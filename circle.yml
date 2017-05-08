@@ -24,6 +24,7 @@ deployment:
       
       #Merge back to develop so the latest version is shared.
       - git remote set-url origin https://$GITHUB_TOKEN@github.com/LevelOneProject/interop-ilp-ledger.git
+      - git branch -d develop
       - git checkout -B develop origin/develop
       - git pull origin develop
       - git merge master
