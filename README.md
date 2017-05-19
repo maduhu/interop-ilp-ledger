@@ -1,4 +1,4 @@
-# interop-ilp ledger
+# Interop Ledger
 This project provides an interop API implementation of ILP Ledger Service.
 
 Contents:
