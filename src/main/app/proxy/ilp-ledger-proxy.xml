@@ -15,7 +15,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 	<!-- DFSP HTTP configuration for making REST call to the ilp service -->
 	<http:request-config name="ILP_Ledger_Configuration"
-		host="${dfsp-ledger.host}" port="${ilp-ledger.port}"
+		host="${dfsp-host}" port="${ilp-ledger.port}"
 		basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
 		<http:basic-authentication username="${ilp-ledger.userName}"
 			password="${ilp-ledger.password}" />
