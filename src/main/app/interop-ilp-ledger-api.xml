@@ -32,6 +32,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
         <object-to-string-transformer doc:name="Object to String"/>
         <set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
+        <logger message="Logging environment for Performance test:  ${MULE_ENV} :: ilp ledger host = ${ilp-ledger.host} :: ilp ledger port = ${ilp-ledger.port} :: ilp-ledger.basePath = ${ilp-ledger.basePath}" level="INFO" doc:name="Logger"/>
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
                 message="Received request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
