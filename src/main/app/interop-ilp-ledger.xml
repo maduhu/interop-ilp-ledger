@@ -54,6 +54,10 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <logger level="DEBUG"
                 message="Sending getLedgerMetadata response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+        <logger level="INFO"
+                message="ilp-ledger-adapter.ledgerAdapterURL=${ilp-ledger-adapter.ledgerAdapterURL}"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+             
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="metadata.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="metadata.start" endSnapKey="metadata.stop" category="l1p.interop-ilp-ledger.metadata.api" metricKey="MetadataGetTime" doc:name="Metrics Record"/>
