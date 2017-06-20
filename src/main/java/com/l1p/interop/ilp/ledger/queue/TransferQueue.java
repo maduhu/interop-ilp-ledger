@@ -65,4 +65,31 @@ public class TransferQueue {
 
     return queuedTransfer;
   }
+
+  public TransferQueueStats getStats() {
+    return new TransferQueueStats(prepareCount.get(), fulfillCount.get(), cancelCount.get());
+  }
+
+  public static class TransferQueueStats {
+    public final int preparesSize, fulfillsSize, cancelsSize;
+
+    public TransferQueueStats(int preparesSize, int fulfillsSize, int cancelsSize) {
+      this.preparesSize = preparesSize;
+      this.fulfillsSize = fulfillsSize;
+      this.cancelsSize = cancelsSize;
+    }
+
+    public int getPreparesSize() {
+      return preparesSize;
+    }
+
+    public int getFulfillsSize() {
+      return fulfillsSize;
+    }
+
+    public int getCancelsSize() {
+      return cancelsSize;
+    }
+  }
+
 }
