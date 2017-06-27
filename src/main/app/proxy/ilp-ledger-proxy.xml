@@ -17,8 +17,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<http:request-config name="ILP_Ledger_Configuration"
 		host="${dfsp-host}" port="${ilp-ledger.port}"
 		basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
-		<http:basic-authentication username="${ilp-ledger.userName}"
-			password="${ilp-ledger.password}" />
 	</http:request-config>
 
 	<spring:beans>
@@ -99,7 +97,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/health"
 			method="GET" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200"/> -->
 			<http:success-status-code-validator
 				values="200..500" />
 		</http:request>
@@ -108,9 +105,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
 	</flow>
 
-	<flow name="getAccounts">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
+	<sub-flow name="getAccounts">
+		<set-property propertyName="Content-Type" value="application/json"	doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
 		<logger level="INFO"
@@ -124,11 +120,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
-	<flow name="getAccount">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
+	<sub-flow name="getAccount">
+		<set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
 		<logger level="INFO"
@@ -136,9 +131,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
 			method="GET" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,400,404"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
+			<http:success-status-code-validator	values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
 		<choice doc:name="Map Ledger URLs based on the response code">
@@ -153,9 +146,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
-	<flow name="putAccount">
+	<sub-flow name="putAccount">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -170,10 +163,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
 	
-	<flow name="putTransfer">
+	<sub-flow name="putTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -205,9 +198,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 	
-	<flow name="getTransfer">
+	<sub-flow name="getTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -217,7 +210,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
 			method="GET" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,400,404"/> -->
 			<http:success-status-code-validator
 				values="200..500" />
 		</http:request>
@@ -234,10 +226,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 	
 
-	<flow name="executeTransfer">
+	<sub-flow name="executeTransfer">
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -245,9 +237,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
 			method="PUT" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
+			<http:success-status-code-validator	values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
 		<set-variable variableName="payloadToReturn" value="#[payload]"
@@ -259,7 +249,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				</metrics:inc-count>
 				<http:request config-ref="ILP_Ledger_Configuration"
 					path="/transfers/#[id]" method="GET" doc:name="HTTP">
-					<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
 					<http:success-status-code-validator
 						values="200..500" />
 				</http:request>
@@ -269,9 +258,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				<set-variable doc:name="Store Transfer Payload" value="#[payload]" variableName="transferPayload"/>
 				<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
 					method="GET" doc:name="HTTP">
-					<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
-					<http:success-status-code-validator
-						values="200..500" />
+					<http:success-status-code-validator	values="200..500" />
 				</http:request>
 				<object-to-string-transformer doc:name="Object to String" mimeType="text/plain"/>
 				<set-variable doc:name="Store Transfer Fulfillment Payload" value="#[payload]" variableName="transferFulfillmentPayload"/>
@@ -298,9 +285,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 	
-	<flow name="getTransferFulfillment">
+	<sub-flow name="getTransferFulfillment">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -310,28 +297,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
 		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
 			method="GET" doc:name="HTTP">
-			<!-- <http:success-status-code-validator values="200,400,404"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
+			<http:success-status-code-validator	values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
-        <!-- <choice doc:name="Map Ledger URLs based on the response code">
-			<when expression="#[message.inboundProperties.'http.status' == 200]">
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-					doc:name="Transform Ledger URL" />
-			</when>
-			<otherwise>
-				<logger message="getTransferFulfillment failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
-					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-			</otherwise>
-		</choice> -->
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-		
-	</flow>
+	</sub-flow>
 	
 
-	<flow name="rejectTransfer">
+	<sub-flow name="rejectTransfer">
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -364,9 +338,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 					  value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
-	<flow name="getConnectors">
+	<sub-flow name="getConnectors">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -383,14 +357,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
-	<flow name="postMessages">
+	<sub-flow name="postMessages">
 		<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendMessageNotification(payload)]]></expression-component>
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
 		<set-property propertyName="http.status" value="#[201]"
 			doc:name="201" />
-	</flow>
+	</sub-flow>
 
 </mule>
