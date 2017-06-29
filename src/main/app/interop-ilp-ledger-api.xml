@@ -31,9 +31,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<apikit:config name="api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
     <flow name="api-main">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="/apikit${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
         <set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
+        <logger message="** API Kit called at the front of this app **" level="INFO" doc:name="Logger"/>
         
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
@@ -46,7 +47,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="api-console">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.consolePath}/*" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="/apikit/${ilp-ledger-adapter.consolePath}/*" doc:name="HTTP"/>
         <apikit:console config-ref="api-config" doc:name="APIkit Console"/>
     </flow>
 
