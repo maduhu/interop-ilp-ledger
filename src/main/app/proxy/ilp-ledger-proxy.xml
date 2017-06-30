@@ -84,7 +84,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	</spring:beans>
 
 	<flow name="getLedgerMetadata">
-		<set-payload value="#[app.registry.ledgerAdapterMetadata]" doc:name="Set Payload"/>
+		<set-payload value="#[app.registry.ledgerAdapterMetadata]" doc:name="Set Payload" mimeType="application/json"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 	</flow>
 
 	<flow name="getLedgerHealth">
@@ -101,11 +102,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
 	</flow>
 
-	<sub-flow name="getAccounts">
+	<flow name="getAccounts">
 		<set-property propertyName="Content-Type" value="application/json"	doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
@@ -118,26 +120,18 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 
-	<sub-flow name="getAccount">
+	<flow name="getAccount">
 		<set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
 		<logger level="INFO"
 			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
 			category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="logger" />
-<!--         <set-payload value="{ -->
-<!--     &quot;id&quot;: &quot;http://localhost:8088/ilp/ledger/v1/v1/accounts/alice&quot;, -->
-<!--     &quot;name&quot;: &quot;alice&quot;, -->
-<!--     &quot;balance&quot;: &quot;98944.52&quot;, -->
-<!--     &quot;currencyCode&quot;: &quot;USD&quot;, -->
-<!--     &quot;currencySymbol&quot;: &quot;$&quot;, -->
-<!--     &quot;is_disabled&quot;: false, -->
-<!--     &quot;ledger&quot;: &quot;http://localhost:8088/ilp/ledger/v1/v1&quot; -->
-<!-- }" mimeType="application/json" doc:name="Set Payload"/> -->
 		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
 			method="GET" doc:name="HTTP">
 			<http:success-status-code-validator	values="200..500" />
@@ -154,11 +148,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 					category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="Logger" />
 			</otherwise>
 		</choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 
-	<sub-flow name="putAccount">
+	<flow name="putAccount">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -171,12 +166,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 
 	
-	<sub-flow name="putTransfer">
+	<flow name="putTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -206,11 +202,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
 			</otherwise>
 		</choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 	
-	<sub-flow name="getTransfer">
+	<flow name="getTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -234,12 +231,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
 			</otherwise>
 		</choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 	
 
-	<sub-flow name="executeTransfer">
+	<flow name="executeTransfer">
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -295,9 +293,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 	
-	<sub-flow name="getTransferFulfillment">
+	<flow name="getTransferFulfillment">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -312,10 +310,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 	
 
-	<sub-flow name="rejectTransfer">
+	<flow name="rejectTransfer">
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
@@ -348,9 +346,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 					  value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 
-	<sub-flow name="getConnectors">
+	<flow name="getConnectors">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<set-payload value="#[NullPayload.getInstance()]"
@@ -365,16 +363,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 				values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+	</flow>
 
-	<sub-flow name="postMessages">
+	<flow name="postMessages">
 		<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendMessageNotification(payload)]]></expression-component>
 		<set-payload value="#[NullPayload.getInstance()]"
 			doc:name="Set Payload" />
 		<set-property propertyName="http.status" value="#[201]"
 			doc:name="201" />
-	</sub-flow>
+	</flow>
 
 </mule>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
@@ -18,7 +18,8 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/ce/tracking http://www.mulesoft.org/schema/mule/ce/tracking/current/mule-tracking-ce.xsd
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
-http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 
 	<spring:beans>
 		<ss:authentication-manager alias="authenticationManager">
@@ -40,10 +41,10 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
 	</mule-ss:security-manager>
 	
     <sub-flow name="common_Flow">
+        <logger message="This flow was called directly, not through API Kit router  :: ${ilp-ledger-adapter.basePath}" level="INFO" doc:name="Logger"/>
         <set-variable variableName="id" value="#[(message.inboundProperties.'http.uri.params'.id == null) ?  -1 : message.inboundProperties.'http.uri.params'.id]" doc:name="Variable - set ID from uri parameter"/>
      	<set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
-        <logger message="This flow was called directly, not through API Kit router  :: ${ilp-ledger-adapter.basePath}" level="INFO" doc:name="Logger"/>
         
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
@@ -52,6 +53,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <logger level="DEBUG"
                 message="Received request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+        <object-to-string-transformer doc:name="Object to String"/>
     </sub-flow>
     
 	
@@ -239,7 +241,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <logger level="DEBUG"
                 message="Calling executeTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="executeTransfer" doc:name="call executeTransfer"/>
+        <flow-ref name="executeTransfer" doc:name="executeTransfer"/>
         <logger level="INFO"
                 message="Sending executeTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
@@ -311,7 +313,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <logger level="INFO"
                 message="Calling getConnectors for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="getConnectors" doc:name="call getConnectors"/>
+        <flow-ref name="getConnectors" doc:name="getConnectors"/>
         <logger level="INFO"
                 message="Received getConnectors response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
@@ -335,7 +337,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <logger level="DEBUG"
                 message="Calling post messages for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="postMessages" doc:name="call postMessages"/>
+        <flow-ref name="postMessages" doc:name="postMessages"/>
         <logger level="INFO"
                 message="Received postMessages response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
@@ -357,6 +359,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
                 message="Handling auth_token call.  L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <set-payload doc:name="Set Payload" value="{&quot;token&quot;:&quot;placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES&quot;}"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.auth_token.stop" doc:name="SnapTime"/>
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.auth_token.start" endSnapKey="get.auth_token.stop" category="l1p.interop-ilp-ledger.auth-token.api" metricKey="AuthTokenGetRequestTime" doc:name="Metrics Record"/>
         <metrics:time config-ref="metricsConfig" beginSnapKey="apikit.start" endSnapKey="get.auth_token.stop"         category="l1p.interop-ilp-ledger.auth-token.api" metricKey="AuthTokenGetRequestTimeWithFullApiKitGetTime" doc:name="Metrics Record - Complete API call"/>
@@ -364,11 +367,10 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     
     <catch-exception-strategy name="interop-ilp-ledgerCatch_Exception_Strategy">
-<!--         <set-payload value="{ &quot;message&quot; : &quot;Got an error.  This is still under construction&quot; }" doc:name="Set Payload"/> -->
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property - content-type"/>
         <set-property propertyName="http.status" value="501" doc:name="Property - http status"/>
 		<set-session-variable variableName="errorMessageId" value="Transformer Messaging Exception" doc:name="set-errorMessageId"/>
-		<transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
+		<transformer ref="ExceptionTransformer" doc:name="Exception Transformer"/>
     </catch-exception-strategy>
     
 </mule>

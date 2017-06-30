@@ -12,7 +12,7 @@
                 <SizeBasedTriggeringPolicy size="200MB" />
             </Policies>
             <DefaultRolloverStrategy max="10" />
-            <ThresholdFilter level="WARN"  onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="INFO"  onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingFile>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout pattern="%-5p %d [%t] %c{1}: %m%n" />
@@ -20,20 +20,20 @@
     </Appenders>
     <Loggers>
         <Logger name="javax.jmdns.impl.DNSIncoming" level="ERROR" />
-        <Logger name="httpclient.wire" level="WARN" />
-        <Logger name="org.apache.commons.httpclient" level="WARN" />
-        <Logger name="org.mule.util.queue.DualRandomAccessFileQueueStoreDelegate" level="WARN" />
+        <Logger name="httpclient.wire" level="INFO" />
+        <Logger name="org.apache.commons.httpclient" level="INFO" />
+        <Logger name="org.mule.util.queue.DualRandomAccessFileQueueStoreDelegate" level="INFO" />
         <Logger name="org.mule.transformer" level="WARN" />
         <Logger name="org.jetel.graph" level="WARN" />
         <Logger name="org.mule.transport.service.DefaultTransportServiceDescriptor" level="WARN" />
-        <Logger name="com.sforce" level="WARN" />
+        <Logger name="com.sforce" level="INFO" />
         <Logger name="org.mule.module.launcher.DeploymentDirectoryWatcher" level="WARN" />
         <Logger name="org.mule.transformer.graph" level="WARN" />
         <Logger name="com.mulesoft.module.batch" level="WARN" />
         <Logger name="org.mule.transport.jms.JmsMessageUtils" level="ERROR" />
         <Logger name="org.mule.lifecycle.AbstractLifecycleManager" level="WARN" />
 
-        <Root level="ERROR">
+        <Root level="INFO">
             <!-- log levels are set as filters on the appenders -->
             <AppenderRef ref="diagnostic" />
 
