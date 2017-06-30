@@ -43,7 +43,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <set-variable variableName="id" value="#[(message.inboundProperties.'http.uri.params'.id == null) ?  -1 : message.inboundProperties.'http.uri.params'.id]" doc:name="Variable - set ID from uri parameter"/>
      	<set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
-        <logger message="This flow was called directly, not through API Kit router  :: ${ilp-ledger-adapter.basePath}" level="ERROR" doc:name="Logger"/>
+        <logger message="This flow was called directly, not through API Kit router  :: ${ilp-ledger-adapter.basePath}" level="INFO" doc:name="Logger"/>
         
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
         <logger level="INFO"
@@ -80,7 +80,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     
     <flow name="get:/health:api-config">
-        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/health" doc:name="HTTP"/>
+        <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/health" doc:name="HTTP" allowedMethods="GET"/>
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.health.start" doc:name="SnapTime"/>
         <logger level="INFO"
@@ -364,10 +364,11 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     
     <catch-exception-strategy name="interop-ilp-ledgerCatch_Exception_Strategy">
-        <logger level="ERROR" doc:name="Logger" message="Got an ERROR.  "/>
-        <set-payload value="{ &quot;message&quot; : &quot;Got an error.  This is still under construction&quot; }" doc:name="Set Payload"/>
+<!--         <set-payload value="{ &quot;message&quot; : &quot;Got an error.  This is still under construction&quot; }" doc:name="Set Payload"/> -->
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property - content-type"/>
         <set-property propertyName="http.status" value="501" doc:name="Property - http status"/>
+		<set-session-variable variableName="errorMessageId" value="Transformer Messaging Exception" doc:name="set-errorMessageId"/>
+		<transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
     </catch-exception-strategy>
     
 </mule>
