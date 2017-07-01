@@ -32,16 +32,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
-        <set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
+        <flow-ref name="check-and-set-L1p-Trace-Id" doc:name="check-and-set-L1p-Trace-Id"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
         
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
-        <logger level="INFO"
-                message="Received request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <logger level="DEBUG"
-                message="Received request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']: #[payload]"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
