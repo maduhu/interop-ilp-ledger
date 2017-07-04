@@ -28,7 +28,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <spring:bean id="ExceptionTransformer" name="ExceptionTransformer" class="com.l1p.interop.L1PExceptionTransformer"/>
     </spring:beans>
 
-	<apikit:config name="api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
+	<!-- <apikit:config name="api-config" disableValidations="true" raml="ilp-ledger-adapter.raml" consoleEnabled="false" doc:name="Router" />
 
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/apikit${ilp-ledger-adapter.basePath}/*" doc:name="HTTP"/>
@@ -36,7 +36,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
         <logger message="** API Kit called at the front of this app **" level="INFO" doc:name="Logger"/>
         
-        <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
+        <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/>
         <logger level="INFO"
                 message="Received request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] at path=#[message.inboundProperties.'http.request.path'], method=#[message.inboundProperties.'http.method'], Content-Type=#[message.inboundProperties.'Content-Type']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
@@ -59,45 +59,45 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="405">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 405 error - org.mule.module.apikit.exception.MethodNotAllowedException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            <logger level="ERROR"
+                    message="Received 405 error - org.mule.module.apikit.exception.MethodNotAllowedException: #[exception.getCauseException().getMessage();]"
+                    category="some.category"/>
             <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
             <set-session-variable variableName="errorMessageId" value="Method Not Allowed" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="415">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 415 error - org.mule.module.apikit.exception.UnsupportedMediaTypeException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            <logger level="ERROR"
+                    message="Received 415 error - org.mule.module.apikit.exception.UnsupportedMediaTypeException: #[exception.getCauseException().getMessage();]"
+                    category="some.category"/>
             <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
             <set-session-variable variableName="errorMessageId" value="Unsupported MediaType" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="406">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 406 error - org.mule.module.apikit.exception.NotAcceptableException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            <logger level="ERROR"
+                    message="Received 406 error - org.mule.module.apikit.exception.NotAcceptableException: #[exception.getCauseException().getMessage();]"
+                    category="some.category"/>
             <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
             <set-session-variable variableName="errorMessageId" value="Not Acceptable" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="400">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 400 error - org.mule.module.apikit.exception.BadRequestException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            <logger level="ERROR"
+                    message="Received 400 error - org.mule.module.apikit.exception.BadRequestException: #[exception.getCauseException().getMessage();]"
+                    category="some.category"/>
             <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
             <set-session-variable variableName="errorMessageId" value="Bad request" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
         <apikit:mapping statusCode="500">
-            <!--<logger level="ERROR"-->
-                    <!--message="Received 500 error - org.mule.api.transformer.TransformerMessagingException: #[exception.getCauseException().getMessage();]"-->
-                    <!--category="some.category"/>-->
+            <logger level="ERROR"
+                    message="Received 500 error - org.mule.api.transformer.TransformerMessagingException: #[exception.getCauseException().getMessage();]"
+                    category="some.category"/>
             <apikit:exception value="org.mule.api.transformer.TransformerMessagingException" />
             <set-session-variable variableName="errorMessageId" value="Transformer Messaging Exception" doc:name="set-errorMessageId"/>
             <transformer ref="ExceptionTransformer" doc:name="ExceptionTransformer"/>
         </apikit:mapping>
-    </apikit:mapping-exception-strategy>
+    </apikit:mapping-exception-strategy> -->
 
 </mule>

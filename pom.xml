@@ -20,8 +20,8 @@
 	</scm>
 
 	<properties>
-		<interop-domain.version>0.1.32</interop-domain.version>
-    </properties>
+		<interop-domain.version>0.1.33</interop-domain.version>
+	</properties>
 
 	<build>
 		<plugins>
