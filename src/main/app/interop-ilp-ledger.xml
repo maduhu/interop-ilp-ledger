@@ -33,6 +33,10 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 				</ss:user-service>
 			</ss:authentication-provider>
 		</ss:authentication-manager>
+        <spring:bean id="transferQueue" class="com.l1p.interop.ilp.ledger.queue.TransferQueue">
+            <spring:constructor-arg value="1000"/><!-- Prepare Limit -->
+            <spring:constructor-arg value="1000"/><!-- Cancel Limit -->
+        </spring:bean>
 	</spring:beans>
 
 	<mule-ss:security-manager name="muleSecurityManager">
@@ -152,12 +156,12 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
         <set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
         <logger level="INFO"
-                message="Calling putTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling putTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="putTransfer" doc:name="call putTransfer"/>
-        <logger level="INFO"
-                message="Sending putTransfer(#[id])response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+        <flow-ref name="putTransferEnqueue" doc:name="call putTransfer"/>
+        <!--<logger level="INFO"-->
+                <!--message="Sending putTransfer(#[id])response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"-->
+                <!--category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>-->
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers.start" endSnapKey="put.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersPutRequestTime" doc:name="Metrics Record"/>
@@ -191,12 +195,12 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
     	<set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
         <logger level="INFO"
-                message="Calling executeTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling executeTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="executeTransfer" doc:name="executeTransfer"/>
-        <logger level="INFO"
-                message="Sending executeTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+        <flow-ref name="executeTransferEnqueue" doc:name="executeTransfer"/>
+        <!--<logger level="INFO"-->
+                <!--message="Sending executeTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"-->
+                <!--category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>-->
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-fulfillment.start" endSnapKey="put.transfers-fulfillment.stop" category="l1p.interop-ilp-ledger.transfers-fulfillment.api" metricKey="TransfersFulfillmentPutRequestTime" doc:name="Metrics Record"/>
@@ -230,12 +234,12 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
         <set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
         <logger level="INFO"
-                message="Calling rejectTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling rejectTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
-        <flow-ref name="rejectTransfer" doc:name="call executeTransfer"/>
-        <logger level="INFO"
-                message="Received rejectTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
+        <flow-ref name="rejectTransferEnqueue" doc:name="call executeTransfer"/>
+        <!--<logger level="INFO"-->
+                <!--message="Received rejectTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"-->
+                <!--category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>-->
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.stop" doc:name="SnapTime"/>
         
         <metrics:time config-ref="metricsConfig" beginSnapKey="put.transfers-rejection.start" endSnapKey="put.transfers-rejection.stop" category="l1p.interop-ilp-ledger.transfers-rejection.api" metricKey="TransfersRejectionPutRequestTime" doc:name="Metrics Record"/>

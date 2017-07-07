@@ -2,6 +2,8 @@ package com.l1p.interop.ilp.ledger.queue;
 
 import com.l1p.interop.ilp.ledger.domain.Transfer;
 
+import java.util.Date;
+
 public class QueuedTransfer {
     final private TransferState transferState;
     final private Transfer transferDetails;
@@ -17,5 +19,9 @@ public class QueuedTransfer {
 
     public Transfer getTransferDetails() {
         return transferDetails;
+    }
+
+    public Date getTimestamp() {
+        return transferDetails.getExpiresAt();
     }
 }

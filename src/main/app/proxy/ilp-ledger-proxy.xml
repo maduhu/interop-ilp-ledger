@@ -83,6 +83,31 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</spring:bean>
 	</spring:beans>
 
+	<flow name="routeTransfer" processingStrategy="asynchronous" doc:name="route based on state of transfer">
+		<set-variable variableName="queuedTransfer" value="#[app.registry.transferQueue.takeNext()]"/>
+		<choice>
+			<when expression="#[queuedTransfer != null]">
+				<choice>
+					<when expression="#[queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.PREPARE">
+						<set-payload value="#[queuedTransfer.getTrasferDetails()]"/>
+						<flow-ref name="putTransfer"/>
+					</when>
+					<when expression="#[queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.FULFILL">
+						<set-payload value="#[queuedTransfer.getTrasferDetails()]"/>
+						<flow-ref name="executeTransfer"/>
+					</when>
+					<when expression="#[queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.CANCEL">
+						<set-payload value="#[queuedTransfer.getTrasferDetails()]"/>
+						<flow-ref name="rejectTransfer"/>
+					</when>
+				</choice>
+			</when>
+			<otherwise>
+				<logger level="WARN" category="com.l1p.interop.ilp.ledger.queue" message="No QueuedTransfer object returned from the queue"/>
+			</otherwise>
+		</choice>
+	</flow>
+
 	<flow name="getLedgerMetadata">
 		<set-payload value="#[app.registry.ledgerAdapterMetadata]" doc:name="Set Payload" mimeType="application/json"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
@@ -172,14 +197,19 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	</flow>
 
 	
-	<flow name="putTransfer">
+	<flow name="putTransferEnqueue">
+        <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addPrepare(flowVars.id, payload)]]></expression-component>
+		<flow-ref name="routeTransfer"/>
+    </flow>
+	<sub-flow name="putTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
 			doc:name="Property" />
 		<logger level="INFO"
 			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
+		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[payload.id]"
 			method="PUT" doc:name="HTTP">
+			<json:object-to-json-transformer doc:name="Object to JSON"/>
 			<!--<http:success-status-code-validator values="200,201,400,422"/> -->
 			<http:success-status-code-validator
 				values="200..500" />
@@ -205,7 +235,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <json:object-to-json-transformer doc:name="Object to JSON"/>
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 	
 	<flow name="getTransfer">
 		<set-property propertyName="Content-Type" value="application/json"
@@ -237,14 +267,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	</flow>
 	
 
-	<flow name="executeTransfer">
+	<flow name="executeTransferEnqueue">
+        <expression-component doc:name="Enqueue Fulfill"><![CDATA[app.registry.transferQueue.addFulfill(flowVars.id, payload)]]></expression-component>
+		<flow-ref name="routeTransfer"/>
+    </flow>
+
+	<sub-flow name="executeTransfer">
 		<set-property propertyName="Content-Type" value="text/plain"
 			doc:name="Property" />
 		<logger level="INFO"
 			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
+		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[payload.id]/fulfillment"
 			method="PUT" doc:name="HTTP">
+			<set-payload value="#[payload.getExecutionCondition()]"/>
 			<http:success-status-code-validator	values="200..500" />
 		</http:request>
 		<object-to-string-transformer doc:name="Object to String" />
@@ -293,7 +329,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload" />
 		<set-property propertyName="http.status"
 			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 	
 	<flow name="getTransferFulfillment">
 		<set-property propertyName="Content-Type" value="application/json"
@@ -313,20 +349,24 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	</flow>
 	
 
-	<flow name="rejectTransfer">
-		<set-property propertyName="Content-Type" value="text/plain"
-			doc:name="Property" />
+	<flow name="rejectTransferEnqueue">
+        <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addCancel(flowVars.id, payload)]]></expression-component>
+        <flow-ref name="routeTransfer"/>
+    </flow>
+	<sub-flow name="rejectTransfer">
 		<logger level="INFO"
 			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
 			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<object-to-string-transformer doc:name="Object to String" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/rejection"
+		<set-property propertyName="Content-Type" value="text/plain"
+					  doc:name="Property" />
+		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[payload.id]/rejection"
 			method="PUT" doc:name="HTTP">
+			<set-payload value="#[payload.getRejectionReason()]"/>
 			<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
 			<http:success-status-code-validator
 				values="200..500" />
 		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
+		<object-to-string-transformer doc:name="Object To Transfer JSON" />
 		<choice doc:name="Map Ledger URLs based on the response code">
 			<when expression="#[message.inboundProperties.'http.status' == 200]">
 				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
@@ -346,7 +386,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		</choice>
 		<set-property propertyName="http.status"
 					  value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+	</sub-flow>
 
 	<flow name="getConnectors">
 		<set-property propertyName="Content-Type" value="application/json"
