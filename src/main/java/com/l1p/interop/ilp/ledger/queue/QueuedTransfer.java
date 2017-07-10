@@ -24,4 +24,12 @@ public class QueuedTransfer {
     public Date getTimestamp() {
         return transferDetails.getExpiresAt();
     }
+
+    @Override
+    public String toString() {
+        return "QueuedTransfer{" +
+                "transferState=" + transferState +
+                ", timestamp=" + getTimestamp() +
+                '}';
+    }
 }
