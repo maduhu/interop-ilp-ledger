@@ -33,7 +33,7 @@
         <Logger name="org.mule.transport.jms.JmsMessageUtils" level="ERROR" />
         <Logger name="org.mule.lifecycle.AbstractLifecycleManager" level="WARN" />
 
-        <Root level="INFO">
+        <Root level="DEBUG">
             <!-- log levels are set as filters on the appenders -->
             <AppenderRef ref="diagnostic" />
 
