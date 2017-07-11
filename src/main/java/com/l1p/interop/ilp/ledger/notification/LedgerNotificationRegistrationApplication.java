@@ -27,6 +27,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	private final ObjectMapper mapper;
 	private final Broadcaster broadcaster;
 	private final LedgerUrlMapper ledgerUrlMapper;
+	private boolean subscribeAllAccounts;
 
 	public LedgerNotificationRegistrationApplication(LedgerUrlMapper ledgerUrlMapper) {
 		this.ledgerUrlMapper = ledgerUrlMapper;
@@ -54,7 +55,17 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public void onMessage(WebSocket socket, String text) {
 		// expect to receive registration request only
 		log.info("received message: {}", text);
-		handleNotificationSubscriptionRequest(socket, text);
+		try {
+			final SubscriptionRequest subscriptionRequest = mapper.readValue(text, SubscriptionRequest.class);
+			if(subscriptionRequest.getMethod().equalsIgnoreCase("subscribe_account")){
+				handleSubscribeToAccountNotificationRequest(socket, text);
+			} else if(subscriptionRequest.getMethod().equalsIgnoreCase("subscribe_all_accounts")) {
+				handleSubscribeAllAccountsNotificationRequest(socket, text);
+			}
+		} catch (IOException e) {
+			log.warn("In onMessage method. Failed converting from string request to SubscriptionRequest class: {}", ExceptionUtils.getStackTrace(e));
+		}
+
 	}
 
 	@Override
@@ -83,16 +94,29 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	private void broadcast(String account, String text) {
 		subscriptions.forEach((k,v) -> log.info("Accounts subscribed for: "+k));
-		final Set<WebSocket> subscriptions = this.subscriptions.get(account);
-		if (subscriptions != null && !subscriptions.isEmpty()) {
-			broadcaster.broadcast(subscriptions, text);
-			log.info("account: {} message send to websockets", account);
-		} else {
-			log.warn("no one subscribed for account: {}", account);
-		}
+        final Set<WebSocket> subscriptions = this.subscriptions.get(account);
+        if (subscriptions != null && !subscriptions.isEmpty()) {
+            broadcaster.broadcast(subscriptions, text);
+            log.info("account: {} message send to websockets", account);
+        } else {
+            log.warn("no one subscribed for account: {}", account);
+        }
 	}
 
-	private void handleNotificationSubscriptionRequest(final WebSocket socket, String text) {
+    private void broadcastAll( String text) {
+        subscriptions.forEach((account,socketList) -> {
+            final Set<WebSocket> subscriptions = this.subscriptions.get(account);
+            if (subscriptions != null && !subscriptions.isEmpty()) {
+                broadcaster.broadcast(subscriptions, text);
+                log.info("account: {} message send to websockets", account);
+            } else {
+                log.warn("no one subscribed for account: {}", account);
+            }
+
+        });
+    }
+
+	private void handleSubscribeToAccountNotificationRequest(final WebSocket socket, String text) {
 		try {
 			final SubscriptionRequest subscriptionRequest = mapper.readValue(text, SubscriptionRequest.class);
 			LedgerNotificationWebSocket ledgerNotificationWebSocket = (LedgerNotificationWebSocket) socket;
@@ -131,6 +155,15 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 		}
 
 	}
+
+	private void handleSubscribeAllAccountsNotificationRequest(final WebSocket socket, String text) {
+		try {
+			subscribeAllAccounts = true;
+		} catch (Exception e) {
+			log.error(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
 
 	public void sendTransferPreparedNotification(String transferJson) {
 		try {
@@ -189,12 +222,16 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 			String notificationJson = mapper.writeValueAsString(notification);
 			log.info("notification: " + notificationJson);
-			for (Credit credit : transfer.getCredits()) {
-				broadcast(credit.getAccount(), notificationJson);
-			}
-			for (Debit debit : transfer.getDebits()) {
-				broadcast(debit.getAccount(), notificationJson);
-			}
+			if(subscribeAllAccounts){
+                broadcastAll(notificationJson);
+            } else {
+                for (Credit credit : transfer.getCredits()) {
+                    broadcast(credit.getAccount(), notificationJson);
+                }
+                for (Debit debit : transfer.getDebits()) {
+                    broadcast(debit.getAccount(), notificationJson);
+                }
+            }
 		} catch (JsonProcessingException e) {
 			log.warn("Failed to send transfer prepared notification", e);
 		}
