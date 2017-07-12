@@ -27,13 +27,14 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	private final ObjectMapper mapper;
 	private final Broadcaster broadcaster;
 	private final LedgerUrlMapper ledgerUrlMapper;
-	private boolean subscribeAllAccounts;
+	private Set<WebSocket> subscribeAllSockets;
 
 	public LedgerNotificationRegistrationApplication(LedgerUrlMapper ledgerUrlMapper) {
 		this.ledgerUrlMapper = ledgerUrlMapper;
 		subscriptions = new ConcurrentHashMap<String, Set<WebSocket>>();
 		mapper = new ObjectMapper();
 		broadcaster = new OptimizedBroadcaster();
+        subscribeAllSockets = new CopyOnWriteArraySet<WebSocket>();
 	}
 
 	@Override
@@ -83,6 +84,9 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 					return webSocketFromMap;
 			});
 		}
+
+		subscribeAllSockets.remove(ledgerNotificationWebSocket);
+
 		super.onClose(socket, frame);
 	}
 
@@ -104,16 +108,11 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	}
 
     private void broadcastAll( String text) {
-        subscriptions.forEach((account,socketList) -> {
-            final Set<WebSocket> subscriptions = this.subscriptions.get(account);
-            if (subscriptions != null && !subscriptions.isEmpty()) {
-                broadcaster.broadcast(subscriptions, text);
-                log.info("account: {} message send to websockets", account);
-            } else {
-                log.warn("no one subscribed for account: {}", account);
-            }
+	    if(!subscribeAllSockets.isEmpty()) {
+            broadcaster.broadcast(subscribeAllSockets, text);
+            log.info("account: {} message sent to websockets");
+        }
 
-        });
     }
 
 	private void handleSubscribeToAccountNotificationRequest(final WebSocket socket, String text) {
@@ -158,7 +157,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	private void handleSubscribeAllAccountsNotificationRequest(final WebSocket socket, String text) {
 		try {
-			subscribeAllAccounts = true;
+			subscribeAllSockets.add(socket);
 		} catch (Exception e) {
 			log.error(ExceptionUtils.getStackTrace(e));
 		}
@@ -222,16 +221,15 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 			String notificationJson = mapper.writeValueAsString(notification);
 			log.info("notification: " + notificationJson);
-			if(subscribeAllAccounts){
-                broadcastAll(notificationJson);
-            } else {
-                for (Credit credit : transfer.getCredits()) {
-                    broadcast(credit.getAccount(), notificationJson);
-                }
-                for (Debit debit : transfer.getDebits()) {
-                    broadcast(debit.getAccount(), notificationJson);
-                }
+            for (Credit credit : transfer.getCredits()) {
+                broadcast(credit.getAccount(), notificationJson);
             }
+            for (Debit debit : transfer.getDebits()) {
+                broadcast(debit.getAccount(), notificationJson);
+            }
+
+            broadcastAll(notificationJson);
+
 		} catch (JsonProcessingException e) {
 			log.warn("Failed to send transfer prepared notification", e);
 		}
@@ -248,6 +246,8 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			notification.setParams(params);
 			String notificationJson = mapper.writeValueAsString(notification);
 			broadcast(message.getTo(), notificationJson);
+
+            broadcastAll(notificationJson);
 
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to convert to Transfer", e);
