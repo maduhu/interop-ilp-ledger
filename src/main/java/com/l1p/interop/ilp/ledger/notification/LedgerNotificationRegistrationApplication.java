@@ -27,7 +27,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	private final ObjectMapper mapper;
 	private final Broadcaster broadcaster;
 	private final LedgerUrlMapper ledgerUrlMapper;
-	private Set<WebSocket> subscribeAllSockets;
+	private final Set<WebSocket> subscribeAllSockets;
 
 	public LedgerNotificationRegistrationApplication(LedgerUrlMapper ledgerUrlMapper) {
 		this.ledgerUrlMapper = ledgerUrlMapper;
