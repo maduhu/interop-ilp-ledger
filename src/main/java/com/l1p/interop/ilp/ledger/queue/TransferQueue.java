@@ -43,6 +43,7 @@ public class TransferQueue {
 
     public void addPrepare(String transferJson) throws IOException {
         final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
+        log.warn("Transfer Id: {}",transfer.getId());
         tranferExpiryMap.put(transfer.getId(), transfer.getExpiresAt());
         if (prepareCount.get() > preparesInQueueLimit) {
             log.warn("Prepare msg discarded b/c limit reached");
@@ -52,7 +53,7 @@ public class TransferQueue {
         }
     }
 
-    public void addFufill(String transferId, String executionCondition) {
+    public void addFulfill(String transferId, String executionCondition) {
         Transfer transfer = new Transfer();
         transfer.setId(transferId);
         transfer.setExecutionCondition(executionCondition);

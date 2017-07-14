@@ -221,7 +221,7 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	private void sendTransferNotification(String transferType, Transfer transfer,HashMap<String,String> relatedResourceMap) {
 		try {
-			log.warn("Received notification for publishing");
+			log.warn("In sendTransferNotification. Transfer Id: {}",transfer.getId());
 			final Notification notification = new Notification();
 			TransferParams params = new TransferParams(transferType, transfer);
 			params.setRelatedResources(relatedResourceMap);

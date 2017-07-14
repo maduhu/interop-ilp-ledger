@@ -97,9 +97,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </sub-flow>
 
     <flow name="routeTransfer" processingStrategy="synchronous" >
-        <logger level="INFO"
-                message="In Router thread"
-                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <set-variable variableName="queuedTransfer" value="#[app.registry.transferQueue.takeNext()]" doc:name="Variable"/>
         <choice doc:name="Choice">
             <when expression="#[queuedTransfer != null]">
@@ -216,13 +213,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
 
     <sub-flow name="putTransfer">
-        <set-payload value="#[flowVars.queuedTransfer.getTransferDetails()]" doc:name="Set Transfer as payload"/>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-payload value="#[flowVars.queuedTransfer.getTransferDetailsAsJson()]" doc:name="Set Transfer as payload"/>
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+        <transformer ref="ledgerAdapterToActualLedgerUrlTransformer"
+                     doc:name="Transform from adapter URL to dfsp ledger URL" />
         <logger level="INFO"
                 message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put payload: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"
+        <!--<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"-->
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
                       method="PUT" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,422"/> -->
             <http:success-status-code-validator
@@ -293,12 +292,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-payload value="#[flowVars.queuedTransfer.getTransferDetails().getExecutionCondition()]" doc:name="Set Execution Condition as payload"/>
         <set-property propertyName="Content-Type" value="text/plain" doc:name="Property" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[payload]"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[message.payloadAs(java.lang.String)]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]/fulfillment"
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
                       method="PUT" doc:name="HTTP">
             <http:success-status-code-validator	values="200..500" />
         </http:request>
+        <logger level="INFO"
+                message="Response from dfsp for /fulfillment: #[message.payloadAs(java.lang.String)]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <object-to-string-transformer doc:name="Object to String" />
         <set-variable variableName="payloadToReturn" value="#[payload]"
                       doc:name="Variable" />
@@ -307,11 +309,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
                     <metrics:metric-keys><metrics:metric-key>TransferExecuteSuccess</metrics:metric-key></metrics:metric-keys>
                 </metrics:inc-count>
+                <logger level="INFO"
+                        message="Sending request to dfsp: GET /transfers/#[id]"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
                 <http:request config-ref="ILP_Ledger_Configuration"
                               path="/transfers/#[id]" method="GET" doc:name="HTTP">
                     <http:success-status-code-validator
                             values="200..500" />
                 </http:request>
+                <logger level="INFO"
+                        message="Response from dfsp for GET /transfers: #[message.payloadAs(java.lang.String)]"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
                 <object-to-string-transformer doc:name="Object to String" />
                 <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
                              doc:name="Transform Ledger URL" />
@@ -376,7 +384,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <logger level="INFO"
                 message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]/rejection"
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/rejection"
                       method="PUT" doc:name="HTTP">
             <!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
             <http:success-status-code-validator

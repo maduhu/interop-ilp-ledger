@@ -28,7 +28,7 @@ public class TransferQueueTest {
 
         underTest.addPrepare(mapper.writeValueAsString(p2));
         underTest.addPrepare(mapper.writeValueAsString(p1));
-        underTest.addFufill("p2", "f2");
+        underTest.addFulfill("p2", "f2");
 
         System.out.println(underTest.takeNext());
         System.out.println(underTest.takeNext());
