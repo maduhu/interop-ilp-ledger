@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:json="http://www.mulesoft.org/schema/mule/json"
-	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:spring="http://www.springframework.org/schema/beans" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
@@ -13,358 +13,431 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-	<!-- DFSP HTTP configuration for making REST call to the ilp service -->
-	<http:request-config name="ILP_Ledger_Configuration"
-		host="${dfsp-host}" port="${ilp-ledger.port}"
-		basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
-	</http:request-config>
+    <!-- DFSP HTTP configuration for making REST call to the ilp service -->
+    <http:request-config name="ILP_Ledger_Configuration"
+                         host="${dfsp-host}" port="${ilp-ledger.port}"
+                         basePath="${ilp-ledger.basePath}" doc:name="HTTP Request Configuration">
+    </http:request-config>
 
-	<spring:beans>
-		<spring:bean id="LedgerMetadataTransformer" name="LedgerMetadataTransformer"
-			class="com.l1p.interop.ilp.ledger.LedgerMetadataTransformer">
-			<spring:constructor-arg value="${ilp-ledger-adapter.ledgerAdapterURL}" />
-			<spring:constructor-arg value="${ilp-ledger.accountTransfersURL}" />
-		</spring:bean>
-		<spring:bean id="ledgerAdapterMetadata"
-			class="com.l1p.interop.ilp.ledger.LedgerAdapterMetadata">
-			<spring:property name="connectors">
-				<spring:list>
-				</spring:list>
-			</spring:property>
-			<spring:property name="urls">
-				<spring:bean class="com.l1p.interop.ilp.ledger.ServiceUrlRegistry">
-					<spring:property name="health"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/health" />
-					<spring:property name="transfer"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id" />
-					<spring:property name="transferFulfillment"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/fulfillment" />
-					<spring:property name="transferState"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/state" />
-					<spring:property name="transferRejection"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/rejection" />
-					<spring:property name="accounts"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts" />
-					<spring:property name="account"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts/:name" />
-					<spring:property name="authToken"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/auth_token" />
-					<spring:property name="message"
-						value="${ilp-ledger-adapter.ledgerAdapterURL}/messages" />
-					<spring:property name="websocket"
-						value="${ilp-ledger-adapter.websocket.url}" />
-				</spring:bean>
-			</spring:property>
-			<spring:property name="precision" value="10" />
-			<spring:property name="scale" value="2" />
-		</spring:bean>
-		<spring:bean id="RequestMapper" name="RequestMapper"
-			class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
-			<spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}" />
-			<spring:constructor-arg value="${ilp-ledger.ledgerURL}" />
-		</spring:bean>
-		<spring:bean id="ResponseMapper" name="ResponseMapper"
-			class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
-			<spring:constructor-arg value="${ilp-ledger.ledgerURL}" />
-			<spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}" />
-		</spring:bean>
-		<spring:bean id="notificationRegistrationApp"
-			class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication">
-			<spring:constructor-arg ref="ledgerUrlMapper" />
-		</spring:bean>
-		<spring:bean id="notificationRegistrationServer"
-			class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationServer">
-			<spring:constructor-arg value="/tmp" />
-			<spring:constructor-arg
-				value="${ilp-ledger-adapter.notification.registration.port}" />
-			<spring:constructor-arg
-				value="${ilp-ledger-adapter.notification.registration.path}" />
-			<spring:constructor-arg ref="notificationRegistrationApp" />
-		</spring:bean>
-	</spring:beans>
 
-	<flow name="getLedgerMetadata">
-		<set-payload value="#[app.registry.ledgerAdapterMetadata]" doc:name="Set Payload"/>
-	</flow>
 
-	<flow name="getLedgerHealth">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/health, method=get"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/health"
-			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</flow>
+    <spring:beans>
+        <spring:bean id="LedgerMetadataTransformer" name="LedgerMetadataTransformer"
+                     class="com.l1p.interop.ilp.ledger.LedgerMetadataTransformer">
+            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerAdapterURL}" />
+            <spring:constructor-arg value="${ilp-ledger.accountTransfersURL}" />
+        </spring:bean>
+        <spring:bean id="ledgerAdapterMetadata"
+                     class="com.l1p.interop.ilp.ledger.LedgerAdapterMetadata">
+            <spring:property name="connectors">
+                <spring:list>
+                </spring:list>
+            </spring:property>
+            <spring:property name="urls">
+                <spring:bean class="com.l1p.interop.ilp.ledger.ServiceUrlRegistry">
+                    <spring:property name="health"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/health" />
+                    <spring:property name="transfer"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id" />
+                    <spring:property name="transferFulfillment"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/fulfillment" />
+                    <spring:property name="transferState"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/state" />
+                    <spring:property name="transferRejection"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/rejection" />
+                    <spring:property name="accounts"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts" />
+                    <spring:property name="account"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts/:name" />
+                    <spring:property name="authToken"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/auth_token" />
+                    <spring:property name="message"
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/messages" />
+                    <spring:property name="websocket"
+                                     value="${ilp-ledger-adapter.websocket.url}" />
+                </spring:bean>
+            </spring:property>
+            <spring:property name="precision" value="10" />
+            <spring:property name="scale" value="2" />
+        </spring:bean>
+        <spring:bean id="RequestMapper" name="RequestMapper"
+                     class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
+            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}" />
+            <spring:constructor-arg value="${ilp-ledger.ledgerURL}" />
+        </spring:bean>
+        <spring:bean id="ResponseMapper" name="ResponseMapper"
+                     class="com.l1p.interop.ilp.ledger.PayloadContentMapper">
+            <spring:constructor-arg value="${ilp-ledger.ledgerURL}" />
+            <spring:constructor-arg value="${ilp-ledger-adapter.ledgerURL}" />
+        </spring:bean>
+        <spring:bean id="notificationRegistrationApp"
+                     class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationApplication">
+            <spring:constructor-arg ref="ledgerUrlMapper" />
+        </spring:bean>
+        <spring:bean id="notificationRegistrationServer"
+                     class="com.l1p.interop.ilp.ledger.notification.LedgerNotificationRegistrationServer">
+            <spring:constructor-arg value="/tmp" />
+            <spring:constructor-arg
+                    value="${ilp-ledger-adapter.notification.registration.port}" />
+            <spring:constructor-arg
+                    value="${ilp-ledger-adapter.notification.registration.path}" />
+            <spring:constructor-arg ref="notificationRegistrationApp" />
+        </spring:bean>
+    </spring:beans>
 
-	<sub-flow name="getAccounts">
-		<set-property propertyName="Content-Type" value="application/json"	doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts, method=get"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts"
-			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+    <queued-asynchronous-processing-strategy name="ledger-transfer-processing-strategy" maxThreads="32" minThreads="8" poolExhaustedAction="WAIT" doc:name="Queued Asynchronous Processing Strategy"/>
 
-	<sub-flow name="getAccount">
-		<set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
-			category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
-			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator	values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<choice doc:name="Map Ledger URLs based on the response code">
-			<when expression="#[message.inboundProperties.'http.status' == 200]">
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-					doc:name="Transform Ledger URL" />
-			</when>
-			<otherwise>
-				<logger message="getAccount failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
-					category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="Logger" />
-			</otherwise>
-		</choice>
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+    <sub-flow name="setResponseAndCallRouteTransfer">
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <set-property propertyName="http.status" value="201" doc:name="Property"/>
+        <async doc:name="Async" processingStrategy="ledger-transfer-processing-strategy">
+            <flow-ref name="routeTransfer" doc:name="Flow Reference"/>
+        </async>
 
-	<sub-flow name="putAccount">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
-			method="PUT" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,201,400,403"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+    </sub-flow>
 
-	
-	<sub-flow name="putTransfer">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
-			method="PUT" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,201,400,422"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<choice doc:name="Map Ledger URLs based on the response code">
-			<when expression="#[message.inboundProperties.'http.status' == 201]">
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferPutSuccess</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-					doc:name="Transform Ledger URL" />
-				<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferPreparedNotification(payload)]]></expression-component>
-			</when>
-			<otherwise>
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferPutFailure</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<logger message="putTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
-					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-			</otherwise>
-		</choice>
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
-	
-	<sub-flow name="getTransfer">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
-			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<choice doc:name="Map Ledger URLs based on the response code">
-			<when expression="#[message.inboundProperties.'http.status' == 200]">
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-					doc:name="Transform Ledger URL" />
-			</when>
-			<otherwise>
-				<logger message="getTransfer failed for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
-					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-			</otherwise>
-		</choice>
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
-	
+    <flow name="routeTransfer" processingStrategy="synchronous" >
+        <set-variable variableName="queuedTransfer" value="#[app.registry.transferQueue.takeNext()]" doc:name="Variable"/>
+        <choice doc:name="Choice">
+            <when expression="#[queuedTransfer != null]">
+                <choice doc:name="Choice">
+                    <when expression="flowVars.queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.PREPARE">
+                        <flow-ref name="putTransfer" doc:name="Flow Reference"/>
+                    </when>
+                    <when expression="flowVars.queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.FULFILL">
+                        <flow-ref name="executeTransfer" doc:name="Flow Reference"/>
+                    </when>
+                    <when expression="flowVars.queuedTransfer.transferState == com.l1p.interop.ilp.ledger.queue.TransferState.CANCEL">
+                        <flow-ref name="rejectTransfer" doc:name="Flow Reference"/>
+                    </when>
+                </choice>
+            </when>
+            <otherwise>
+                <logger level="WARN" category="com.l1p.interop.ilp.ledger.queue" message="Transfer queue is empty" doc:name="Logger"/>
+            </otherwise>
+        </choice>
+    </flow>
 
-	<sub-flow name="executeTransfer">
-		<set-property propertyName="Content-Type" value="text/plain"
-			doc:name="Property" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
-			method="PUT" doc:name="HTTP">
-			<http:success-status-code-validator	values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<set-variable variableName="payloadToReturn" value="#[payload]"
-			doc:name="Variable" />
-		<choice doc:name="Choice">
-			<when expression="#[message.inboundProperties.'http.status' == 200]">
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferExecuteSuccess</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<http:request config-ref="ILP_Ledger_Configuration"
-					path="/transfers/#[id]" method="GET" doc:name="HTTP">
-					<http:success-status-code-validator
-						values="200..500" />
-				</http:request>
-				<object-to-string-transformer doc:name="Object to String" />
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-							doc:name="Transform Ledger URL" />
-				<set-variable doc:name="Store Transfer Payload" value="#[payload]" variableName="transferPayload"/>
-				<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
-					method="GET" doc:name="HTTP">
-					<http:success-status-code-validator	values="200..500" />
-				</http:request>
-				<object-to-string-transformer doc:name="Object to String" mimeType="text/plain"/>
-				<set-variable doc:name="Store Transfer Fulfillment Payload" value="#[payload]" variableName="transferFulfillmentPayload"/>
-				<choice doc:name="Map Ledger URLs based on the response code">
-					<when expression="#[message.inboundProperties.'http.status' == 200]">
-						<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(flowVars.transferPayload,flowVars.transferFulfillmentPayload)]]></expression-component>
-					</when>
-					<otherwise>
-						<logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-							level="ERROR" category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-					</otherwise>
-				</choice>
-                
-			</when>
-			<otherwise>
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferExecuteFailure</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
-					level="ERROR" category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-			</otherwise>
-		</choice>
+    <flow name="getLedgerMetadata">
+        <set-payload value="#[app.registry.ledgerAdapterMetadata]" doc:name="Set Payload" mimeType="application/json"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
 
-		<set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload" />
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
-	
-	<sub-flow name="getTransferFulfillment">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=get"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
-			method="GET" doc:name="HTTP">
-			<http:success-status-code-validator	values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
-	
+    <flow name="getLedgerHealth">
+        <set-property propertyName="Content-Type" value="application/json"
+                      doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/health, method=get"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/health"
+                      method="GET" doc:name="HTTP">
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
 
-	<sub-flow name="rejectTransfer">
-		<set-property propertyName="Content-Type" value="text/plain"
-			doc:name="Property" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<object-to-string-transformer doc:name="Object to String" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/rejection"
-			method="PUT" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<choice doc:name="Map Ledger URLs based on the response code">
-			<when expression="#[message.inboundProperties.'http.status' == 200]">
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferRejectSuccess</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
-					doc:name="Transform Ledger URL" />
-				<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferRejectedNotification(payload)]]></expression-component>
-			</when>
-			<otherwise>
-				<metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
-					<metrics:metric-keys><metrics:metric-key>TransferRejectFailure</metrics:metric-key></metrics:metric-keys>
-				</metrics:inc-count>
-				<logger message="rejectTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
-					category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
-			</otherwise>
-		</choice>
-		<set-property propertyName="http.status"
-					  value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+    <flow name="getAccounts">
+        <set-property propertyName="Content-Type" value="application/json"	doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts, method=get"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts"
+                      method="GET" doc:name="HTTP">
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
 
-	<sub-flow name="getConnectors">
-		<set-property propertyName="Content-Type" value="application/json"
-			doc:name="Property" />
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<logger level="INFO"
-			message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/connectors, method=get"
-			category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
-		<http:request config-ref="ILP_Ledger_Configuration" path="/connectors"
-			method="GET" doc:name="HTTP">
-			<!--<http:success-status-code-validator values="200"/> -->
-			<http:success-status-code-validator
-				values="200..500" />
-		</http:request>
-		<object-to-string-transformer doc:name="Object to String" />
-		<set-property propertyName="http.status"
-			value="#[message.inboundProperties.'http.status']" doc:name="Property" />
-	</sub-flow>
+    <flow name="getAccount">
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=get"
+                category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
+                      method="GET" doc:name="HTTP">
+            <http:success-status-code-validator	values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <set-variable variableName="http-status" value="200" doc:name="mock http status"/>
+        <choice doc:name="Map Ledger URLs based on the response code. http-status" doc:description="#[message.inboundProperties.'http.status' == 200]">
+            <when expression="#[flowVars.'http-status' == 200]">
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+                             doc:name="Transform Ledger URL" />
+            </when>
+            <otherwise>
+                <logger message="getAccount failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
+                        category="com.l1p.interop.ilp.ledger.flow-getAccount" doc:name="Logger" />
+            </otherwise>
+        </choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
 
-	<sub-flow name="postMessages">
-		<expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendMessageNotification(payload)]]></expression-component>
-		<set-payload value="#[NullPayload.getInstance()]"
-			doc:name="Set Payload" />
-		<set-property propertyName="http.status" value="#[201]"
-			doc:name="201" />
-	</sub-flow>
+    <flow name="putAccount">
+        <set-property propertyName="Content-Type" value="application/json"
+                      doc:name="Property" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/accounts/#[id], method=put"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/accounts/#[id]"
+                      method="PUT" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200,201,400,403"/> -->
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
+
+
+    <flow name="putTransferEnqueue">
+        <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addPrepare(payload)]]></expression-component>
+        <flow-ref name="setResponseAndCallRouteTransfer" />
+    </flow>
+
+    <sub-flow name="putTransfer">
+        <set-payload value="#[flowVars.queuedTransfer.getTransferDetailsAsJson()]" doc:name="Set Transfer as payload"/>
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+        <transformer ref="ledgerAdapterToActualLedgerUrlTransformer"
+                     doc:name="Transform from adapter URL to dfsp ledger URL" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put payload: #[payload]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <!--<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"-->
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
+                      method="PUT" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200,201,400,422"/> -->
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <logger level="INFO"
+                message="Response from dfsp: #[payload]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <choice doc:name="Map Ledger URLs based on the response code">
+            <when expression="#[message.inboundProperties.'http.status' == 201]">
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferPutSuccess</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+                             doc:name="Transform Ledger URL" />
+                <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTransferPreparedNotification(payload)]]></expression-component>
+            </when>
+            <otherwise>
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferPutFailure</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <logger message="putTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
+            </otherwise>
+        </choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </sub-flow>
+
+    <flow name="getTransfer">
+        <set-property propertyName="Content-Type" value="application/json"
+                      doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
+                      method="GET" doc:name="HTTP">
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <choice doc:name="Map Ledger URLs based on the response code">
+            <when expression="#[message.inboundProperties.'http.status' == 200]">
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+                             doc:name="Transform Ledger URL" />
+            </when>
+            <otherwise>
+                <logger message="getTransfer failed for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
+            </otherwise>
+        </choice>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
+
+
+    <flow name="executeTransferEnqueue">
+        <expression-component doc:name="Enqueue Fulfill"><![CDATA[app.registry.transferQueue.addFulfill(flowVars.id, payload)]]></expression-component>
+        <flow-ref name="setResponseAndCallRouteTransfer" />
+    </flow>
+
+    <sub-flow name="executeTransfer">
+        <set-payload value="#[flowVars.queuedTransfer.getTransferDetails().getExecutionCondition()]" doc:name="Set Execution Condition as payload"/>
+        <set-property propertyName="Content-Type" value="text/plain" doc:name="Property" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[message.payloadAs(java.lang.String)]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
+                      method="PUT" doc:name="HTTP">
+            <http:success-status-code-validator	values="200..500" />
+        </http:request>
+        <logger level="INFO"
+                message="Response from dfsp for /fulfillment: #[message.payloadAs(java.lang.String)]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <object-to-string-transformer doc:name="Object to String" />
+        <set-variable variableName="payloadToReturn" value="#[payload]"
+                      doc:name="Variable" />
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties.'http.status' == 200]">
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferExecuteSuccess</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <logger level="INFO"
+                        message="Sending request to dfsp: GET /transfers/#[id]"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+                <http:request config-ref="ILP_Ledger_Configuration"
+                              path="/transfers/#[id]" method="GET" doc:name="HTTP">
+                    <http:success-status-code-validator
+                            values="200..500" />
+                </http:request>
+                <logger level="INFO"
+                        message="Response from dfsp for GET /transfers: #[message.payloadAs(java.lang.String)]"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+                <object-to-string-transformer doc:name="Object to String" />
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+                             doc:name="Transform Ledger URL" />
+                <set-variable doc:name="Store Transfer Payload" value="#[payload]" variableName="transferPayload"/>
+                <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
+                              method="GET" doc:name="HTTP">
+                    <http:success-status-code-validator	values="200..500" />
+                </http:request>
+                <object-to-string-transformer doc:name="Object to String" mimeType="text/plain"/>
+                <set-variable doc:name="Store Transfer Fulfillment Payload" value="#[payload]" variableName="transferFulfillmentPayload"/>
+                <choice doc:name="Map Ledger URLs based on the response code">
+                    <when expression="#[message.inboundProperties.'http.status' == 200]">
+                        <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferExecutedNotification(flowVars.transferPayload,flowVars.transferFulfillmentPayload)]]></expression-component>
+                    </when>
+                    <otherwise>
+                        <logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                                level="ERROR" category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
+                    </otherwise>
+                </choice>
+
+            </when>
+            <otherwise>
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferExecuteFailure</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                        level="ERROR" category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
+            </otherwise>
+        </choice>
+
+        <set-payload value="#[flowVars.payloadToReturn]" doc:name="Set Payload" />
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </sub-flow>
+
+    <flow name="getTransferFulfillment">
+        <set-property propertyName="Content-Type" value="application/json"
+                      doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=get"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
+                      method="GET" doc:name="HTTP">
+            <http:success-status-code-validator	values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" returnClass="java.lang.String" mimeType="text/plain"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
+
+
+    <flow name="rejectTransferEnqueue">
+        <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addCancel(flowVars.id, payload)]]></expression-component>
+        <flow-ref name="setResponseAndCallRouteTransfer" />
+    </flow>
+
+    <sub-flow name="rejectTransfer">
+        <set-payload value="#[flowVars.queuedTransfer.getTransferDetails().getRejectionReason()]" doc:name="Set Execution Condition as payload"/>
+        <set-property propertyName="Content-Type" value="text/plain" doc:name="Property" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/rejection, method=put"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/rejection"
+                      method="PUT" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object To Transfer JSON" />
+        <choice doc:name="Map Ledger URLs based on the response code">
+            <when expression="#[message.inboundProperties.'http.status' == 200]">
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferRejectSuccess</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <transformer ref="actualLedgerToLedgerAdapterUrlTransformer"
+                             doc:name="Transform Ledger URL" />
+                <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendTranferRejectedNotification(payload)]]></expression-component>
+            </when>
+            <otherwise>
+                <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
+                    <metrics:metric-keys><metrics:metric-key>TransferRejectFailure</metrics:metric-key></metrics:metric-keys>
+                </metrics:inc-count>
+                <logger message="rejectTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
+                        category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
+            </otherwise>
+        </choice>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </sub-flow>
+
+    <flow name="getConnectors">
+        <set-property propertyName="Content-Type" value="application/json"
+                      doc:name="Property" />
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <logger level="INFO"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/connectors, method=get"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
+        <http:request config-ref="ILP_Ledger_Configuration" path="/connectors"
+                      method="GET" doc:name="HTTP">
+            <!--<http:success-status-code-validator values="200"/> -->
+            <http:success-status-code-validator
+                    values="200..500" />
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="http.status"
+                      value="#[message.inboundProperties.'http.status']" doc:name="Property" />
+    </flow>
+
+    <flow name="postMessages">
+        <expression-component doc:name="Expression"><![CDATA[app.registry.notificationRegistrationApp.sendMessageNotification(payload)]]></expression-component>
+        <set-payload value="#[NullPayload.getInstance()]"
+                     doc:name="Set Payload" />
+        <set-property propertyName="http.status" value="#[201]"
+                      doc:name="201" />
+    </flow>
 
 </mule>
