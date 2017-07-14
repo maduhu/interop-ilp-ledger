@@ -116,6 +116,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     <flow name="get:/accounts/{id}:api-config">
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/accounts/{id}" allowedMethods="GET" doc:name="HTTP"/>
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
+        <http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.accounts-id.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling getAccount(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
@@ -268,6 +269,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 	<flow name="post:/messages:api-config">
         <http:listener config-ref="api-httpListenerConfig" path="${ilp-ledger-adapter.basePath}/messages" allowedMethods="POST" doc:name="HTTP"/>
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
+        <http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="post.message.start" doc:name="SnapTime"/>
         <logger level="INFO"
                 message="Calling post messages for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"

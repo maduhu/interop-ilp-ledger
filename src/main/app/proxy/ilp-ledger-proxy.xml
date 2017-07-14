@@ -220,7 +220,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <json:object-to-json-transformer doc:name="Object to JSON"/>
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put payload: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"
                       method="PUT" doc:name="HTTP">
@@ -229,6 +229,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                     values="200..500" />
         </http:request>
         <object-to-string-transformer doc:name="Object to String" />
+        <logger level="INFO"
+                message="Response from dfsp: #[payload]"
+                category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <choice doc:name="Map Ledger URLs based on the response code">
             <when expression="#[message.inboundProperties.'http.status' == 201]">
                 <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
@@ -290,7 +293,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-payload value="#[flowVars.queuedTransfer.getTransferDetails().getExecutionCondition()]" doc:name="Set Execution Condition as payload"/>
         <set-property propertyName="Content-Type" value="text/plain" doc:name="Property" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[payload]"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]/fulfillment"
                       method="PUT" doc:name="HTTP">
