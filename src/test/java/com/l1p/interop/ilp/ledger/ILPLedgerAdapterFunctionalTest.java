@@ -4,20 +4,34 @@ import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.Options;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.l1p.interop.JsonTransformer;
+import com.l1p.interop.JsonTransformerException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mule.tck.junit4.FunctionalTestCase;
 import org.python.jline.internal.Log;
@@ -27,6 +41,12 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+
+import wiremock.org.apache.http.HttpResponse;
+import wiremock.org.apache.http.client.ClientProtocolException;
+import wiremock.org.apache.http.client.methods.HttpGet;
+import wiremock.org.apache.http.impl.client.CloseableHttpClient;
+import wiremock.org.apache.http.impl.client.HttpClients;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +60,24 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	private final String serviceHost = "http://localhost:8081";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(8081);
 
 	WebResource webService;
+	private WireMockServer wireMockServer;
 
 	@Override
 	protected String getConfigResources() {
 		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml, proxy/mock-ilp-ledger.xml,proxy/mock-ilp-ledger-api.xml";
 	}
+	
+	
+	@After
+	public void shutdown() {
+		wireMockServer.stop();
+	}
+	
 
 	@BeforeClass
 	public static void initEnv() {
@@ -56,10 +87,19 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		System.setProperty("metrics.reporter.kafka.topic", "bmgf.metric.pi2");
 	}
 
+	
 	@Before
 	public void initSslClient() throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, KeyManagementException {
 		ClientConfig config = new DefaultClientConfig();
 		webService = Client.create(config).resource(serviceHost);
+		
+		/*
+		 * 
+		 */
+		wireMockServer = new WireMockServer(Options.DYNAMIC_PORT);
+		wireMockServer.start();
+		WireMock.configureFor(wireMockServer.port());
+
 	}
 
 	@Test
@@ -67,15 +107,36 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		final String invalidPath = "path/shouldnt/exist";
 		final String notJSON = "<BadRequest>This is not JSON</BadRequest>";
 		logger.info("Posting event to web services");
+		
+		wireMockRule.stubFor(get(urlMatching(invalidPath))
+	            .willReturn(status(404)));
 
 		ClientResponse clientResponse = postRequest(invalidPath, notJSON);
 		//validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "Resource not found");
 		validateResponse( "InvalidPathShouldReturn404", clientResponse, 404, "No listener");
 	}
 
+	
+	@Test
+	public void testSuccess() {
+		
+		Map<String, String> params = new HashMap<String,String>();
+		String path1 = "/some/thing";
+		
+		wireMockRule.stubFor(get(urlMatching(path1))
+	            .willReturn(aResponse().withBody("wiremock returned with a body").withStatus(200)));
+
+		ClientResponse clientResponse = getRequest( path1, params);
+		System.out.println("..results for /some/thing : " + clientResponse.getStatus());
+		assertEquals("Test a valid result", 200, clientResponse.getStatus());
+	}
+	
+	
 	@Test
 	public void testPutAccounts() throws Exception {
 		final String putAccountJSON = loadResourceAsString("testData/putAccount-Alice.json");
+		final String putAccountResponseJSON = loadResourceAsString("testData/putAccountResponse.json");
+		
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		String id = "john";
@@ -106,13 +167,36 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field message did not contain expected value", "Invalid request payload JSON format", jsonReponse.get( "message" ) );
 		*/
 		
+		System.out.println("Test testPutAccounts accounts path = " + accountsPath+ id);
+		
+		wireMockRule.stubFor(put(urlMatching(accountsPath+id+".*"))
+	            .willReturn(aResponse().withBody(putAccountResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
+		
+		
 		//Valid PUT - should be invalid if it exists but valid here because it is mocked
+		// Commented out 7/17/2017 as this response will be mocked by WireMock.
 		ClientResponse clientResponse = putRequestWithQueryParams( accountsPath + id, params, putAccountJSON );
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		
+		String json = clientResponse.getEntity(String.class);
+		
+		System.out.println("Test testPutAccounts response = " + json);
+		System.out.println("Returned HTTP Status: " + clientResponse.getStatus());
+		System.out.println("and about to map response to a Map for convienence.");
+		
+		Map<String, Object> jsonReponse = stringToMapLocal( json );
+//		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		
+	
+		System.out.println("**** About to do first assertEquals on response from call.");
+		
 		assertEquals( "AccountsPutInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
+		System.out.println("**** 1");
 		assertEquals( "Response field id did not contain expected value", idValue, jsonReponse.get( "id" ) );
+		System.out.println("**** 2");
 		assertEquals( "Response field id did not contain expected value", id, jsonReponse.get( "name" ) );
-		assertEquals( "Response field id did not contain expected value", "USD", jsonReponse.get( "currency" ) );
+		System.out.println("**** 3");
+		assertEquals( "Response field id did not contain expected value", "USD", jsonReponse.get( "currencyCode" ) );
+		System.out.println("**** 4");
 		
 		//Invalid PUT, no authorization
 		//Disabling this because, currently account is getting created without auth :-), should this be changed?
@@ -377,12 +461,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	}
 	
 	
-	/**
-	 * Convenience method to create the basic auth request
-	 * @param username
-	 * @param password
-	 * @return
-	 */
 	/*
 	 private String createEncryptedAuth(String username, String password) {
 	 
@@ -393,4 +471,22 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		return auth;
 	}
 	*/
+	
+	
+	/**
+	 * Convenience method to create the basic auth request
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	private static Map<String, Object> stringToMapLocal(final String jsonString) throws JsonParseException, JsonMappingException, IOException {
+		
+		System.out.println("About to convert JSON to a map");
+		HashMap<String,Object> result = new ObjectMapper().readValue(jsonString, HashMap.class);
+		return result;
+		
+	}
 }
