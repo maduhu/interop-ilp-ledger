@@ -21,7 +21,8 @@
 
 	<properties>
 		<interop-domain.version>0.1.36</interop-domain.version>
-	</properties>
+	<mule.version>3.8.0</mule.version>
+    </properties>
 
 	<build>
 		<plugins>

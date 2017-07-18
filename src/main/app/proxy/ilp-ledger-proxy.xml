@@ -209,7 +209,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="putTransferEnqueue">
         <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addPrepare(payload)]]></expression-component>
-        <flow-ref name="setResponseAndCallRouteTransfer" />
+        <flow-ref name="setResponseAndCallRouteTransfer" doc:name="Flow Reference"/>
     </flow>
 
     <sub-flow name="putTransfer">
@@ -285,7 +285,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="executeTransferEnqueue">
         <expression-component doc:name="Enqueue Fulfill"><![CDATA[app.registry.transferQueue.addFulfill(flowVars.id, payload)]]></expression-component>
-        <flow-ref name="setResponseAndCallRouteTransfer" />
+        <flow-ref name="setResponseAndCallRouteTransfer" doc:name="Flow Reference"/>
     </flow>
 
     <sub-flow name="executeTransfer">
@@ -375,7 +375,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <flow name="rejectTransferEnqueue">
         <expression-component doc:name="Enqueue Prepare"><![CDATA[app.registry.transferQueue.addCancel(flowVars.id, payload)]]></expression-component>
-        <flow-ref name="setResponseAndCallRouteTransfer" />
+        <flow-ref name="setResponseAndCallRouteTransfer" doc:name="Flow Reference"/>
     </flow>
 
     <sub-flow name="rejectTransfer">
