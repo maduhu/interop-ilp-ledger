@@ -183,20 +183,13 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		System.out.println("Returned HTTP Status: " + clientResponse.getStatus());
 		System.out.println("and about to map response to a Map for convienence.");
 		
+		// the JsonTransformer was not working so we created a local version that worked.
 		Map<String, Object> jsonReponse = stringToMapLocal( json );
-//		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
-		
-	
-		System.out.println("**** About to do first assertEquals on response from call.");
 		
 		assertEquals( "AccountsPutInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
-		System.out.println("**** 1");
 		assertEquals( "Response field id did not contain expected value", idValue, jsonReponse.get( "id" ) );
-		System.out.println("**** 2");
 		assertEquals( "Response field id did not contain expected value", id, jsonReponse.get( "name" ) );
-		System.out.println("**** 3");
 		assertEquals( "Response field id did not contain expected value", "USD", jsonReponse.get( "currencyCode" ) );
-		System.out.println("**** 4");
 		
 		//Invalid PUT, no authorization
 		//Disabling this because, currently account is getting created without auth :-), should this be changed?
@@ -230,6 +223,10 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field message did not contain expected value", "Unknown account.", jsonReponse.get( "message" ) );
 		*/
 		
+		wireMockRule.stubFor(get(urlMatching(accountsPath+".*"))
+	            .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(200)));
+		
+		
 		//Valid GET for account alice, run this separately, if needed
 		ClientResponse clientResponse = getRequest( accountsPath, params );
 		assertEquals( "AccountsGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
@@ -246,9 +243,11 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 	}
 	
+	
 	@Test
 	public void testGetTransfer() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
+		final String getTransferResponseJSON = loadResourceAsString("testData/getTransferResponse.json");
 		//params.put( "Authorization", "Basic YWRtaW46YWRtaW4=" );
 		//params.put( "Authorization", createEncryptedAuth("admin", "admin") );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613123";
@@ -258,15 +257,27 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		//Valid Get Transfer
 		params.clear();
+		
+		System.out.println("3 Test testGetTransfer accounts path = " + accountsPath);
+		
+		wireMockRule.stubFor(get(urlMatching(transfersPath+id+".*"))
+	            .willReturn(aResponse().withBody(getTransferResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
+		
 		ClientResponse clientResponse = getRequest( transfersPath + id, params );
+		String json = clientResponse.getEntity(String.class);
+		
+		System.out.println("Response from getTransfer = " + json);
+		
 		assertEquals( "TransferGetInValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
-		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
+		
+		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( json );
 		assertEquals( "Response field id did not contain expected value", "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204", jsonReponse.get( "id" ) );
 		
 		//assertEquals( "Response field message did not contain expected value", "id is not a valid Uuid", jsonReponse.get( "message" ) );
 		//assertTrue( "Response field validationErrors was not present in response", jsonReponse.get( "validationErrors" ) != null );
 	}
 
+	
 	@Test
 	public void testGetHealth() throws Exception {
 		//Finish this when /health works as expected, currently getting a 404
@@ -290,16 +301,27 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		}
 	}
 
+	
 	@Test
 	public void testGetMetadata() throws Exception {
 		
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		String request = "/ilp/ledger/v1/";
+		final String getMetadataResponseJSON = loadResourceAsString("testData/getMetadataResponse.json");
+		
+		System.out.println("3 Test testGetTransfer accounts path = " + accountsPath);
+		
+		wireMockRule.stubFor(get(urlMatching(request+".*"))
+	            .willReturn(aResponse().withBody(getMetadataResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
+
+		
 		
 		//Valid GET request for Metadata
-		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/", params );
+		ClientResponse clientResponse = getRequest( request, params );
 		Map<String, Object> jsonReponse = JsonTransformer.stringToMap( clientResponse.getEntity(String.class) );
 		System.out.println("JSON Output: "+jsonReponse);
+		
 		Map<String, Object> urls = (Map<String, Object>) jsonReponse.get( "urls");
 		
 		assertEquals( "MetadataGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
@@ -323,23 +345,31 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 	}
 
+	
 	//Transfer related propose, prepare and execute need up-to-date code of the whole project, then need to be executed in an order
 	//The tests below can be finished once that is done.
 	@Test
 	public void testPutTransferFulfillment() throws Exception {
 		Map<String, String> params = new HashMap<String,String>();
 		params.clear();
+
+		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
+		String request = transfersPath + id + "/fulfillment";
+		
 		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
 		//params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
-		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
 		final String putTransferJSON = "cf:0:_v8";
+		
+		wireMockRule.stubFor(put(urlMatching(request+".*"))
+	            .willReturn(aResponse().withBody(putTransferJSON).withHeader("Content-Type", "text/plain").withStatus(200)));
 
+		
 		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id+"/fulfillment", params, putTransferJSON );
 		//ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id + "/fulfillment", params, putTransferJSON );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
-			assertEquals("response does not have the crypto condition fulfillment.","cf:0:_v8",responseContent);
+			assertEquals("response does not have the crypto condition fulfillment.","cf:0:_v8", responseContent);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
@@ -348,25 +378,39 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	}
 	
+	
 	@Test
 	public void testGetConnectors() throws Exception {
 		//This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
+		
+		wireMockRule.stubFor(get(urlMatching(connectorsPath+".*"))
+	            .willReturn(aResponse().withBody("{ \"message\" : \"this is a json message\"").withHeader("Content-Type", "application/json").withStatus(200)));
 		
 		ClientResponse clientResponse = getRequest( connectorsPath, null );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
+			System.out.println("response from GetConnectors() = " + responseContent);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
 	}
 	
+	
 	@Test
 	public void testPostMessages() throws Exception {
+		
+		System.out.println("postMessage url = " + messagesPath);
+		
+		wireMockRule.stubFor(post(urlPathEqualTo("/"+messagesPath))
+	            .willReturn(aResponse().withBody("").withStatus(201).withHeader("Content-Type", "application/json")));
+		
+		
 		ClientResponse clientResponse = postRequest( messagesPath, loadResourceAsString("testData/postMessagesBody.json") );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
+			System.out.println("response from PostMessage() = " + responseContent);
 			assertEquals("Response is not blank as expected.","",responseContent);
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );

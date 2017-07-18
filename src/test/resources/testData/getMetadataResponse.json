@@ -1,0 +1,20 @@
+{
+    "currencyCode": null,
+    "currencySymbol": null,
+    "connectors": [],
+    "urls": {
+        "health": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/health",
+        "transfer": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/transfers/:id",
+        "account": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/accounts/:name",
+        "accounts": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/accounts",
+        "message": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/messages",
+        "websocket": "ws://ec2-34-231-88-223.compute-1.amazonaws.com:8089/websocket",
+        "transfer_state": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/tranfers/:id/state",
+        "transfer_rejection": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/tranfers/:id/rejection",
+        "transfer_fulfillment": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/transfers/:id/fulfillment",
+        "account_transfers": null,
+        "auth_token": "http://ec2-34-231-88-223.compute-1.amazonaws.com:8088/ilp/ledger/v1/auth_token"
+    },
+    "precision": 10,
+    "scale": 2
+}
