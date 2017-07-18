@@ -133,6 +133,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/health"
                       method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+            </http:request-builder>
             <http:success-status-code-validator
                     values="200..500" />
         </http:request>
@@ -151,6 +154,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/accounts"
                       method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+            </http:request-builder>
             <http:success-status-code-validator
                     values="200..500" />
         </http:request>
@@ -223,6 +229,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <!--<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
                       method="PUT" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+            </http:request-builder>
             <!--<http:success-status-code-validator values="200,201,400,422"/> -->
             <http:success-status-code-validator
                     values="200..500" />
@@ -314,6 +323,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                         category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
                 <http:request config-ref="ILP_Ledger_Configuration"
                               path="/transfers/#[id]" method="GET" doc:name="HTTP">
+                    <http:request-builder>
+                        <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+                    </http:request-builder>
                     <http:success-status-code-validator
                             values="200..500" />
                 </http:request>
@@ -326,6 +338,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <set-variable doc:name="Store Transfer Payload" value="#[payload]" variableName="transferPayload"/>
                 <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
                               method="GET" doc:name="HTTP">
+                    <http:request-builder>
+                        <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+                    </http:request-builder>
                     <http:success-status-code-validator	values="200..500" />
                 </http:request>
                 <object-to-string-transformer doc:name="Object to String" mimeType="text/plain"/>
@@ -386,6 +401,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/rejection"
                       method="PUT" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+            </http:request-builder>
             <!--<http:success-status-code-validator values="200,201,400,404,422"/> -->
             <http:success-status-code-validator
                     values="200..500" />
@@ -422,6 +440,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/connectors"
                       method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:header headerName="L1p-Trace-Id" value="#[sessionVars.'L1p-Trace-Id']" />
+            </http:request-builder>
             <!--<http:success-status-code-validator values="200"/> -->
             <http:success-status-code-validator
                     values="200..500" />

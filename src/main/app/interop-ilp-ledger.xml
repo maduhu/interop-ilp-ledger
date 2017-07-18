@@ -47,7 +47,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     <sub-flow name="common_Flow">
         <logger message="This flow was called directly, not through API Kit router  :: ${ilp-ledger-adapter.basePath}" level="INFO" doc:name="Logger"/>
         <set-variable variableName="id" value="#[(message.inboundProperties.'http.uri.params'.id == null) ?  -1 : message.inboundProperties.'http.uri.params'.id]" doc:name="Variable - set ID from uri parameter"/>
-     	<set-session-variable variableName="L1p-Trace-Id" value="#[(message.inboundProperties.'L1p-Trace-Id' == null) ? java.util.UUID.randomUUID() : message.inboundProperties.'L1p-Trace-Id']" doc:name="set-L1p-Trace-Id"/>
+        <set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="apikit.start" doc:name="SnapTime Start"/>
         
         <!-- <custom-transformer class="com.l1p.interop.ilp.ledger.BasicAuthCredentialsTransformer" doc:name="Basic Auth Transformer"/> -->
@@ -155,7 +155,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
-        <set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
+
         <logger level="INFO"
                 message="Calling putTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
@@ -175,8 +175,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
-    	<set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
-        <logger level="INFO"
+    	<logger level="INFO"
                 message="Calling getTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="getTransfer" doc:name="call getTransfer"/>
@@ -194,8 +193,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
-    	<set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
-        <logger level="INFO"
+    	<logger level="INFO"
                 message="Calling executeTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="executeTransferEnqueue" doc:name="executeTransfer"/>
@@ -214,8 +212,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
-    	<set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
-        <logger level="INFO"
+    	<logger level="INFO"
                 message="Calling getTransferFullfillment(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
@@ -233,7 +230,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="common_Flow" doc:name="common_Flow"/>
     	<http:basic-security-filter realm="mule-realm" />
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-rejection.start" doc:name="SnapTime"/>
-        <set-session-variable variableName="L1p-Trace-Id" value="#[ (message.inboundProperties.'L1p-Trace-Id' != null) ? (message.inboundProperties.'L1p-Trace-Id') : (message.inboundProperties.'http.uri.params'.id) ]" doc:name="Reset-L1p-Trace-Id"/>
         <logger level="INFO"
                 message="Calling rejectTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
