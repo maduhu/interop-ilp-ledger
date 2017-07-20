@@ -37,6 +37,10 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
             <spring:constructor-arg value="1000"/><!-- Prepare Limit -->
             <spring:constructor-arg value="1000"/><!-- Cancel Limit -->
         </spring:bean>
+        <spring:bean id="transferQueueGauge" class="com.l1p.interop.ilp.ledger.metrics.TransferQueueGauge">
+            <spring:constructor-arg ref="metricRegistry"/>
+            <spring:constructor-arg ref="transferQueue"/>
+        </spring:bean>
 	</spring:beans>
 
 	<mule-ss:security-manager name="muleSecurityManager">
