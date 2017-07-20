@@ -163,13 +163,14 @@ public class LedgerNotificationRegistrationApplicationTest extends TestCase{
 	public void testSendMessageNotification() throws JsonProcessingException {
 		
 		Message msg = new Message();
-		msg.setData("this is the data object");
+		//msg.setData("this is the data object");
 		msg.setFrom("Tester1");
 		msg.setLedger("ledger name");
 		msg.setTo("Sender1");
 		
 		ObjectMapper om = new ObjectMapper();
-		String jsonMsg = om.writeValueAsString(msg);
+		//String jsonMsg = om.writeValueAsString(msg);
+		String jsonMsg = "{\"id\":null,\"ilp\":null,\"ledger\":\"ledger name\",\"from\":\"Tester1\",\"to\":\"Sender1\"}";
 		
 		// this is the actual test case we are performing.
 		app.sendMessageNotification(jsonMsg);
