@@ -1,5 +1,6 @@
 package com.l1p.interop.ilp.ledger.queue;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l1p.interop.ilp.ledger.domain.Transfer;
@@ -13,7 +14,7 @@ public class TransferQueueTest {
     
     @Test
     public void test() throws IOException {
-        TransferQueue underTest = new TransferQueue(10, 10);
+        TransferQueue underTest = new TransferQueue(10, 10, new MetricRegistry());
 
         Calendar cal = Calendar.getInstance();
 
