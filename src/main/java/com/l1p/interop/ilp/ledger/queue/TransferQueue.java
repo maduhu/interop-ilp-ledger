@@ -1,5 +1,6 @@
 package com.l1p.interop.ilp.ledger.queue;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l1p.interop.ilp.ledger.domain.Transfer;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static com.l1p.interop.ilp.ledger.queue.TransferState.*;
 
 public class TransferQueue {
@@ -25,10 +27,11 @@ public class TransferQueue {
     final Map<String, Date> tranferExpiryMap = new ConcurrentHashMap<>();
     final int preparesInQueueLimit;
     final int cancelsInQueueLimit;
+    final MetricRegistry metricRegistry;
 
     private final ObjectMapper mapper;
 
-    public TransferQueue(int preparesInQueueLimit, int cancelsInQueueLimit) {
+    public TransferQueue(int preparesInQueueLimit, int cancelsInQueueLimit, final MetricRegistry metricRegistry) {
         this.preparesInQueueLimit = preparesInQueueLimit;
         this.cancelsInQueueLimit = cancelsInQueueLimit;
         Comparator comparator = Comparator.comparing(QueuedTransfer::getTransferState).thenComparing(QueuedTransfer::getTimestamp);
@@ -39,6 +42,7 @@ public class TransferQueue {
         cancelCount = new AtomicInteger(0);
 
         mapper = new ObjectMapper();
+        this.metricRegistry = metricRegistry;
     }
 
     public void addPrepare(String transferJson) throws IOException {
@@ -47,9 +51,13 @@ public class TransferQueue {
         tranferExpiryMap.put(transfer.getId(), transfer.getExpiresAt());
         if (prepareCount.get() > preparesInQueueLimit) {
             log.warn("Prepare msg discarded b/c limit reached");
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.prepares.drop")).inc();
         } else {
             boolean added = priorityQueue.add(new QueuedTransfer(PREPARE, transfer));
-            if (added) prepareCount.incrementAndGet();
+            if (added) {
+                prepareCount.incrementAndGet();
+                metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.prepares.size")).inc();
+            }
         }
     }
 
@@ -61,7 +69,10 @@ public class TransferQueue {
 
         QueuedTransfer queuedTransfer = new QueuedTransfer(FULFILL, transfer);
         boolean added = priorityQueue.add(queuedTransfer);
-        if (added) fulfillCount.incrementAndGet();
+        if (added) {
+            fulfillCount.incrementAndGet();
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.fulfills.size")).inc();
+        }
     }
 
     public void addCancel(String transferId, String rejectionReason) {
@@ -73,9 +84,11 @@ public class TransferQueue {
         QueuedTransfer queuedTransfer = new QueuedTransfer(CANCEL, transfer);
         if (cancelCount.get() > cancelsInQueueLimit) {
             log.warn("Cancel msg discarded b/c limit reached");
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.cancels.drop")).inc();
         } else {
             boolean added = priorityQueue.add(queuedTransfer);
             if (added) cancelCount.incrementAndGet();
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.cancels.size")).inc();
         }
     }
 
@@ -84,9 +97,18 @@ public class TransferQueue {
         QueuedTransfer queuedTransfer = priorityQueue.poll();
         if (queuedTransfer == null) return null;
 
-        if (queuedTransfer.getTransferState() == PREPARE) prepareCount.decrementAndGet();
-        else if (queuedTransfer.getTransferState() == FULFILL) fulfillCount.decrementAndGet();
-        else cancelCount.decrementAndGet();
+        if (queuedTransfer.getTransferState() == PREPARE) {
+            prepareCount.decrementAndGet();
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.prepares.size")).dec();
+        }
+        else if (queuedTransfer.getTransferState() == FULFILL) {
+            fulfillCount.decrementAndGet();
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.fulfills.size")).dec();
+        }
+        else {
+            cancelCount.decrementAndGet();
+            metricRegistry.counter(name("l1p.interop-ilp-ledger.transfer.queue.cancels.size")).dec();
+        }
 
         return queuedTransfer;
     }
