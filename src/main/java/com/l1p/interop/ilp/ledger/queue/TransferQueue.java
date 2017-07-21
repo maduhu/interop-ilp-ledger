@@ -92,6 +92,7 @@ public class TransferQueue {
     }
 
     public TransferQueueStats getStats() {
+        log.info("Providing stats");
         return new TransferQueueStats(prepareCount.get(), fulfillCount.get(), cancelCount.get());
     }
 
