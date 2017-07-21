@@ -145,7 +145,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 			final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(),
 					subscriptionRequest.getJsonrpc(), subscriptionRequest.getParams().getAccounts().size());
 			String subscriptionResponseJson = mapper.writeValueAsString(subscriptionResponse);
-			log.info("send response to subscription request: {} ", subscriptionResponseJson);
 			socket.send(subscriptionResponseJson);
 			// socket.send("{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":1}");
 
@@ -164,7 +163,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
             final SubscriptionResponse subscriptionResponse = new SubscriptionResponse(subscriptionRequest.getId(),
                     subscriptionRequest.getJsonrpc(), 0);
             String subscriptionResponseJson = mapper.writeValueAsString(subscriptionResponse);
-            log.info("send response to subscription request: {} ", subscriptionResponseJson);
             socket.send(subscriptionResponseJson);
 		} catch (Exception e) {
 			log.error(ExceptionUtils.getStackTrace(e));
@@ -174,7 +172,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	public void sendTransferPreparedNotification(String transferJson) {
 		try {
-			log.info("Prepared Transfer JSON: {}", transferJson);
 			final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
 			//ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
 			sendTransferPreparedNotification(transfer);
@@ -185,7 +182,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	public void sendTranferExecutedNotification(String transferJson,String fulfillmentCondition) {
 		try {
-			log.info("Executed Transfer JSON: {}", transferJson);
 			final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
 			ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
 			sendTranferExecutedNotification(transfer,fulfillmentCondition);
@@ -196,7 +192,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	
 	public void sendTranferRejectedNotification(String transferJson) {
 		try {
-			log.info("Rejected Transfer JSON: {}", transferJson);
 			final Transfer transfer = mapper.readValue(transferJson, Transfer.class);
 			ledgerUrlMapper.mapUrlToLedgerAdapter(transfer);
 			sendTranferRejectedNotification(transfer);
@@ -221,7 +216,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 
 	private void sendTransferNotification(String transferType, Transfer transfer,HashMap<String,String> relatedResourceMap) {
 		try {
-			log.warn("In sendTransferNotification. Transfer Id: {}",transfer.getId());
 			final Notification notification = new Notification();
 			TransferParams params = new TransferParams(transferType, transfer);
 			params.setRelatedResources(relatedResourceMap);
@@ -246,7 +240,6 @@ public class LedgerNotificationRegistrationApplication extends WebSocketApplicat
 	public void sendMessageNotification(String msgJson) {
 		// broadcast(account, msg);
 		try {
-			log.info("Message JSON: {}", msgJson);
 			final Message message = mapper.readValue(msgJson, Message.class);
 			// ledgerUrlMapper.mapUrlToLedgerAdapter(message);
 			final Notification notification = new Notification();
