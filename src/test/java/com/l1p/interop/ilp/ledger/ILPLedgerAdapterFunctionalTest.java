@@ -129,22 +129,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 
 	
 	@Test
-	public void testSuccess() {
-		
-		Map<String, String> params = new HashMap<String,String>();
-		String path1 = "/some/thing";
-		
-//		localService.stubFor(get(urlMatching(path1)).
-//					willReturn(aResponse().withBody("wiremock returned with a body").
-//					withStatus(200)));
-
-		ClientResponse clientResponse = getRequest( path1, params);
-		System.out.println("..results for /some/thing : " + clientResponse.getStatus());
-		assertEquals("Test a valid result", 200, clientResponse.getStatus());
-	}
-	
-	
-	@Test
 	public void testPutAccounts() throws Exception {
 		final String putAccountJSON = loadResourceAsString("testData/putAccount-Alice.json");
 		final String putAccountResponseJSON = loadResourceAsString("testData/putAccountResponse.json");
@@ -383,26 +367,16 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		params.clear();
 
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
-		String request = transfersPath + id + "/fulfillment";
-		String fullRequestListenerPath = ledgerServicePath + "/transfers/" + id + "/fulfillment";
 		String fullRequestCallPath = transfersPath + id + "/fulfillment";
 		
-		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		//params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
 		final String putTransferJSON = "cf:0:_v8";
 		
-		// TODO fix this end point for ilp service 
-		ilpLedgerRule.stubFor(put(urlPathMatching( fullRequestListenerPath ))
-	            .willReturn(aResponse().withBody(putTransferJSON).withHeader("Content-Type", "text/plain").withStatus(200)));
-
-		System.out.println("put:/transfers/{}/fulfillment = " + fullRequestCallPath);
-		
-//		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id + "/fulfillment", params, putTransferJSON );
 		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( fullRequestCallPath, params, putTransferJSON );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
-			assertEquals("response does not have the crypto condition fulfillment.","cf:0:_v8", responseContent);
+			assertEquals("response payload was supposed to be empty", "", responseContent);
+			assertEquals("response status was supposed to be 201", 201, clientResponse.getStatus());
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
