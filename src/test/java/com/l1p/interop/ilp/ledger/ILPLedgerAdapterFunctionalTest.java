@@ -58,27 +58,31 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	private final String transfersPath="/ilp/ledger/v1/transfers/";
 	private final String connectorsPath="/ilp/ledger/v1/connectors";
 	private final String messagesPath = "ilp/ledger/v1/messages";
-	private final String serviceHost = "http://localhost:8081";
+	private final String serviceHost = "http://localhost:8088";
+	
+	private final String ilpLedgerServiceBasePath = "/ilp/ledger/v1";
+	private final String ledgerServicePath = "/ledger";
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
+//	@Rule
+//	public WireMockRule wireMockRule = new WireMockRule(9999);
+	
 	@Rule
-	public WireMockRule wireMockRule = new WireMockRule(8081);
+	public WireMockRule ilpLedgerRule = new WireMockRule(8014);
+	
+//	@Rule
+//	public WireMockRule localService = new WireMockRule(8081);
+	
 
 	WebResource webService;
-	private static WireMockServer wireMockServer;
+	
+//	private static WireMockServer wireMockServer;
 
 	@Override
 	protected String getConfigResources() {
-		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml, proxy/mock-ilp-ledger.xml,proxy/mock-ilp-ledger-api.xml";
+		return "test-resources.xml,interop-ilp-ledger-api.xml,interop-ilp-ledger.xml,proxy/ilp-ledger-proxy.xml,proxy/mock-ilp-ledger.xml,proxy/mock-ilp-ledger-api.xml";
 	}
-	
-	
-//	@After
-//	public void shutdown() {
-//		wireMockServer.stop();
-//	}
-	
 
 	@BeforeClass
 	public static void initEnv() {
@@ -87,18 +91,14 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		System.setProperty("metrics.reporter.kafka.broker", "ec2-35-164-199-6.us-west-2.compute.amazonaws.com:9092");
 		System.setProperty("metrics.reporter.kafka.topic", "bmgf.metric.pi2");
 		
-		/*
-		 * Needed for some of these tests 
-		 */
-		wireMockServer = new WireMockServer(Options.DYNAMIC_PORT);
-		wireMockServer.start();
-		WireMock.configureFor(wireMockServer.port());
+//		/*
+//		 * Needed for some of these tests 
+//		 */
+//		wireMockServer = new WireMockServer(Options.DYNAMIC_PORT);
+//		wireMockServer.start();
+//		WireMock.configureFor(wireMockServer.port());
 	}
-	
-	@AfterClass
-	public static void shutdown() {
-		wireMockServer.stop();
-	}
+
 
 	
 	@Before
@@ -127,21 +127,6 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		}
 	}
 
-	
-	@Test
-	public void testSuccess() {
-		
-		Map<String, String> params = new HashMap<String,String>();
-		String path1 = "/some/thing";
-		
-		wireMockRule.stubFor(get(urlMatching(path1))
-	            .willReturn(aResponse().withBody("wiremock returned with a body").withStatus(200)));
-
-		ClientResponse clientResponse = getRequest( path1, params);
-		System.out.println("..results for /some/thing : " + clientResponse.getStatus());
-		assertEquals("Test a valid result", 200, clientResponse.getStatus());
-	}
-	
 	
 	@Test
 	public void testPutAccounts() throws Exception {
@@ -178,10 +163,12 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field message did not contain expected value", "Invalid request payload JSON format", jsonReponse.get( "message" ) );
 		*/
 		
-		System.out.println("Test testPutAccounts accounts path = " + accountsPath+ id);
-		
-		wireMockRule.stubFor(put(urlMatching(accountsPath+id+".*"))
-	            .willReturn(aResponse().withBody(putAccountResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
+		System.out.println("About to call put for testPutAccounts " +  id);
+		String fullPath = ledgerServicePath + "/accounts/" + id;
+		System.out.println("put acccounts path = " + fullPath);
+
+		ilpLedgerRule.stubFor(put(urlPathMatching( fullPath ))
+				.willReturn(aResponse().withBody(putAccountResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
 		
 		
 		//Valid PUT - should be invalid if it exists but valid here because it is mocked
@@ -218,6 +205,10 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		Map<String, String> params = new HashMap<String,String>();
 		params.put( "Authorization", "Basic YWRtaW46Zm9v" );
+		
+		String getAccountResponse = loadResourceAsString("testData/getAccountResponse.json");
+		System.out.println("just loaded get account response data");
+		
 		//ZGZzcDE6ZGZzcDE=
 		//This account should already be present (considering that account 'alice' exists)
 		
@@ -234,11 +225,20 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		assertEquals( "Response field message did not contain expected value", "Unknown account.", jsonReponse.get( "message" ) );
 		*/
 		
-		wireMockRule.stubFor(get(urlMatching(accountsPath+".*"))
-	            .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(200)));
+//		wireMockRule.stubFor(get(urlMatching(accountsPath+".*"))
+//	            .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(200)));
+		
+		
+//		return getResource.path( path ).header("", "Basic YWRtaW46YWRtaW4=" ).type( "application/json" ).get( ClientResponse.class );
+		
+		// TODO:  Fix url   .withBasicAuth("admin", "admin").
+		ilpLedgerRule.stubFor(get(urlPathMatching(ledgerServicePath + "/accounts")).
+				willReturn(aResponse().withBody(getAccountResponse).withHeader("Content-Type", "application/json").withStatus(200)));
 		
 		
 		//Valid GET for account alice, run this separately, if needed
+		System.out.println("about to call get account endpoint ");
+		
 		ClientResponse clientResponse = getRequest( accountsPath, params );
 		assertEquals( "AccountsGetValid" + ": Did not receive status 200", 200, clientResponse.getStatus());
 
@@ -262,6 +262,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		//params.put( "Authorization", "Basic YWRtaW46YWRtaW4=" );
 		//params.put( "Authorization", createEncryptedAuth("admin", "admin") );
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613123";
+		String fullPath = ledgerServicePath + "/transfers/" + id;
 		
 		//http.status=200: {"id":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/transfers/undefined","ledger":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger","debits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/alice","amount":"50.00"}],"credits":[{"account":"http://ec2-52-37-54-209.us-west-2.compute.amazonaws.com:8088/ledger/accounts/bob","amount":"50.00"}],"execution_condition":"cc:0:3:8ZdpKBDUV-KX_OnFZTsCWB_5mlCFI3DynX5f5H2dN-Y:2","cancellation_condition":null,"expires_at":"2016-11-27T00:00:01.000Z","state":"proposed","timeline":{"proposed_at":"2016-11-04T05:23:20.940Z","prepared_at":"2016-11-04T05:23:20.940Z","executed_at":null}}
 		//"params":{"pattern":{},"value":"3a2a1d9e-8640-4d2d-b06c-84f2cd613","key":"id"}}]}
@@ -269,9 +270,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		//Valid Get Transfer
 		params.clear();
 		
-		System.out.println("3 Test testGetTransfer accounts path = " + accountsPath);
 		
-		wireMockRule.stubFor(get(urlMatching(transfersPath+id+".*"))
+		ilpLedgerRule.stubFor(get(urlPathMatching(fullPath))
 	            .willReturn(aResponse().withBody(getTransferResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
 		
 		ClientResponse clientResponse = getRequest( transfersPath + id, params );
@@ -291,6 +291,9 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	
 	@Test
 	public void testGetHealth() throws Exception {
+		
+		ilpLedgerRule.stubFor(get(urlPathMatching(ledgerServicePath + "/health")).willReturn(aResponse().withStatus(200)));
+		
 		//Finish this when /health works as expected, currently getting a 404
 		ClientResponse clientResponse = getRequest( "/ilp/ledger/v1/health", null );
 		String responseContent = null;
@@ -301,6 +304,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		}
 	}
 
+	
 	@Test
 	public void testRejectTransferShouldReturnValidResponse() throws Exception {
 		ClientResponse clientResponse = putRequestWithQueryParams( "/ilp/ledger/v1/transfers/12345/rejection", null, "cf:0:_v8" );
@@ -323,10 +327,8 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		
 		System.out.println("3 Test testGetTransfer accounts path = " + accountsPath);
 		
-		wireMockRule.stubFor(get(urlMatching(request+".*"))
+		ilpLedgerRule.stubFor(get(urlPathMatching(ledgerServicePath + "/"))
 	            .willReturn(aResponse().withBody(getMetadataResponseJSON).withHeader("Content-Type", "application/json").withStatus(200)));
-
-		
 		
 		//Valid GET request for Metadata
 		ClientResponse clientResponse = getRequest( request, params );
@@ -365,22 +367,16 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 		params.clear();
 
 		String id = "3a2a1d9e-8640-4d2d-b06c-84f2cd613204";
-		String request = transfersPath + id + "/fulfillment";
+		String fullRequestCallPath = transfersPath + id + "/fulfillment";
 		
-		//params.put( "Authorization", "Basic YWRtaW46Zm9v" );
-		//params.put( "Authorization", createEncryptedAuth("dfsp1", "dfsp1") );
 		final String putTransferJSON = "cf:0:_v8";
 		
-		wireMockRule.stubFor(put(urlMatching(request+".*"))
-	            .willReturn(aResponse().withBody(putTransferJSON).withHeader("Content-Type", "text/plain").withStatus(200)));
-
-		
-		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id+"/fulfillment", params, putTransferJSON );
-		//ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( transfersPath + id + "/fulfillment", params, putTransferJSON );
+		ClientResponse clientResponse = putRequestWithQueryParamsNullContentType( fullRequestCallPath, params, putTransferJSON );
 		String responseContent = null;
 		try {
 			responseContent = clientResponse.getEntity(String.class);
-			assertEquals("response does not have the crypto condition fulfillment.","cf:0:_v8", responseContent);
+			assertEquals("response payload was supposed to be empty", "", responseContent);
+			assertEquals("response status was supposed to be 201", 201, clientResponse.getStatus());
 		} catch ( Exception e ) {
 			fail( "parsing client response content produced an unexpected exception: " + e.getMessage() );
 		}
@@ -392,10 +388,9 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	
 	@Test
 	public void testGetConnectors() throws Exception {
-		//This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
 		
-		wireMockRule.stubFor(get(urlMatching(connectorsPath+".*"))
-	            .willReturn(aResponse().withBody("{ \"message\" : \"this is a json message\"").withHeader("Content-Type", "application/json").withStatus(200)));
+		//This needs to be implemented when connectors implementation in RAML or elsewhere is finished. Couldn't find this resource as of now
+		ilpLedgerRule.stubFor(get(urlMatching(ledgerServicePath + "/connectors.*")).willReturn(aResponse().withStatus(200)));
 		
 		ClientResponse clientResponse = getRequest( connectorsPath, null );
 		String responseContent = null;
@@ -412,11 +407,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
 	public void testPostMessages() throws Exception {
 		
 		System.out.println("postMessage url = " + messagesPath);
-		
-		wireMockRule.stubFor(post(urlPathEqualTo("/"+messagesPath))
-	            .willReturn(aResponse().withBody("").withStatus(201).withHeader("Content-Type", "application/json")));
-		
-		
+
 		ClientResponse clientResponse = postRequest( messagesPath, loadResourceAsString("testData/postMessagesBody.json") );
 		String responseContent = null;
 		try {
@@ -471,7 +462,7 @@ public class ILPLedgerAdapterFunctionalTest extends FunctionalTestCase {
      * @return ClientResponse instance representing the response from the service
      */
 	private ClientResponse postRequest( String path, String requestData ) {
-		return webService.path( path ).type( "application/json").post(ClientResponse.class, requestData);
+		return webService.path( path ).header("authorization", "Basic YWRtaW46YWRtaW4=" ).type( "application/json").post(ClientResponse.class, requestData);
 	}
 
 	/**

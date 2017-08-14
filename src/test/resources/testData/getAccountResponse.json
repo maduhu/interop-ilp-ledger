@@ -1,0 +1,9 @@
+{
+	"id": "http://ec2-52-32-130-4.us-west-2.compute.amazonaws.com:8014/ilp/ledger/v1/accounts/alice",
+	"name": "alice",
+	"balance": "98944.52",
+	"currencyCode": "USD",
+	"currencySymbol": "$",
+	"is_disabled": false,
+	"ledger": "http://ec2-52-32-130-4.us-west-2.compute.amazonaws.com:8014/ilp/ledger/v1"
+}
