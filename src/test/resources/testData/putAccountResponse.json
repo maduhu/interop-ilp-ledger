@@ -1,0 +1,6 @@
+{
+	"id": "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8014/ledger/accounts/john",
+	"name": "john",
+	"balance": "98944.52",
+	"currencyCode": "USD"
+}

@@ -1,0 +1,37 @@
+{
+	"id": "http://usd-ledger.example/transfers/3a2a1d9e-8640-4d2d-b06c-84f2cd613204",
+	"ledger": "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger",
+	"debits": [{
+		"account": "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger/accounts/dfsp1connector",
+		"memo": {
+			"source_transfer_ledger": "levelone.ist.",
+			"source_transfer_id": "e829a9bf-b87b-4d84-87f3-18dc467ae7c7"
+		},
+		"amount": "7.00"
+	}],
+	"credits": [{
+		"account": "http://ec2-35-163-231-111.us-west-2.compute.amazonaws.com:8088/ledger/accounts/merchant",
+		"memo": {
+			"ilp_header": {
+				"account": "levelone.dfsp1.merchant.4bf0ee9d-1244-4e77-8951-f05a07f4f8a1",
+				"amount": "7",
+				"data": {
+					"data": {
+						"memo": {
+							"fee": 0,
+							"transferCode": "invoice",
+							"debitName": "bob",
+							"creditName": "merchant"
+						}
+					},
+					"expires_at": "2016-12-23T13:59:26.173Z"
+				}
+			}
+		},
+		"amount": "7.00"
+	}],
+	"execution_condition": "cc:0:3:iLS9w-CiypRGXk3VmvJsKlcfOnH0kXvdxL5EIcdjSjI:32",
+	"cancellation_condition": null,
+	"state": "executed",
+	"expires_at": "2016-12-23T13:59:24.173Z"
+}

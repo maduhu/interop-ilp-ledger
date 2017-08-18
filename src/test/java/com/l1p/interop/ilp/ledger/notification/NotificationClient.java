@@ -21,7 +21,8 @@ public class NotificationClient {
     try {
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 //      String uri = "ws://localhost:8089/websocket?token=123";
-      String uri = "ws://ec2-35-166-189-14.us-west-2.compute.amazonaws.com:8089/websocket?token=placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES";
+      //String uri = "ws://ec2-34-231-88-223.compute-1.amazonaws.com:8089/websocket?token=placeholder_9AtVZPN3t49Kx07stO813UHXv6pcES";
+      String uri = "ws://ec2-34-206-201-170.compute-1.amazonaws.com:3002/websocket?token=dtNS8W1GPUPc_k-VXE7Llat0iSMf_TeI4sMm2Qoc7sL7LUdwk8CNOWuu2r48F_CwlxltHW5h02zh5GfXUJM5ZXdAf_uI_Td4Zxs";
       log.info("Connecting to {}", uri);
       container.connectToServer(WebsocketClientEndpoint.class, URI.create(uri));
       messageLatch.await(30, TimeUnit.MINUTES);
