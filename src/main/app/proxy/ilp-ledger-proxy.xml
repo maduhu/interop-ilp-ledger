@@ -42,9 +42,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                     <spring:property name="transferFulfillment"
                                      value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/fulfillment" />
                     <spring:property name="transferState"
-                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/state" />
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/state" />
                     <spring:property name="transferRejection"
-                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/tranfers/:id/rejection" />
+                                     value="${ilp-ledger-adapter.ledgerAdapterURL}/transfers/:id/rejection" />
                     <spring:property name="accounts"
                                      value="${ilp-ledger-adapter.ledgerAdapterURL}/accounts" />
                     <spring:property name="account"
