@@ -253,7 +253,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
                     <metrics:metric-keys><metrics:metric-key>TransferPutFailure</metrics:metric-key></metrics:metric-keys>
                 </metrics:inc-count>
-                <logger message="putTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=dfsp-prepare" level="ERROR"
+                <logger message="putTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']" level="ERROR"
                         category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
             </otherwise>
         </choice>
@@ -358,7 +358,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <metrics:inc-count config-ref="metricsConfig" category="l1p.interop-ilp-ledger.transfer" doc:name="metrics-count">
                     <metrics:metric-keys><metrics:metric-key>TransferExecuteFailure</metrics:metric-key></metrics:metric-keys>
                 </metrics:inc-count>
-                <logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=dfsp-fulfill"
+                <logger message="executeTransfer failed for request with L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
                         level="ERROR" category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
             </otherwise>
         </choice>
