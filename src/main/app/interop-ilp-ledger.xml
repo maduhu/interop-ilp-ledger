@@ -158,7 +158,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers.start" doc:name="SnapTime"/>
 
         <logger level="INFO"
-                message="Calling putTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling putTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=rest-prepare"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="putTransferEnqueue" doc:name="call putTransfer"/>
         <!--<logger level="INFO"-->
@@ -177,11 +177,11 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
     	<logger level="INFO"
-                message="Calling getTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling getTransfer(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="getTransfer" doc:name="call getTransfer"/>
         <logger level="INFO"
-                message="Sending getTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
+                message="Sending getTransfer(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status'], Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
@@ -195,7 +195,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="put.transfers-fulfillment.start" doc:name="SnapTime"/>
     	<logger level="INFO"
-                message="Calling executeTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling executeTransferEnqueue(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=rest-fulfill"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="executeTransferEnqueue" doc:name="executeTransfer"/>
         <!--<logger level="INFO"-->
@@ -214,11 +214,11 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     	<http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.start" doc:name="SnapTime"/>
     	<logger level="INFO"
-                message="Calling getTransferFullfillment(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling getTransferFullfillment(#[id]) for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="getTransferFulfillment" doc:name="getTransferFulfillment"/>
         <logger level="INFO"
-                message="Sending getTransferFulfillment(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
+                message="Sending getTransferFulfillment(#[id]) response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status'], Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="get.transfers.stop" doc:name="SnapTime"/>
         <metrics:time config-ref="metricsConfig" beginSnapKey="get.transfers.start" endSnapKey="get.transfers.stop" category="l1p.interop-ilp-ledger.transfers.api" metricKey="TransfersGetRequestTime" doc:name="Metrics Record"/>
@@ -269,11 +269,11 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <http:basic-security-filter realm="mule-realm" />
     	<metrics:snap-time config-ref="metricsConfig" snapTimeKey="post.message.start" doc:name="SnapTime"/>
         <logger level="INFO"
-                message="Calling post messages for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id']"
+                message="Calling post messages for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=notify"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <flow-ref name="postMessages" doc:name="postMessages"/>
         <logger level="INFO"
-                message="Received postMessages response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status']"
+                message="Received postMessages response for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], http.status=#[message.outboundProperties.'http.status'], Call-Type=notify"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger"/>
         <metrics:snap-time config-ref="metricsConfig" snapTimeKey="post.message.stop" doc:name="SnapTime"/>
         
