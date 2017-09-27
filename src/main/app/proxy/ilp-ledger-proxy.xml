@@ -224,7 +224,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <transformer ref="ledgerAdapterToActualLedgerUrlTransformer"
                      doc:name="Transform from adapter URL to dfsp ledger URL" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put payload: #[payload], Call-Type=rest-prepare"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=put payload: #[payload], L1p-Call-Type=rest-prepare"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <!--<http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[flowVars.queuedTransfer.getTransferDetails().getId()]"-->
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
@@ -238,7 +238,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </http:request>
         <object-to-string-transformer doc:name="Object to String" />
         <logger level="INFO"
-                message="Response from dfsp: #[payload], L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=dfsp-prepare"
+                message="Response from dfsp: #[payload], L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], L1p-Call-Type=dfsp-prepare"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <choice doc:name="Map Ledger URLs based on the response code">
             <when expression="#[message.inboundProperties.'http.status' == 201]">
@@ -268,7 +268,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-payload value="#[NullPayload.getInstance()]"
                      doc:name="Set Payload" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get, Call-Type=get-transfer-status"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id], method=get, L1p-Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]"
                       method="GET" doc:name="HTTP">
@@ -282,7 +282,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                              doc:name="Transform Ledger URL" />
             </when>
             <otherwise>
-                <logger message="getTransfer failed for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], Call-Type=get-transfer-status" level="ERROR"
+                <logger message="getTransfer failed for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'], L1p-Call-Type=get-transfer-status" level="ERROR"
                         category="com.l1p.interop.ilp.ledger.api-main" doc:name="Logger" />
             </otherwise>
         </choice>
@@ -301,14 +301,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-payload value="#[flowVars.queuedTransfer.getTransferDetails().getExecutionCondition()]" doc:name="Set Execution Condition as payload"/>
         <set-property propertyName="Content-Type" value="text/plain" doc:name="Property" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[message.payloadAs(java.lang.String)], Call-Type=rest-fulfill"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=put payload: #[message.payloadAs(java.lang.String)], L1p-Call-Type=rest-fulfill"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
                       method="PUT" doc:name="HTTP">
             <http:success-status-code-validator	values="200..500" />
         </http:request>
         <logger level="INFO"
-                message="Response from dfsp for /fulfillment: #[message.payloadAs(java.lang.String)], Call-Type=dfsp-fulfill"
+                message="Response from dfsp for /fulfillment: #[message.payloadAs(java.lang.String)], L1p-Call-Type=dfsp-fulfill"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <object-to-string-transformer doc:name="Object to String" />
         <set-variable variableName="payloadToReturn" value="#[payload]"
@@ -374,7 +374,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <set-payload value="#[NullPayload.getInstance()]"
                      doc:name="Set Payload" />
         <logger level="INFO"
-                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=get, Call-Type=get-transfer-status"
+                message="Proxying request for L1p-Trace-Id=#[sessionVars.'L1p-Trace-Id'] to http://${dfsp-host}:${ilp-ledger.port}${ilp-ledger.basePath}/transfers/#[id]/fulfillment, method=get, L1p-Call-Type=get-transfer-status"
                 category="com.l1p.interop.ilp.ledger.api-main" doc:name="logger" />
         <http:request config-ref="ILP_Ledger_Configuration" path="/transfers/#[id]/fulfillment"
                       method="GET" doc:name="HTTP">
